@@ -33,9 +33,12 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
 
       pt->original_buffer = org; 
       pt->add_buffer = add; 
-      pt->table = (piece_table_element*)malloc(sizeof(piece_table_element) * DEFAULT_PT_ELEM_SIZE);
+      pt->pt_size = DEFAULT_PT_ELEM_SIZE;
+      pt->table = (piece_table_element*)malloc(sizeof(piece_table_element) * pt->pt_size); 
       pt->start_ins_chr = '\0';
       pt->start_ins_pos = 0;
+
+      /* first element in the piece table should be the original buffer */
      
    return 0;
 }
