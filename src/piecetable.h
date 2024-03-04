@@ -11,7 +11,7 @@ typedef enum {
 typedef struct {
     char* text; 
     size_t size; 
-    size_t nt curr_pos;  /* for the add buffer */
+    size_t curr_pos;  /* for the add buffer */
 } text_buffer; 
 
 typedef struct{
@@ -24,14 +24,15 @@ typedef struct {
     text_buffer* original_buffer; 
     text_buffer* add_buffer; 
     piece_table_element* table; 
+    size_t pt_size; 
+    size_t start_ins_pos;
     char start_ins_chr;
-    size_t  start_ins_pos;
 } piece_table; 
 
 
 int init_piece_table(FILE* f, char* fn, piece_table* pt);
 void empty_piece_table(piece_table* pt);
 
-void resize_add_buffer(text_buffer* add_buff);
+int resize_add_buffer(text_buffer* add_buff);
 
 #endif 
