@@ -9,13 +9,18 @@ void save_file_writes(FILE* f, piece_table* pt){
 
 }
 
-void insert_at(piece_table* pt, char c){
+int insert_at(piece_table* pt, char c){
+    int res; 
 
     text_buffer* add_buff = pt->add_buffer; 
 
     /* check that there is space in the add buffer first */
     if (add_buff->curr_pos + 1 > add_buff->size){
-        resize_add_buffer(add_buff);
+        
+        if (resize_add_buffer(add_buff) < 0){
+            printf("[ERROR]: something went wrong attempting to call realloc... exiting now");
+            return -1; 
+        }
     }
 
     /* check if this is the start of a new insert */
@@ -69,7 +74,6 @@ void edit_file(char* fn){
                     break; 
             }
 
-            if (res < 0) in_edit--;
         }
 
         /* if not in a particular mode then see if we'll enter a mode */
@@ -114,6 +118,8 @@ void edit_file(char* fn){
                     break;
             }
         }
+
+        if (res < 0) in_edit--;
         
     } while (in_edit);
 
