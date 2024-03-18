@@ -2,6 +2,7 @@
 #define SCREEN_SKILLISSUE_H 
 
 #include <curses.h>
+#include "piecetable.h"
 
 typedef struct {
     int rows; 
@@ -9,5 +10,6 @@ typedef struct {
 } termw_info;
 
 void intro_screen_no_file();
+void render_screen(piece_table* pt);
 
 #endif 
