@@ -22,4 +22,6 @@ typedef struct {
 #define USR_MODE_SLT  0x2 
 #define USR_MODE_CMD  0x4
 
+#define WRITE_SIZE    1024 
+
 #endif 

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "skillissue.h"
+#include "utils.h"
 
 static termw_info tinfo; 
 
@@ -28,6 +29,8 @@ int insert_at(piece_table* pt, char c){
         pt->start_ins_chr = c; 
         pt->start_ins_pos = add_buff->curr_pos;
     }
+
+    return 0; 
 }
 
 void esc_make_changes(usermode* umode, piece_table* pt){
@@ -44,22 +47,27 @@ void esc_make_changes(usermode* umode, piece_table* pt){
 void edit_file(char* fn){
     char user_in; 
     usermode umode; 
+    umode.mode &= 0; 
+
     int in_edit = 1;
 
-    /* read file and create appropriate structures */
+    /* check that the file exists */
+
+    /* create appropriate items for reading file and info */
     piece_table pt; 
-    FILE* f = fopen(fn, "r+");
+    FILE* f = fopen(fn, "w+");;
     int res; 
     
-    /* init the piece table */
+    /* open the file and init the piece table */
     if ((res = init_piece_table(f, fn, &pt)) < 0 ) return;
-    
-    
+
+    printw("waiting for input, umode is: %hu\n", umode.mode);
     do {
 
         /* render piece table to output */
-
+        
         user_in = getch(); 
+        printw("user in is: %c", user_in);
 
         /* determine the mode first if on is active */
         if (umode.mode){
@@ -68,6 +76,7 @@ void edit_file(char* fn){
 
                 case USR_MODE_INS:
                     res = insert_at(&pt, user_in);
+                    render_screen(&pt);
                     break;
 
                 default:
@@ -89,7 +98,7 @@ void edit_file(char* fn){
                 
                 /* save progress and write to file */
                 case 'z':
-                    save_file_writes();
+                    save_file_writes(f, &pt);
                     umode.made_save = 1;
                     break; 
 
@@ -119,14 +128,32 @@ void edit_file(char* fn){
             }
         }
 
+        /* re-render the screen */
+
         if (res < 0) in_edit--;
         
     } while (in_edit);
 
     /* if no save was made then write original contents to the file */
     if (!umode.made_save){
+        
+        /* take the original buffer from the pt and write it*/
+        size_t og_size = pt.original_buffer->size; 
+        size_t pos = 0, wr_sz = WRITE_SIZE; 
+        int eow = 0; 
 
-    }
+        do {
+                                                
+            pos = (size_t)ftell(f);
+            if ( (pos + WRITE_SIZE) < og_size ){
+                wr_sz = og_size - pos; 
+                eow++; 
+            }
+            
+            fwrite(pt.original_buffer + pos, sizeof(char), wr_sz, f);
+             
+        } while ( !eow );
+    } 
 
     empty_piece_table(&pt);
 
