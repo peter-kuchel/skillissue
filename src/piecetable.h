@@ -24,7 +24,7 @@ typedef struct {
     text_buffer* original_buffer; 
     text_buffer* add_buffer; 
     piece_table_element* table; 
-    size_t pt_size; 
+    size_t pte_size;                         // num of pt elements 
     size_t start_ins_pos;
     char start_ins_chr;
 } piece_table; 

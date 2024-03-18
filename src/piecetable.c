@@ -1,19 +1,12 @@
-#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "piecetable.h"
-
+#include "utils.h"
 
 int init_piece_table(FILE* f, char* fn, piece_table* pt){
-     struct stat fin;
 
-     if ( stat(fn, &fin) < 0){
-        printf("[ERROR]: could not get info on file %s\n", fn);
-        return -1;
-     }
-
-     size_t fsize = (size_t)fin.st_size; 
+     size_t fsize = file_size(fn); 
 
      char* org_buf = (char*)malloc(sizeof(char) * fsize);
      char* add_buf = (char*)malloc(sizeof(char) * fsize);
@@ -24,17 +17,17 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
      text_buffer* add = (text_buffer*)malloc(sizeof(text_buffer));
 
      org->text = org_buf; 
-     org->size = fin.st_size;
+     org->size = fsize;
      org->curr_pos = -1;         /* -1 since original will be read only (though this doesn't actually matter) */
 
      add->text = add_buf;
-     add->size = fin.st_size; 
+     add->size = fsize; 
      add->curr_pos = 0; 
 
       pt->original_buffer = org; 
       pt->add_buffer = add; 
-      pt->pt_size = DEFAULT_PT_ELEM_SIZE;
-      pt->table = (piece_table_element*)malloc(sizeof(piece_table_element) * pt->pt_size); 
+      pt->pte_size = DEFAULT_PT_ELEM_SIZE;
+      pt->table = (piece_table_element*)malloc(sizeof(piece_table_element) * pt->pte_size); 
       pt->start_ins_chr = '\0';
       pt->start_ins_pos = 0;
 
@@ -52,6 +45,10 @@ void empty_piece_table(piece_table* pt){
    free(pt->add_buffer);
    free(pt->original_buffer);
 
+}
+
+int resize_pt_elements(piece_table_element* table){
+   
 }
 
 int resize_add_buffer(text_buffer* add_buff){
