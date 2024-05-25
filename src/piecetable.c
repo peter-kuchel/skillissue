@@ -37,6 +37,11 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
       pt->pte_curr = 1; 
 
       /* first element in the piece table should be the original buffer */
+
+      pt->table[0].src = ORG; 
+      pt->table[0].start = 0;
+      pt->table[0].len = (int)fsize;
+
      
    return 0;
 }
