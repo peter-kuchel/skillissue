@@ -1,41 +1,37 @@
 #include "screen.h"
 
-void intro_screen_no_file(){
-
-}
-
 void render_screen(piece_table* pt){
 
     /* clear screen first*/
     clear();
 
-    size_t pt_elements = pt->pte_curr; 
+    size_t pt_elements = pt->table.curr_ent_num; 
 
     for (size_t i = 0 ; i < pt_elements; i++){
-        piece_table_element elem = pt->table[i]; 
+        pt_entry entry = *(pt->table.entries[i]); 
 
-        int _start = elem.start; 
-        int _len   = elem.len; 
+        int _start = entry.start; 
+        int _len   = entry.len; 
         int _end = _start + _len;
 
         text_buffer* buff; 
 
-        if (elem.src == ORG)
-            buff = pt->original_buffer; 
+        if (entry.src == ORG)
+            buff = &(pt->original); 
         else 
-            buff = pt->add_buffer; 
+            buff = &(pt->addition); 
         
         char to_print[_len + 1]; 
         int j = 0; 
         for (int i = _start; i < _end; i++){
             to_print[j] = buff->text[i];
-            j++; 
+            j++;
         }
+             
 
         to_print[_len] = '\0';
 
         printw("%s", to_print);    
     }
-
 
 }

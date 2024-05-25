@@ -17,39 +17,39 @@ void save_file_writes(FILE* f, piece_table* pt){
 
 }
 
-int insert_at(piece_table* pt, char c){
-    // int res; 
+// int insert_at(piece_table* pt, char c){
+//     // int res; 
 
-    text_buffer* add_buff = pt->add_buffer; 
+//     text_buffer* add_buff = pt->add_buffer; 
 
-    /* check that there is space in the add buffer first */
-    if (add_buff->curr_pos + 1 > add_buff->size){
+//     /* check that there is space in the add buffer first */
+//     if (add_buff->curr_pos + 1 > add_buff->size){
         
-        if (resize_add_buffer(add_buff) < 0){
-            printf("[ERROR]: something went wrong attempting to call realloc... exiting now");
-            return -1; 
-        }
-    }
+//         if (resize_add_buffer(add_buff) < 0){
+//             printf("[ERROR]: something went wrong attempting to call realloc... exiting now");
+//             return -1; 
+//         }
+//     }
 
-    /* check if this is the start of a new insert */
-    if (pt->start_ins_chr == '\0'){
-        pt->start_ins_chr = c; 
-        pt->start_ins_pos = add_buff->curr_pos;
-    }
+//     /* check if this is the start of a new insert */
+//     if (pt->start_ins_chr == '\0'){
+//         pt->start_ins_chr = c; 
+//         pt->start_ins_pos = add_buff->curr_pos;
+//     }
 
-    return 0; 
-}
+//     return 0; 
+// }
 
-void esc_make_changes(usermode* umode, piece_table* pt){
-    switch(umode->mode){
-        case USR_MODE_INS:
-            /* add finalized entry to the piece table */
-            pt->start_ins_chr = '\0';
-            break; 
-        default:
-            break; 
-    }
-}
+// void esc_make_changes(usermode* umode, piece_table* pt){
+//     switch(umode->mode){
+//         case USR_MODE_INS:
+//             /* add finalized entry to the piece table */
+//             // pt->start_ins_chr = '\0';
+//             break; 
+//         default:
+//             break; 
+//     }
+// }
 
 int edit_file(char* fn){
     char user_in; 
@@ -73,13 +73,14 @@ int edit_file(char* fn){
         printf("[ERROR]: something went wrong with opening the file %s\n", fn);
         return -1;
     }
-    int res; 
+    
+    int edit_status;
+
     /* open the file and init the piece table */
-    if ((res = init_piece_table(f, fn, &pt)) < 0 ){
+    if ((edit_status = init_piece_table(f, fn, &pt)) < 0 ){
         printf("Something went wrong trying to create piecetable for the file content\n");
         goto handle_error; 
     }
-
     
     // printw("waiting for input, umode is: %hu\n", umode.mode);
     render_screen(&pt);
@@ -87,6 +88,7 @@ int edit_file(char* fn){
     /* set cursor to very beginning of the file */
     cursor_pos pos = { .x = 0, .y = 0 };
     move(pos.y, pos.x);
+
 
     do {
 
@@ -102,10 +104,10 @@ int edit_file(char* fn){
 
                 case USR_MODE_INS:
                     if (user_in == USR_MODE_ESC){
-                        esc_make_changes(&umode, &pt);
+                        // esc_make_changes(&umode, &pt);
                         umode.mode &= 0;
                     } else {
-                        res = insert_at(&pt, user_in);
+                        // res = insert_at(&pt, user_in);
                     }
                     
                     // render_screen(&pt);
@@ -142,6 +144,14 @@ int edit_file(char* fn){
                     umode.mode |= USR_MODE_INS;
                     break;  
                 
+                /* redo */
+                case 'j':
+                    break; 
+                
+                /* undo */
+                case 'k':
+                    break; 
+                
                 /* move around file*/
                 case 'w':
                     break; 
@@ -168,7 +178,7 @@ int edit_file(char* fn){
         render_screen(&pt);
         move(pos.y , pos.x);
 
-        if (res < 0) in_edit--;
+        if (edit_status < 0) in_edit--;
         
     } while (in_edit);
 
@@ -176,26 +186,24 @@ int edit_file(char* fn){
     if (!umode.made_save){
         
         /* take the original buffer from the pt and write it*/
-        size_t og_size = pt.original_buffer->size; 
-        size_t pos = 0, wr_sz = WRITE_SIZE; 
-        int eow = 0; 
+        // size_t og_size = pt.original_buffer->size; 
+        // size_t pos = 0, wr_sz = WRITE_SIZE; 
+        // int eow = 0; 
 
-        do {
+        // do {
                                                 
-            pos = (size_t)ftell(f);
-            if ( (pos + WRITE_SIZE) < og_size ){
-                wr_sz = og_size - pos; 
-                eow++; 
-            }
+        //     pos = (size_t)ftell(f);
+        //     if ( (pos + WRITE_SIZE) < og_size ){
+        //         wr_sz = og_size - pos; 
+        //         eow++; 
+        //     }
             
-            fwrite(pt.original_buffer + pos, sizeof(char), wr_sz, f);
+        //     fwrite(pt.original + pos, sizeof(char), wr_sz, f);
             
-        } while ( !eow );
+        // } while ( !eow );
     } 
 
     empty_piece_table(&pt);
-
-    fclose(f);
 
     return 0; 
     
