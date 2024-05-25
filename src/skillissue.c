@@ -1,17 +1,24 @@
 #include <stdio.h> 
 #include <stdlib.h>
+#include <string.h>
+
 
 #include "skillissue.h"
-#include "utils.h"
+
 
 static termw_info tinfo; 
+static Logger logger; 
 
 void save_file_writes(FILE* f, piece_table* pt){
+    // put together the piece table 
+
+    printf("%p %p", f, pt);
+
 
 }
 
 int insert_at(piece_table* pt, char c){
-    int res; 
+    // int res; 
 
     text_buffer* add_buff = pt->add_buffer; 
 
@@ -44,7 +51,7 @@ void esc_make_changes(usermode* umode, piece_table* pt){
     }
 }
 
-void edit_file(char* fn){
+int edit_file(char* fn){
     char user_in; 
     usermode umode; 
     umode.mode &= 0; 
@@ -52,16 +59,31 @@ void edit_file(char* fn){
     int in_edit = 1;
 
     /* check that the file exists */
+    if (file_exists(fn) < 0){
+        printf("[ERROR]: file could not be located %s\n", fn);
+        exit(1);
+    } 
 
     /* create appropriate items for reading file and info */
     piece_table pt; 
-    FILE* f = fopen(fn, "w+");;
-    int res; 
-    
-    /* open the file and init the piece table */
-    if ((res = init_piece_table(f, fn, &pt)) < 0 ) return;
+    FILE* f = fopen(fn, "r+");
 
-    printw("waiting for input, umode is: %hu\n", umode.mode);
+    /* check that the file was opened correctly*/
+    if (f == NULL){
+        printf("[ERROR]: something went wrong with opening the file %s\n", fn);
+        exit(1);
+    }
+    int res; 
+    /* open the file and init the piece table */
+    if ((res = init_piece_table(f, fn, &pt)) < 0 ){
+        printf("Something went wrong trying to create piecetable for the file content\n");
+        goto handle_error; 
+    }
+
+    
+    // printw("waiting for input, umode is: %hu\n", umode.mode);
+    render_screen(&pt);
+
     do {
 
         /* render piece table to output */
@@ -71,7 +93,7 @@ void edit_file(char* fn){
 
         /* determine the mode first if on is active */
         if (umode.mode){
-             
+            
             switch(umode.mode){
 
                 case USR_MODE_INS:
@@ -82,7 +104,6 @@ void edit_file(char* fn){
                 default:
                     break; 
             }
-
         }
 
         /* if not in a particular mode then see if we'll enter a mode */
@@ -134,7 +155,7 @@ void edit_file(char* fn){
         
     } while (in_edit);
 
-    /* if no save was made then write original contents to the file */
+    /* if no save was made then keep the contents as they were when the file was opened */
     if (!umode.made_save){
         
         /* take the original buffer from the pt and write it*/
@@ -151,7 +172,7 @@ void edit_file(char* fn){
             }
             
             fwrite(pt.original_buffer + pos, sizeof(char), wr_sz, f);
-             
+            
         } while ( !eow );
     } 
 
@@ -159,6 +180,14 @@ void edit_file(char* fn){
 
     // maybe a goto here incase something goes wrong 
     fclose(f);
+
+    return 0; 
+    
+
+handle_error:
+    empty_piece_table(&pt);
+    fclose(f); 
+    return -1; 
 }
 
 void menu_screen(){
@@ -167,35 +196,33 @@ void menu_screen(){
 
 void run_sk(int argc, char** argv){
 
-    /* init terminal screen */
-    initscr(); 
-
-    // get size of the terminal 
-    getmaxyx(stdscr, tinfo.rows, tinfo.cols); 
-
     /* started with a file so load this file right away */
     if (argc > 1){
-        edit_file(argv[1]);
-    } 
-    
-    /* otherwise goto menu screen */
-    else {
-        printw("%d %d", tinfo.rows, tinfo.cols);
-        menu_screen();
-    }
+        initscr(); 
 
-    /* end terminal screen and return back */
-    endwin();
-    
+        // get size of the terminal 
+        getmaxyx(stdscr, tinfo.rows, tinfo.cols);
+        int res = edit_file(argv[1]);
+
+        teardown_logger(&logger);
+        endwin();
+
+        if (res < 0) exit(1);
+
+    } else {
+        printf("[Error]: need to supply valid file path as arg\n");
+        exit(1);
+    }
 }
 
 int main(int argc, char** argv){
 
     
+    setup_logger(&logger, LOG_FILE);
 
     /* run */
     run_sk(argc, argv);
+
  
-    
     return 0; 
 }

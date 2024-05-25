@@ -13,6 +13,9 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
 
      fread(org_buf, sizeof(char), fsize, f);
 
+     // check that fread was successful 
+     if (ferror(f) != 0) return -1; 
+
      text_buffer* org = (text_buffer*)malloc(sizeof(text_buffer));
      text_buffer* add = (text_buffer*)malloc(sizeof(text_buffer));
 
@@ -31,6 +34,8 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
       pt->start_ins_chr = '\0';
       pt->start_ins_pos = 0;
 
+      pt->pte_curr = 1; 
+
       /* first element in the piece table should be the original buffer */
      
    return 0;
@@ -38,17 +43,19 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
 
 void empty_piece_table(piece_table* pt){
 
-   free(pt->add_buffer->text);
-   free(pt->original_buffer->text);
+   safeFree(pt->add_buffer->text);
+   safeFree(pt->original_buffer->text);
 
-   free(pt->table);
-   free(pt->add_buffer);
-   free(pt->original_buffer);
+   safeFree(pt->table);
+   safeFree(pt->add_buffer);
+   safeFree(pt->original_buffer);
 
 }
 
 int resize_pt_elements(piece_table_element* table){
-   
+   printf("%p", table);
+
+   return 0; 
 }
 
 int resize_add_buffer(text_buffer* add_buff){

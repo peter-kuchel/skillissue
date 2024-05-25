@@ -2,6 +2,9 @@
 #define UTILS_SKILLISSUE_H 
 
 #include <sys/stat.h>
+#include <stdio.h>
+
+#define LOG_FILE "skillissue_log_file.log"
 
 int file_exists(char* fname);
 size_t file_size(char* fname);

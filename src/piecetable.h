@@ -24,7 +24,8 @@ typedef struct {
     text_buffer* original_buffer; 
     text_buffer* add_buffer; 
     piece_table_element* table; 
-    size_t pte_size;                         // num of pt elements 
+    size_t pte_curr;                            // current pte element position 
+    size_t pte_size;                            // num of pt elements 
     size_t start_ins_pos;
     char start_ins_chr;
 } piece_table; 
@@ -34,5 +35,6 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt);
 void empty_piece_table(piece_table* pt);
 
 int resize_add_buffer(text_buffer* add_buff);
+int resize_pt_elements(piece_table_element* table); 
 
 #endif 

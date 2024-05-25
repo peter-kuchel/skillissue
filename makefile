@@ -14,4 +14,10 @@ mk-bin:
 	mkdir -p bin
 
 sk: 
-	$(CC) $(CFLAGS) $(SRC)/utils.c $(SRC)/piecetable.c $(SRC)/screen.c $(SRC)/skillissue.c -o $(BIN)/skillissue $(NCURSES)
+	$(CC) $(CFLAGS) 	\
+	$(SRC)/utils.c 		\
+	$(SRC)/piecetable.c \
+	$(SRC)/screen.c 	\
+	$(SRC)/skillissue.c \
+	$(SRC)/logging.c	\
+	-o $(BIN)/$(TARGET) $(NCURSES)

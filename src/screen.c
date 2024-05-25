@@ -9,7 +9,7 @@ void render_screen(piece_table* pt){
     /* clear screen first*/
     clear();
 
-    size_t pt_elements = pt->pte_size; 
+    size_t pt_elements = pt->pte_curr; 
 
     for (size_t i = 0 ; i < pt_elements; i++){
         piece_table_element elem = pt->table[i]; 
@@ -25,17 +25,16 @@ void render_screen(piece_table* pt){
         else 
             buff = pt->add_buffer; 
         
-        char to_print[_len]; 
+        char to_print[_len + 1]; 
         int j = 0; 
         for (int i = _start; i < _end; i++){
             to_print[j] = buff->text[i];
             j++; 
         }
 
-        printw("%s", to_print);
-            
-        
-        
+        to_print[_len] = '\0';
+
+        printw("%s", to_print);    
     }
 
 

@@ -3,6 +3,8 @@
 
 #include "piecetable.h"
 #include "screen.h"
+#include "logging.h"
+#include "utils.h"
 
 typedef struct {
     FILE* f; 
