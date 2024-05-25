@@ -1,9 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "piecetable.h"
-#include "utils.h"
+
 
 int init_piece_table(FILE* f, char* fn, piece_table* pt){
    
@@ -24,26 +20,45 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
    pt->addition.text = add_buf; 
    pt->addition.size = STARTING_ADD_BUF_SIZE; 
 
-   pt_entry** table_ents = (pt_entry**)malloc( sizeof(pt_entry*) * DEFAULT_PT_ENT_SIZE);
+   int* _orger = (int*)malloc(sizeof(int) * DEFAULT_PT_ENT_SIZE);
+   pt->table.organizer = _orger; 
+   pt->table.ent_cap = DEFAULT_PT_ENT_SIZE;
+   pt->table.middle = (pt->table.ent_cap >> 1) - 1; 
+
+   pt_entry*  table_ents = (pt_entry*)malloc( sizeof(pt_entry) * DEFAULT_PT_ENT_SIZE);
    pt->table.entries = table_ents; 
-   pt->table.cap = DEFAULT_PT_ENT_SIZE;
+   pt->table.ent_cap = DEFAULT_PT_ENT_SIZE;
 
-   pt_entry** redo_ents = (pt_entry**)malloc( sizeof(pt_entry*) * DEFAULT_PT_ENT_SIZE);
-   pt->redo_stack.entries = redo_ents;
-   pt->redo_stack.cap = DEFAULT_PT_ENT_SIZE;
+   // pt_entry** redo_ents = (pt_entry**)malloc( sizeof(pt_entry*) * DEFAULT_PT_ENT_SIZE);
+   int* redo_ents = (int*)malloc( sizeof(int) * DEFAULT_PT_ENT_SIZE);
+   pt->redo.stack = redo_ents;
+   pt->redo.cap = DEFAULT_PT_ENT_SIZE;
 
-   pt_entry** undo_ents = (pt_entry**)malloc( sizeof(pt_entry*) * DEFAULT_PT_ENT_SIZE);
-   pt->undo_stack.entries = undo_ents; 
-   pt->undo_stack.cap = DEFAULT_PT_ENT_SIZE;
+   int* undo_ents = (int*)malloc( sizeof(int) * DEFAULT_PT_ENT_SIZE);
+   pt->undo.stack = undo_ents; 
+   pt->undo.cap = DEFAULT_PT_ENT_SIZE;
+
+   int* reclaim_spots = (int*)malloc( sizeof(int) * DEFAULT_PT_ENT_SIZE);
+   pt->reclaim.stack = reclaim_spots;
+   pt->reclaim.cap = DEFAULT_PT_ENT_SIZE;
 
    // add the first element - which is the original buffer 
-   pt_entry* org_entry = (pt_entry*)malloc( sizeof(pt_entry) );
+
+   int entry_pos = pt->table.ent_num;       // will be 0 because of memset
+
+   pt_entry* org_entry = &(pt->table.entries[entry_pos]);
+
    org_entry->src = ORG; 
    org_entry->start = 0; 
-   org_entry->len = f_size; 
+   org_entry->len = f_size;
 
-   pt->table.entries[0] = org_entry;
-   pt->table.curr_ent_num++;  
+   pt->table.organizer[pt->table.middle] = entry_pos;
+   pt->table.org_head = pt->table.middle; 
+   pt->table.org_num++;  
+
+   pt->curr_ent_ptr = entry_pos;
+
+   pt->table.ent_num++; 
 
    return 0; 
 
@@ -54,18 +69,11 @@ void empty_piece_table(piece_table* pt){
    safeFree(pt->original.text);
    safeFree(pt->addition.text);
 
-   int i; 
-   for (i = 0; i < pt->table.cap; i++)
-      safeFree(pt->table.entries[i]);
-   
-   for (i = 0; i < pt->redo_stack.cap; i++)
-      safeFree(pt->redo_stack.entries[i]);
+   safeFree(pt->table.organizer);
+   safeFree(pt->table.entries); 
 
-   for(i = 0; i < pt->undo_stack.cap; i++)
-      safeFree(pt->undo_stack.entries[i]);
-
-   safeFree(pt->table.entries);
-   safeFree(pt->redo_stack.entries);
-   safeFree(pt->undo_stack.entries);
+   safeFree(pt->redo.stack);
+   safeFree(pt->undo.stack);
+   safeFree(pt->reclaim.stack);
 
 }

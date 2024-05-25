@@ -5,10 +5,11 @@ void render_screen(piece_table* pt){
     /* clear screen first*/
     clear();
 
-    size_t pt_elements = pt->table.curr_ent_num; 
+    size_t pt_entries = pt->table.org_num; 
+    size_t ent_head = pt->table.org_head;
 
-    for (size_t i = 0 ; i < pt_elements; i++){
-        pt_entry entry = *(pt->table.entries[i]); 
+    for (size_t i = ent_head ; i < pt_entries; i++){
+        pt_entry entry = pt->table.entries[i]; 
 
         int _start = entry.start; 
         int _len   = entry.len; 
