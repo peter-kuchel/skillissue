@@ -61,7 +61,7 @@ int edit_file(char* fn){
     /* check that the file exists */
     if (file_exists(fn) < 0){
         printf("[ERROR]: file could not be located %s\n", fn);
-        exit(1);
+        return -1;
     } 
 
     /* create appropriate items for reading file and info */
@@ -71,7 +71,7 @@ int edit_file(char* fn){
     /* check that the file was opened correctly*/
     if (f == NULL){
         printf("[ERROR]: something went wrong with opening the file %s\n", fn);
-        exit(1);
+        return -1;
     }
     int res; 
     /* open the file and init the piece table */
@@ -84,6 +84,10 @@ int edit_file(char* fn){
     // printw("waiting for input, umode is: %hu\n", umode.mode);
     render_screen(&pt);
 
+    /* set cursor to very beginning of the file */
+    cursor_pos pos = { .x = 0, .y = 0 };
+    move(pos.y, pos.x);
+
     do {
 
         /* render piece table to output */
@@ -92,13 +96,19 @@ int edit_file(char* fn){
         printw("user in is: %c", user_in);
 
         /* determine the mode first if on is active */
-        if (umode.mode){
+        if (umode.mode > 0){
             
             switch(umode.mode){
 
                 case USR_MODE_INS:
-                    res = insert_at(&pt, user_in);
-                    render_screen(&pt);
+                    if (user_in == USR_MODE_ESC){
+                        esc_make_changes(&umode, &pt);
+                        umode.mode &= 0;
+                    } else {
+                        res = insert_at(&pt, user_in);
+                    }
+                    
+                    // render_screen(&pt);
                     break;
 
                 default:
@@ -109,14 +119,13 @@ int edit_file(char* fn){
         /* if not in a particular mode then see if we'll enter a mode */
         else {
             switch(user_in){
-
                 /* exit the current mode */
-                case USR_MODE_ESC:
-                    /* save changes depending on the mode before */
-                    esc_make_changes(&umode, &pt);
-                    umode.mode &= 0; 
-                    break;
-                
+                // case USR_MODE_ESC:
+                //     /* save changes depending on the mode before */
+                //     esc_make_changes(&umode, &pt);
+                //     umode.mode &= 0; 
+                //     break;
+
                 /* save progress and write to file */
                 case 'z':
                     save_file_writes(f, &pt);
@@ -137,10 +146,16 @@ int edit_file(char* fn){
                 case 'w':
                     break; 
                 case 'a':
+                    if (pos.x > 0)
+                        pos.x--; 
                     break;
                 case 's':
+
                     break;
                 case 'd':
+
+                    // if ()
+                    pos.x++; 
                     break; 
                 
                 default:
@@ -150,6 +165,8 @@ int edit_file(char* fn){
         }
 
         /* re-render the screen */
+        render_screen(&pt);
+        move(pos.y , pos.x);
 
         if (res < 0) in_edit--;
         
@@ -178,7 +195,6 @@ int edit_file(char* fn){
 
     empty_piece_table(&pt);
 
-    // maybe a goto here incase something goes wrong 
     fclose(f);
 
     return 0; 
