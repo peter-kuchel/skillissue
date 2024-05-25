@@ -36,7 +36,8 @@ typedef struct{
     int org_cap; 
     int org_num;
     int org_head;                           
-    int middle;
+    int org_midd;
+    int org_tail;
 
     /* for entries - as entries might reference ptrs in the one of the various stacks */
     int ent_cap; 

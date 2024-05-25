@@ -23,7 +23,7 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
    int* _orger = (int*)malloc(sizeof(int) * DEFAULT_PT_ENT_SIZE);
    pt->table.organizer = _orger; 
    pt->table.ent_cap = DEFAULT_PT_ENT_SIZE;
-   pt->table.middle = (pt->table.ent_cap >> 1) - 1; 
+   pt->table.org_midd = (pt->table.ent_cap >> 1) - 1; 
 
    pt_entry*  table_ents = (pt_entry*)malloc( sizeof(pt_entry) * DEFAULT_PT_ENT_SIZE);
    pt->table.entries = table_ents; 
@@ -52,8 +52,10 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
    org_entry->start = 0; 
    org_entry->len = f_size;
 
-   pt->table.organizer[pt->table.middle] = entry_pos;
-   pt->table.org_head = pt->table.middle; 
+   int middle = pt->table.org_midd; 
+   pt->table.organizer[middle] = entry_pos;
+   pt->table.org_head = middle; 
+   pt->table.org_tail = middle; 
    pt->table.org_num++;  
 
    pt->curr_ent_ptr = entry_pos;
