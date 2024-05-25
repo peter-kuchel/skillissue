@@ -155,6 +155,7 @@ int edit_file(char* fn){
                 /* move around file*/
                 case 'w':
                     break; 
+                    
                 case 'a':
                     if (pos.x > 0)
                         pos.x--; 

@@ -28,7 +28,6 @@ void render_screen(piece_table* pt){
             j++;
         }
              
-
         to_print[_len] = '\0';
 
         printw("%s", to_print);    
