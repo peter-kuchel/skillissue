@@ -2,17 +2,24 @@
 
 An easy to use cli text-editor for the vscode soydevs such as myself who don't know how to type properly on a keyboard and can't exit from Vim.
 
-# How to use 
+# How to use    
 
-## Insert (i):
+The editor has very limited commands and has some similarity to existing cli editors:
 
-## Save (z):
+### Insert (i):
+Insert characters at the current position of the cursor, exit with ESC 
 
-## Redo (j):
+### Save (z):
+Save the changes made to the file
 
-## Undo (k):
+### Redo (j):
+Redo the most recent change
 
-## Move (w,a,s,d):
+### Undo (k):
+Undo the most recent change
+
+### Move (w,a,s,d):
+Move around the currently opened document with these keys 
 
 # TODO: 
 
@@ -21,6 +28,7 @@ An easy to use cli text-editor for the vscode soydevs such as myself who don't k
     * handle keeping the cursor in the same column when going up and down 
     * bounds checking 
     * rendering only text within the terminal box, based off of the size 
+    * handling the cursor position on a line where it is just '\n'
 
 * handling insertions and the organization of the piece table 
     * handle inserts by placing the possibly to be added chars into a buffer while insert is toggled
