@@ -12,6 +12,8 @@ typedef struct {
 
 int log_to_file_stream(FILE* log_file, char* msg);
 int log_to_file(char* log_file, char* msg);
+int setup_logger(Logger* logger, char* log_file);
+int teardown_logger(Logger* logger); 
 
 
 #endif 

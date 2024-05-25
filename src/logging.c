@@ -28,3 +28,21 @@ int log_to_file(char* log_file, char* msg){
     fclose(f);
     return res; 
 }
+
+int setup_logger(Logger* logger, char* log_file){
+    FILE* f = fopen(log_file, "a");
+    if (f == NULL){
+        printf("[Error]: Something went wrong opening log file");
+        exit(1); 
+    }
+
+    logger->fstream = f; 
+    logger->fname = log_file;
+
+    return 0;  
+}
+int teardown_logger(Logger* logger){
+    fclose(logger->fstream);
+
+    return 0; 
+}
