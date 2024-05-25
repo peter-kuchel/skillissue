@@ -7,22 +7,25 @@ So that we can continue to avoid learning these skills, and avoid downloading a 
 
 The editor is very basic, with some surface-level similarity to existing cli editors. Using the following keys, you can:
 
-### Move ( w, a, s, d ):
+### Quit [ q ]
+Exit the currently opened file (we did it!)
+
+### Move [ w, a, s, d ]:
 Move around the currently opened document with these keys
 
-### Insert ( i ):
+### Insert [ i ]:
 Insert characters at the current position of the cursor, exit insertion with ESC 
 
-### Save ( z ):
+### Save [ z ]:
 Save the current changes made to the file
 
-### Redo ( j ):
+### Redo [ j ]:
 Redo the most recent change
 
-### Undo ( k ):
+### Undo [ k ]:
 Undo the most recent change
 
-# TODO: 
+# TODO (and possible future functionality): 
 
 * track position of cursor so that it moves correctly on the front end side of things 
     * handle finding new lines to increment y 
@@ -48,3 +51,5 @@ Undo the most recent change
 * line numbering and formating 
 * something that displays the command that has been toggled (similar to vim?)
 * jumping to a certain line number in the document
+* during a save, re-building the piece table (?) (so to stop future allocations and potential performance degration?)
+* searching the file for certain words
