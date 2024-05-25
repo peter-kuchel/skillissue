@@ -1,25 +1,26 @@
 # SKILLISSUE
 
-An easy to use cli text-editor for the vscode soydevs such as myself who don't know how to type properly on a keyboard and can't exit from Vim.
+An easy to use cli text-editor for the vscode soy-devs such as myself who don't know how to type properly on a keyboard, and can't exit from Vim.
+So that we can continue to avoid learning these skills, and avoid downloading a vscode server when ssh'ing into our cloud instances. 
 
 # How to use    
 
-The editor has very limited commands and has some similarity to existing cli editors:
+The editor is very basic, with some surface-level similarity to existing cli editors. Using the following keys, you can:
 
-### Insert (i):
-Insert characters at the current position of the cursor, exit with ESC 
+### Move ( w, a, s, d ):
+Move around the currently opened document with these keys
 
-### Save (z):
-Save the changes made to the file
+### Insert ( i ):
+Insert characters at the current position of the cursor, exit insertion with ESC 
 
-### Redo (j):
+### Save ( z ):
+Save the current changes made to the file
+
+### Redo ( j ):
 Redo the most recent change
 
-### Undo (k):
+### Undo ( k ):
 Undo the most recent change
-
-### Move (w,a,s,d):
-Move around the currently opened document with these keys 
 
 # TODO: 
 
@@ -27,7 +28,7 @@ Move around the currently opened document with these keys
     * handle finding new lines to increment y 
     * handle keeping the cursor in the same column when going up and down 
     * bounds checking 
-    * rendering only text within the terminal box, based off of the size 
+    * rendering only text within the terminal box, based off of the size and position within the file
     * handling the cursor position on a line where it is just '\n'
 
 * handling insertions and the organization of the piece table 
@@ -45,4 +46,5 @@ Move around the currently opened document with these keys
     * figuring out when a redo is no longer valid and removing it from the stack 
 
 * line numbering and formating 
-* something that displays the cmd that has been toggled (similar to vim?)
+* something that displays the command that has been toggled (similar to vim?)
+* jumping to a certain line number in the document
