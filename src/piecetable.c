@@ -1,6 +1,13 @@
 #include "piecetable.h"
 
 
+
+
+// int get_curr_pos(piece_table* pt){
+//    int curr_pos = pt->
+// }
+
+
 int init_piece_table(FILE* f, char* fn, piece_table* pt){
    
    size_t f_size = file_size(fn);
@@ -17,8 +24,8 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
    pt->original.text = org_buf; 
    pt->original.size = f_size; 
 
-   pt->addition.text = add_buf; 
-   pt->addition.size = STARTING_ADD_BUF_SIZE; 
+   pt->addition.buf.text = add_buf; 
+   pt->addition.buf.size = STARTING_ADD_BUF_SIZE; 
 
    int* _orger = (int*)malloc(sizeof(int) * DEFAULT_PT_ENT_SIZE);
    pt->table.organizer = _orger; 
@@ -69,7 +76,7 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
 void empty_piece_table(piece_table* pt){
 
    safeFree(pt->original.text);
-   safeFree(pt->addition.text);
+   safeFree(pt->addition.buf.text);
 
    safeFree(pt->table.organizer);
    safeFree(pt->table.entries); 
