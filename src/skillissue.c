@@ -14,45 +14,52 @@ void save_file_writes(FILE* f, piece_table* pt){
 
     printf("%p %p", f, pt);
 
+    // use freopen to clear the contents ?
+
 
 }
 
-// int insert_at(piece_table* pt, char c){
-//     // int res; 
+int handle_insertion_mode(piece_table* pt, usermode* umode, char user_in){
+    add_buffer_t* add_buf = &(pt->addition);
 
-//     text_buffer* add_buff = pt->add_buffer; 
+    /* insert mode was just activated:
+        create the entry at current position 
+    */
+    if ( !(add_buf->write_active) ){
+        add_buf->saved_pos = add_buf->curr_pos;
+        add_buf->write_active++; 
+    }
 
-//     /* check that there is space in the add buffer first */
-//     if (add_buff->curr_pos + 1 > add_buff->size){
+    /* handle user finishing up insertion mode*/
+    if (user_in == USR_MODE_ESC){
+        // esc_make_changes(&umode, &pt);
+        umode->mode &= 0;
+
+            
+    /* handle when backspace is pressed */
+    } else if (user_in == 127) {
         
-//         if (resize_add_buffer(add_buff) < 0){
-//             printf("[ERROR]: something went wrong attempting to call realloc... exiting now");
-//             return -1; 
-//         }
-//     }
 
-//     /* check if this is the start of a new insert */
-//     if (pt->start_ins_chr == '\0'){
-//         pt->start_ins_chr = c; 
-//         pt->start_ins_pos = add_buff->curr_pos;
-//     }
+        /* handle deletions pertaining to the original text */
+        if (add_buf->curr_pos == add_buf->saved_pos){
+        
+        /* re-handle the entry next to the current */
+        } else {
+            
+        }
+    
+    /* insert char into additions and update the entry*/
+    } else {
+        add_buf->buf.text[add_buf->curr_pos] = user_in;
+        add_buf->curr_pos++;
+    }
 
-//     return 0; 
-// }
 
-// void esc_make_changes(usermode* umode, piece_table* pt){
-//     switch(umode->mode){
-//         case USR_MODE_INS:
-//             /* add finalized entry to the piece table */
-//             // pt->start_ins_chr = '\0';
-//             break; 
-//         default:
-//             break; 
-//     }
-// }
+    return 0; 
+}
 
 int edit_file(char* fn){
-    char user_in; 
+     
     usermode umode; 
     umode.mode &= 0; 
 
@@ -79,38 +86,35 @@ int edit_file(char* fn){
     /* open the file and init the piece table */
     if ((edit_status = init_piece_table(f, fn, &pt)) < 0 ){
         printf("Something went wrong trying to create piecetable for the file content\n");
-        goto handle_error; 
+        // goto handle_error; 
+        exit(1);
     }
     
-    // printw("waiting for input, umode is: %hu\n", umode.mode);
     render_screen(&pt);
 
     /* set cursor to very beginning of the file */
     cursor_pos pos = { .x = 0, .y = 0 };
     move(pos.y, pos.x);
 
-
+    char user_in;
+    // int 
+    // pt_entry ent; 
     do {
 
         /* render piece table to output */
         
         user_in = getch(); 
         printw("user in is: %c", user_in);
+        int insert_res; 
 
-        /* determine the mode first if on is active */
+        /* determine the mode first if one is active */
         if (umode.mode > 0){
             
             switch(umode.mode){
 
                 case USR_MODE_INS:
-                    if (user_in == USR_MODE_ESC){
-                        // esc_make_changes(&umode, &pt);
-                        umode.mode &= 0;
-                    } else {
-                        // res = insert_at(&pt, user_in);
-                    }
-                    
-                    // render_screen(&pt);
+                    insert_res = handle_insertion_mode(&pt, &umode, user_in);
+                    if (insert_res < 0){}
                     break;
 
                 default:
@@ -121,12 +125,6 @@ int edit_file(char* fn){
         /* if not in a particular mode then see if we'll enter a mode */
         else {
             switch(user_in){
-                /* exit the current mode */
-                // case USR_MODE_ESC:
-                //     /* save changes depending on the mode before */
-                //     esc_make_changes(&umode, &pt);
-                //     umode.mode &= 0; 
-                //     break;
 
                 /* save progress and write to file */
                 case 'z':
@@ -157,6 +155,9 @@ int edit_file(char* fn){
                     break; 
                     
                 case 'a':
+
+                    // determine next pointer to character
+                    // retrieve current entry and position 
                     if (pos.x > 0)
                         pos.x--; 
                     break;
@@ -165,12 +166,14 @@ int edit_file(char* fn){
                     break;
                 case 'd':
 
-                    // if ()
+                    // determine the next pointed to character 
+                    // retrieve the current entry and position 
+                    
                     pos.x++; 
                     break; 
                 
                 default:
-                    /* let the user know this was not valid */
+                    /* let the user know this was not valid - or maybe do nothing? */
                     break;
             }
         }
@@ -209,10 +212,10 @@ int edit_file(char* fn){
     return 0; 
     
 
-handle_error:
-    empty_piece_table(&pt);
-    fclose(f); 
-    return -1; 
+// handle_error:
+//     empty_piece_table(&pt);
+//     fclose(f); 
+//     return -1; 
 }
 
 void menu_screen(){

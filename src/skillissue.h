@@ -19,10 +19,13 @@ typedef struct {
 
 
 #define USR_MODE_ESC  27
+// #define USER_DEL      
 
 #define USR_MODE_INS  0x1
 #define USR_MODE_SLT  0x2 
 #define USR_MODE_CMD  0x4
+
+#define TMP_ADD_BUF_SIZE 256
 
 #define WRITE_SIZE    1024 
 
