@@ -75,23 +75,30 @@ typedef struct{
     /* information about the piece table state */
 
     size_t      curr_chr_ptr;                               // currently pointed to char in the table 
-    int         curr_pos_ptr;                               // current index of the character in one of the buffers
-    int         curr_ent_ptr;                               // current ptr to the entry in the table 
+    int         curr_pos_ptr;                               // current index of the character in one of the buffers referenced by the current entry
+    int         curr_ent_ptr;                               // current ptr to position in the organizer
 
 
 } piece_table; 
 
+#define GET_ENT_AT_POS(pt_ptr, pos) \
+( pt_ptr->table.entries[pt_ptr->table.organizer[pos]] )
 
 #define GET_CURR_ENT(pt_ptr) \
-( &(pt_ptr->table.entries[pt_ptr->table.organizer[pt_ptr->curr_ent_ptr]]) ) 
+( pt_ptr->table.entries[pt_ptr->table.organizer[pt_ptr->curr_ent_ptr]] ) 
 
-#define GET_CURR_CHAR(pt_ptr) ( pt_ptr )
+#define GET_CURR_ENT_PTR(pt_ptr) ( &( GET_CURR_ENT(pt_ptr) ) )
+
+#define GET_PT_BUFF(pt_ptr, src) ( src == ORG ? &(pt_ptr->original) : &(pt_ptr->addition.buf) )
 
 
+
+void log_piece_table_current(Logger* logger, piece_table* pt);
 int init_piece_table(FILE* f, char* fn, piece_table* pt);
 void empty_piece_table(piece_table* pt);
 
-int get_curr_pos(piece_table* pt);
+char get_curr_char_by_entry(piece_table* pt, pt_entry* ent, size_t pos);
+// int get_curr_pos(piece_table* pt);
 
 
 void push_pt_stack_t(pt_stack_t* _stack, pt_entry* entry);
