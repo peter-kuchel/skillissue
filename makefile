@@ -20,4 +20,5 @@ sk:
 	$(SRC)/screen.c 	\
 	$(SRC)/skillissue.c \
 	$(SRC)/logging.c	\
+	$(SRC)/cursor.c     \
 	-o $(BIN)/$(TARGET) $(NCURSES)

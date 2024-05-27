@@ -16,6 +16,5 @@ typedef struct {
 } cursor_pos;
 
 void render_screen(piece_table* pt);
-int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir);
 
 #endif 
