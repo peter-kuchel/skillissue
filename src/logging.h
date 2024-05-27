@@ -6,6 +6,7 @@
 #include <string.h>
 
 #define LOG_FILE "skillissue_log_file.log"
+#define LOG_TOGGLE 1
 
 typedef struct {
     char* fname; 
