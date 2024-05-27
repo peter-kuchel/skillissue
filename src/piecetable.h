@@ -78,6 +78,8 @@ typedef struct{
     int         curr_pos_ptr;                               // current index of the character in one of the buffers referenced by the current entry
     int         curr_ent_ptr;                               // current ptr to position in the organizer
 
+    int         insert_ready;
+
 
 } piece_table; 
 
