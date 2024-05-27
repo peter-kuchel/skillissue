@@ -14,7 +14,7 @@ void save_file_writes(FILE* f, piece_table* pt){
 
     printf("%p %p", f, pt);
 
-    // use freopen to clear the contents ?
+    // use freopen to clear the contents 
 
 
 }
@@ -41,16 +41,27 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, char user_in){
     } else if (user_in == 127) {
         
 
+
+
+
+        // to handle deletes -> similar to insert where 
+        // create the 
+        // memset(pbuf, 0, PBUF_SIZE);
+        // log_to_file(&sk_logger, "backspace was pressed\n");
+
         /* handle deletions pertaining to the original text */
-        if (add_buf->curr_pos == add_buf->saved_pos){
+        // if (add_buf->curr_pos == add_buf->saved_pos){
         
-        /* re-handle the entry next to the current */
-        } else {
+        // /* re-handle the entry next to the current */
+        // } else {
             
-        }
+        // }
     
     /* insert char into additions and update the entry*/
     } else {
+
+        // get the current ent
+        // pt_entry*
         add_buf->buf.text[add_buf->curr_pos] = user_in;
         add_buf->curr_pos++;
     }
@@ -59,90 +70,7 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, char user_in){
     return 0; 
 }
 
-int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
-    // determine the next pointed to character 
-    // retrieve the current entry and position
-    pt_entry* ent; 
-    pt_table_t* table; 
-    // get current entry and position 
-    ent = GET_CURR_ENT_PTR(pt);
-    size_t chr_ptr = pt->curr_chr_ptr; 
 
-    // memset(pbuf, 0, PBUF_SIZE);
-    // sprintf(pbuf, "curr_chr_ptr: %ld\n", chr_ptr);
-    // log_to_file(&sk_logger, pbuf);
-    // printf("%ld\n", chr_ptr);
-
-    // move to the right 
-    if (dir > 0){
-        size_t upper_bound = ent->start + ent->len;
-
-        // go forward to next entry 
-        if (chr_ptr + 1 > upper_bound){
-
-            table = &(pt->table);
-            if (table->org_tail == pt->curr_ent_ptr){
-                printf("at pos n, can't move\n");
-                return 0;
-            }
-
-            pt->curr_ent_ptr++; 
-            ent = GET_CURR_ENT_PTR(pt);
-
-            pt->curr_chr_ptr = ent->start; 
-        } 
-
-        pos->x++;
-        pt->curr_chr_ptr++;
-
-        // handle a newline
-        char curr_chr = get_curr_char_by_entry(pt, ent, pt->curr_chr_ptr);
-
-        if (curr_chr == '\n'){
-            pos->x = 0; 
-            pos->y++;
-        }
-
-
-    } else {
-        size_t lower_bound = ent->start; 
-
-        // memset(pbuf, 0, PBUF_SIZE);
-        // sprintf(pbuf, "chr_ptr %ld ? %ld lower bound: \n", chr_ptr, lower_bound);
-        // log_to_file(&sk_logger, pbuf); 
-
-        // go back to prev entry 
-        if (chr_ptr == lower_bound){
-
-            table = &(pt->table);
-
-             
-            if (table->org_head == pt->curr_ent_ptr){
-                printf("at pos 0, can't move\n");
-                return 0;
-            }
-
-            pt->curr_ent_ptr--; 
-            ent = GET_CURR_ENT_PTR(pt);
-
-            pt->curr_chr_ptr = ent->start + ent->len; 
-        }
-
-        pos->x--;
-        pt->curr_chr_ptr--; 
-
-        char curr_chr = get_curr_char_by_entry(pt, ent, pt->curr_chr_ptr);
-
-        if (curr_chr == '\n'){
-
-            // need to find position for x at the end of the line 
-            pos->x = 0; 
-            pos->y--;
-        }
-    }
-
-    return 0; 
-}
 
 int edit_file(char* fn){
      
@@ -206,10 +134,9 @@ int edit_file(char* fn){
                 default:
                     break; 
             }
-        }
 
         /* if not in a particular mode then see if we'll enter a mode */
-        else {
+        } else {
             switch(user_in){
 
                 /* save progress and write to file */
@@ -269,22 +196,7 @@ int edit_file(char* fn){
     /* if no save was made then keep the contents as they were when the file was opened */
     if (!umode.made_save){
         
-        /* take the original buffer from the pt and write it*/
-        // size_t og_size = pt.original_buffer->size; 
-        // size_t pos = 0, wr_sz = WRITE_SIZE; 
-        // int eow = 0; 
-
-        // do {
-                                                
-        //     pos = (size_t)ftell(f);
-        //     if ( (pos + WRITE_SIZE) < og_size ){
-        //         wr_sz = og_size - pos; 
-        //         eow++; 
-        //     }
-            
-        //     fwrite(pt.original + pos, sizeof(char), wr_sz, f);
-            
-        // } while ( !eow );
+        fclose(f);
     } 
 
     empty_piece_table(&pt);
