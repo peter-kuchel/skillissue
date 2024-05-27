@@ -34,6 +34,7 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, char user_in){
     if (user_in == USR_MODE_ESC){
         // esc_make_changes(&umode, &pt);
         umode->mode &= 0;
+        add_buf->write_active--; 
 
             
     /* handle when backspace is pressed */
@@ -53,6 +54,83 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, char user_in){
         add_buf->buf.text[add_buf->curr_pos] = user_in;
         add_buf->curr_pos++;
     }
+
+
+    return 0; 
+}
+
+int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
+    // determine the next pointed to character 
+    // retrieve the current entry and position
+    pt_entry* ent; 
+    pt_table_t* table; 
+    // get current entry and position 
+    ent = GET_CURR_ENT_PTR(pt);
+    size_t chr_ptr = pt->curr_chr_ptr; 
+
+    printf("%ld\n", chr_ptr);
+
+    // move to the right 
+    if (dir > 0){
+        size_t upper_bound = ent->start + ent->len;
+
+        // go forward to next entry 
+        if (chr_ptr + 1 > upper_bound){
+
+            table = &(pt->table);
+            if (table->org_tail == pt->curr_ent_ptr){
+                printf("at pos n, can't move\n");
+                return 0;
+            }
+
+            pt->curr_ent_ptr++; 
+            ent = GET_CURR_ENT_PTR(pt);
+
+            pt->curr_chr_ptr = ent->start; 
+        } 
+
+        pos->x++;
+
+        // handle a newline
+        char curr_chr = get_curr_char_by_entry(pt, ent, pt->curr_chr_ptr);
+
+        if (curr_chr == '\n'){
+            pos->x = 0; 
+            pos->y++;
+        }
+
+
+    } else {
+        size_t lower_bound = ent->start; 
+
+        // go back to prev entry 
+        if (chr_ptr - 1 < lower_bound){
+
+            table = &(pt->table);
+            if (table->org_head == pt->curr_ent_ptr){
+                printf("at pos 0, can't move\n");
+                return 0;
+            }
+
+            pt->curr_ent_ptr--; 
+            ent = GET_CURR_ENT_PTR(pt);
+
+            pt->curr_chr_ptr = ent->start + ent->len; 
+        }
+
+
+        pos->x--; 
+
+        char curr_chr = get_curr_char_by_entry(pt, ent, pt->curr_chr_ptr);
+
+        if (curr_chr == '\n'){
+
+            // need to find position for x at the end of the line 
+            pos->x = 0; 
+            pos->y--;
+        }
+    }
+
 
 
     return 0; 
@@ -155,21 +233,13 @@ int edit_file(char* fn){
                     break; 
                     
                 case 'a':
-
-                    // determine next pointer to character
-                    // retrieve current entry and position 
-                    if (pos.x > 0)
-                        pos.x--; 
+                    handle_side_movement(&pt, &pos, -1);
                     break;
                 case 's':
 
                     break;
                 case 'd':
-
-                    // determine the next pointed to character 
-                    // retrieve the current entry and position 
-                    
-                    pos.x++; 
+                    handle_side_movement(&pt, &pos, 1);
                     break; 
                 
                 default:
@@ -210,16 +280,6 @@ int edit_file(char* fn){
     empty_piece_table(&pt);
 
     return 0; 
-    
-
-// handle_error:
-//     empty_piece_table(&pt);
-//     fclose(f); 
-//     return -1; 
-}
-
-void menu_screen(){
-
 }
 
 void run_sk(int argc, char** argv){
@@ -246,7 +306,8 @@ void run_sk(int argc, char** argv){
 int main(int argc, char** argv){
 
     
-    setup_logger(&logger, LOG_FILE);
+    setup_logger(&sk_logger, LOG_FILE);
+    log_to_file(&sk_logger, "logger has been successfully set up!\n");
 
     /* run */
     run_sk(argc, argv);
