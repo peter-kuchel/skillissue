@@ -11,7 +11,7 @@
 #define DEFAULT_PT_ENT_SIZE     64
 
 typedef enum {
-    ORG = 0, 
+    ORGN = 0, 
     ADD = 1 
 } pt_src_t; 
 
@@ -75,8 +75,7 @@ typedef struct{
     /* information about the piece table state */
 
     size_t      curr_chr_ptr;                               // currently pointed to char in the table 
-    int         curr_ent_ptr;                               // current ptr to position in the organizer
-    int         curr_orf_ptr;                               // index in the org
+    int         curr_org_ptr;                               // current ptr to position in the organizer
 
     int         insert_ready;
 
@@ -86,12 +85,12 @@ typedef struct{
 #define GET_ENT_AT_POS(pt_ptr, pos) \
 ( pt_ptr->table.entries[pt_ptr->table.organizer[pos]] )
 
-#define GET_CURR_ENT(pt_ptr) \
-( pt_ptr->table.entries[pt_ptr->table.organizer[pt_ptr->curr_ent_ptr]] ) 
+#define CURR_ORG_ENT(pt_ptr) \
+( pt_ptr->table.entries[pt_ptr->table.organizer[pt_ptr->curr_org_ptr]] ) 
 
-#define GET_CURR_ENT_PTR(pt_ptr) ( &( GET_CURR_ENT(pt_ptr) ) )
+#define CURR_ORG_ENT_PTR(pt_ptr) ( &( CURR_ORG_ENT(pt_ptr) ) )
 
-#define GET_PT_BUFF(pt_ptr, src) ( src == ORG ? &(pt_ptr->original) : &(pt_ptr->addition.buf) )
+#define GET_PT_BUFF(pt_ptr, src) ( src == ORGN ? &(pt_ptr->original) : &(pt_ptr->addition.buf) )
 
 
 

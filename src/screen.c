@@ -2,7 +2,7 @@
 
 int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
     
-    pt_entry* ent = GET_CURR_ENT_PTR(pt);
+    pt_entry* ent = CURR_ORG_ENT_PTR(pt);
     size_t chr_ptr = pt->curr_chr_ptr; 
 
     // move to the right 
@@ -12,7 +12,7 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
         // go forward to next entry 
         if (chr_ptr + 1 >= upper_bound){
 
-            if (pt->table.org_tail == pt->curr_ent_ptr){
+            if (pt->table.org_tail == pt->curr_org_ptr){
                 
                 // if at the very end of the file 
                 if (chr_ptr + 1 == upper_bound){
@@ -23,8 +23,8 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
                 return 0;
             }
 
-            pt->curr_ent_ptr++; 
-            ent = GET_CURR_ENT_PTR(pt);
+            pt->curr_org_ptr++; 
+            ent = CURR_ORG_ENT_PTR(pt);
 
             pt->curr_chr_ptr = ent->start; 
         } 
@@ -47,13 +47,13 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
         // go back to prev entry 
         if (chr_ptr == lower_bound){
              
-            if (pt->table.org_head == pt->curr_ent_ptr){
+            if (pt->table.org_head == pt->curr_org_ptr){
                 printf("at pos 0, can't move\n");
                 return 0;
             }
 
-            pt->curr_ent_ptr--; 
-            ent = GET_CURR_ENT_PTR(pt);
+            pt->curr_org_ptr--; 
+            ent = CURR_ORG_ENT_PTR(pt);
 
             pt->curr_chr_ptr = ent->start + ent->len; 
         }
@@ -94,7 +94,7 @@ void render_screen(piece_table* pt){
 
         pt_buffer_t* buff; 
 
-        if (entry.src == ORG)
+        if (entry.src == ORGN)
             buff = &(pt->original); 
         else 
             buff = &(pt->addition.buf); 

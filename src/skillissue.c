@@ -51,9 +51,9 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
         // create the entries needed to handle the insert 
         if ( !pt->insert_ready ){
             
-            int ent_ptr = pt->curr_ent_ptr; 
+            int ent_ptr = pt->curr_org_ptr; 
             size_t chr_ptr = pt->curr_chr_ptr; 
-            curr_ent = GET_CURR_ENT_PTR(pt);
+            curr_ent = CURR_ORG_ENT_PTR(pt);
 
             // if cursor is at the very end or beggining of the file
             int very_end = ent_ptr == pt->table.org_tail && (curr_ent->start + curr_ent->len) == chr_ptr;
@@ -107,7 +107,7 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
 
                 // update head or tail depending on direction
                 pt->table.organizer[direction] = new_ent_pos;  
-                pt->curr_ent_ptr = direction;
+                pt->curr_org_ptr = direction;
 
                 memset(pbuf, 0, PBUF_SIZE);
                 sprintf(pbuf, "ent pos: %d, dir: %d\n", new_ent_pos, direction);
@@ -126,7 +126,7 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
             pt->insert_ready++;
         }
 
-        curr_ent = GET_CURR_ENT_PTR(pt);
+        curr_ent = CURR_ORG_ENT_PTR(pt);
 
          
         add_buffer_t* adds = &(pt->addition);
@@ -140,8 +140,8 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
         curr_ent->len++; 
 
         memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, "ent_ptr: %d, len: %ld, curr_pos: %ld, src: %d\n", 
-            pt->curr_ent_ptr, curr_ent->len, adds->curr_pos, curr_ent->src);
+        sprintf(pbuf, "ent_org_ptr: %d, len: %ld, curr_pos: %ld, src: %d\n", 
+            pt->curr_org_ptr, curr_ent->len, adds->curr_pos, curr_ent->src);
         log_to_file(&sk_logger, pbuf);
 
         pt->curr_chr_ptr = adds->curr_pos;
