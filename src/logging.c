@@ -1,7 +1,9 @@
 #include "logging.h"
 
 
-int log_to_file_stream(FILE* log_file, char* msg){
+int log_to_file(Logger* logger, char* msg){
+
+    FILE* log_file = logger->fstream; 
     size_t msg_len = strlen(msg);
 
     size_t bytes_written = fwrite(msg, sizeof(char), msg_len, log_file);
@@ -12,21 +14,13 @@ int log_to_file_stream(FILE* log_file, char* msg){
         return ferror_status; 
     }
 
-    return 0; 
-}
+    int flush_res = fflush(log_file);
+    if (flush_res != 0){
 
-int log_to_file(char* log_file, char* msg){
-    FILE* f = fopen(log_file, "a");
-
-    if (f == NULL){ 
-        perror("Error with opening the file - errno set:");
         return -1;
     }
 
-    int res = log_to_file_stream(f, msg);
-
-    fclose(f);
-    return res; 
+    return 0; 
 }
 
 int setup_logger(Logger* logger, char* log_file){
@@ -39,6 +33,7 @@ int setup_logger(Logger* logger, char* log_file){
     logger->fstream = f; 
     logger->fname = log_file;
 
+    
     return 0;  
 }
 int teardown_logger(Logger* logger){

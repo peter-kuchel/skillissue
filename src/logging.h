@@ -5,13 +5,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define LOG_FILE "skillissue_log_file.log"
+
 typedef struct {
     char* fname; 
     FILE* fstream;
 } Logger; 
 
-int log_to_file_stream(FILE* log_file, char* msg);
-int log_to_file(char* log_file, char* msg);
+Logger sk_logger; 
+
+int log_to_file(Logger* logger, char* msg);
 int setup_logger(Logger* logger, char* log_file);
 int teardown_logger(Logger* logger); 
 
