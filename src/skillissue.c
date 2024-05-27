@@ -19,18 +19,16 @@ void save_file_writes(FILE* f, piece_table* pt){
 
 }
 
-int handle_insertion_mode(piece_table* pt, usermode* umode, char user_in){
-    // add_buffer_t* add_buf = &(pt->addition);
+int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos, char user_in){
 
     pt_entry* curr_ent;
 
     /* handle user finishing up insertion mode*/
     if (user_in == USR_MODE_ESC){
-        // esc_make_changes(&umode, &pt);
+        
+        if (pt->insert_ready) pt->insert_ready--;
         umode->mode &= 0;
-        // add_buf->write_active--; 
-
-            
+         
     /* handle when backspace is pressed */
     } else if (user_in == 127) {
         
@@ -63,16 +61,19 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, char user_in){
             if ( very_end || very_beginning ){
 
                 
+
+                // check if entries need to be reallocd 
+                if (pt->table.ent_num + 1 == pt->table.ent_cap){
+
+                }
+
+                pt->table.ent_num++;
                 int new_ent_pos = pt->table.ent_num;
+
                 pt_entry* new_single_entry = &(pt->table.entries[new_ent_pos]);
                 new_single_entry->src = ADD; 
                 new_single_entry->start = pt->addition.curr_pos; 
                 new_single_entry->len = 0; 
-
-                 
-                pt->table.ent_num++;
-
-                // check here for needing to realloc
 
                 // place either at tail or the head 
                 int pos = very_end ? pt->table.org_tail : pt->table.org_head;
@@ -106,6 +107,11 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, char user_in){
 
                 // update head or tail depending on direction
                 pt->table.organizer[direction] = new_ent_pos;  
+                pt->curr_ent_ptr = direction;
+
+                memset(pbuf, 0, PBUF_SIZE);
+                sprintf(pbuf, "ent pos: %d, dir: %d\n", new_ent_pos, direction);
+                log_to_file(&sk_logger, pbuf);
 
                 if (very_end) 
                     pt->table.org_tail = direction;
@@ -116,13 +122,38 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, char user_in){
             } else {
 
             }   
+
+            pt->insert_ready++;
         }
 
-        // else the insertion is happening either in the middle of an existing entry  
+        curr_ent = GET_CURR_ENT_PTR(pt);
 
-        
-        // add_buf->buf.text[add_buf->curr_pos] = user_in;
-        // add_buf->curr_pos++;
+         
+        add_buffer_t* adds = &(pt->addition);
+
+        // check that there is space in additions
+        if (adds->curr_pos + 1 == adds->buf.size){
+
+        }
+
+        adds->buf.text[adds->curr_pos] = user_in; 
+        curr_ent->len++; 
+
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "ent_ptr: %d, len: %ld, curr_pos: %ld, src: %d\n", 
+            pt->curr_ent_ptr, curr_ent->len, adds->curr_pos, curr_ent->src);
+        log_to_file(&sk_logger, pbuf);
+
+        pt->curr_chr_ptr = adds->curr_pos;
+        adds->curr_pos++; 
+
+        if (user_in == '\n'){
+
+        } else {
+            curs_pos->x++;
+        }
+
+
     }
 
 
@@ -186,7 +217,7 @@ int edit_file(char* fn){
             switch(umode.mode){
 
                 case USR_MODE_INS:
-                    insert_res = handle_insertion_mode(&pt, &umode, user_in);
+                    insert_res = handle_insertion_mode(&pt, &umode, &pos, user_in);
                     if (insert_res < 0){}
                     break;
 
@@ -250,7 +281,7 @@ int edit_file(char* fn){
         
     } while (in_edit);
 
-    // log_piece_table_current(&sk_logger, &pt);
+    log_piece_table_current(&sk_logger, &pt);
 
     /* if no save was made then keep the contents as they were when the file was opened */
     if (!umode.made_save){

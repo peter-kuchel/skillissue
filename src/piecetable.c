@@ -73,7 +73,7 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
 
    pt->curr_ent_ptr = middle;
 
-   pt->table.ent_num++; 
+   // pt->table.ent_num++; 
 
    return 0; 
 
@@ -118,9 +118,10 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
    }
    log_to_file(logger, "]\n");
 
+   int i; 
    int _tail = tb->org_tail;
-   log_to_file(logger, "Current piece table org state:\n");
-   for (int i = tb->org_head; i <= _tail; i++){
+   log_to_file(logger, "Current piece table state:\n");
+   for (i = tb->org_head; i <= _tail; i++){
       memset(pbuf, 0, PBUF_SIZE);
       pt_entry ent = GET_ENT_AT_POS(pt, i);
 
@@ -128,7 +129,19 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
       log_to_file(logger, pbuf);
    }
 
-   memset(pbuf, 0, PBUF_SIZE);
+   
+   log_to_file(logger, "Current organizer state:\n[");
+   for (i = tb->org_head; i <= tb->org_tail; i++){
+      memset(pbuf, 0, PBUF_SIZE);
+      if (i == tb->org_tail) 
+         sprintf(pbuf, "%d", tb->organizer[i]);
+      else 
+         sprintf(pbuf, "%d, ", tb->organizer[i]);
+
+      log_to_file(logger, pbuf);
+   }
+   log_to_file(logger, "]\n");
+
 
 
 }

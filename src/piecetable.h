@@ -11,8 +11,8 @@
 #define DEFAULT_PT_ENT_SIZE     64
 
 typedef enum {
-    ORG, 
-    ADD 
+    ORG = 0, 
+    ADD = 1 
 } pt_src_t; 
 
 typedef struct {
@@ -75,8 +75,8 @@ typedef struct{
     /* information about the piece table state */
 
     size_t      curr_chr_ptr;                               // currently pointed to char in the table 
-    int         curr_pos_ptr;                               // current index of the character in one of the buffers referenced by the current entry
     int         curr_ent_ptr;                               // current ptr to position in the organizer
+    int         curr_orf_ptr;                               // index in the org
 
     int         insert_ready;
 
