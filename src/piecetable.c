@@ -106,15 +106,16 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
    memset(pbuf, 0, PBUF_SIZE);
    for (size_t j = 0; j < adds->curr_pos; j++){
       
-      if (j > 0 && j % PBUF_SIZE == 0){
+      pbuf[pbuf_i] = adds->buf.text[j];
+      pbuf_i++;
+
+      if ( (j > 0 && j % PBUF_SIZE == 0) || j + 1 == adds->curr_pos){
 
          log_to_file(logger, pbuf);
          memset(pbuf, 0, PBUF_SIZE);
          pbuf_i = 0; 
       }
-      pbuf[pbuf_i] = adds->buf.text[j];
-      pbuf_i++;
-
+      
    }
    log_to_file(logger, "]\n");
 

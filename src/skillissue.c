@@ -32,18 +32,6 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
     /* handle when backspace is pressed */
     } else if (user_in == 127) {
         
-        // to handle deletes -> similar to insert where 
-        // create the 
-        // memset(pbuf, 0, PBUF_SIZE);
-        // log_to_file(&sk_logger, "backspace was pressed\n");
-
-        /* handle deletions pertaining to the original text */
-        // if (add_buf->curr_pos == add_buf->saved_pos){
-        
-        // /* re-handle the entry next to the current */
-        // } else {
-            
-        // }
     
     /* insert char into additions and update the entry*/
     } else {
@@ -58,6 +46,8 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
             // if cursor is at the very end or beggining of the file
             int very_end = ent_ptr == pt->table.org_tail && (curr_ent->start + curr_ent->len) == chr_ptr;
             int very_beginning = ent_ptr == pt->table.org_head && curr_ent->start == chr_ptr;
+
+            int at_ent_end = (pt->curr_chr_ptr + 1) == (curr_ent->start + curr_ent->len); 
             if ( very_end || very_beginning ){
 
                 
@@ -118,7 +108,9 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
                 else 
                     pt->table.org_head = direction; 
             
-            /* handle other case where entries are in the middle */
+            /* handle case where curr_chr_ptr is at the end of an existing entry */
+            } else if (at_ent_end){
+            /* handle case where insert is in the middle of an existing entry */
             } else {
 
             }   
@@ -140,12 +132,13 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
         curr_ent->len++; 
 
         memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, "ent_org_ptr: %d, len: %ld, curr_pos: %ld, src: %d\n", 
+        sprintf(pbuf, 
+            "[INSERT {%c}] ent_org_ptr: %d, len: %ld, curr_pos: %ld, src: %d\n", adds->buf.text[adds->curr_pos],
             pt->curr_org_ptr, curr_ent->len, adds->curr_pos, curr_ent->src);
         log_to_file(&sk_logger, pbuf);
 
-        pt->curr_chr_ptr = adds->curr_pos;
         adds->curr_pos++; 
+        pt->curr_chr_ptr = adds->curr_pos;
 
         if (user_in == '\n'){
 

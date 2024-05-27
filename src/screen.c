@@ -10,7 +10,7 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
         size_t upper_bound = ent->start + ent->len;
 
         // go forward to next entry 
-        if (chr_ptr + 1 >= upper_bound){
+        if (chr_ptr == upper_bound || chr_ptr + 1 == upper_bound){
 
             if (pt->table.org_tail == pt->curr_org_ptr){
                 
@@ -23,10 +23,12 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
                 return 0;
             }
 
-            pt->curr_org_ptr++; 
-            ent = CURR_ORG_ENT_PTR(pt);
+            if (chr_ptr + 1 == upper_bound){
+                pt->curr_org_ptr++; 
+                ent = CURR_ORG_ENT_PTR(pt);
 
-            pt->curr_chr_ptr = ent->start; 
+                pt->curr_chr_ptr = ent->start - 1;
+            } 
         } 
 
         pos->x++;
@@ -45,21 +47,59 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
         size_t lower_bound = ent->start; 
 
         // go back to prev entry 
-        if (chr_ptr == lower_bound){
-             
+
+        // memset(pbuf, 0, PBUF_SIZE);
+        // sprintf(pbuf, "chr_ptr-- vs lowerbound: %ld <= %ld\n == %d\n", chr_ptr - 1, lower_bound, (chr_ptr - 1 <= lower_bound));
+        // log_to_file(&sk_logger, pbuf); 
+
+        if (chr_ptr == lower_bound || chr_ptr - 1 == lower_bound){
+            memset(pbuf, 0, PBUF_SIZE);
+            sprintf(pbuf, "[At (or past) lower bound]\n");
+            log_to_file(&sk_logger, pbuf);  
+            
             if (pt->table.org_head == pt->curr_org_ptr){
-                printf("at pos 0, can't move\n");
+
+                memset(pbuf, 0, PBUF_SIZE);
+                sprintf(pbuf, "[At far left entry]: chr_ptr = %ld\n",chr_ptr);
+                log_to_file(&sk_logger, pbuf);  
+
+                // at the very beginning of the file
+                if (chr_ptr - 1 == lower_bound){
+                    
+                    pos->x--;
+                    pt->curr_chr_ptr--; 
+
+                    memset(pbuf, 0, PBUF_SIZE);
+                    sprintf(pbuf, "[currently at very end] before: %ld, after: %ld\n", chr_ptr, pt->curr_chr_ptr);
+                    log_to_file(&sk_logger, pbuf);
+                }
                 return 0;
             }
+            
+            if (chr_ptr == lower_bound){
+                pt->curr_org_ptr--; 
+                ent = CURR_ORG_ENT_PTR(pt);
 
-            pt->curr_org_ptr--; 
-            ent = CURR_ORG_ENT_PTR(pt);
+                pt->curr_chr_ptr = (ent->start + ent->len); 
 
-            pt->curr_chr_ptr = ent->start + ent->len; 
+                memset(pbuf, 0, PBUF_SIZE);
+                sprintf(pbuf, "[going into next entry - 1]: curr_org_ptr: %d, curr_chr_ptr before: %ld, after: %ld\n", 
+                    pt->curr_org_ptr, chr_ptr, pt->curr_chr_ptr);
+                log_to_file(&sk_logger, pbuf);
+            }
         }
 
         pos->x--;
         pt->curr_chr_ptr--; 
+
+        char _c = CURR_PTR_AT_CHR(pt);
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(
+            pbuf, 
+            "chr_ptr before: %ld, after: %ld| %c | lb: %ld| org_pos: %d, org_head: %d\n", 
+            chr_ptr, pt->curr_chr_ptr, _c, 
+            lower_bound, pt->curr_org_ptr, pt->table.org_head);
+        log_to_file(&sk_logger, pbuf);
 
         char curr_chr = get_curr_char_by_entry(pt, ent, pt->curr_chr_ptr);
 
@@ -73,6 +113,8 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
             pos->y--;
         }
     }
+
+    
 
     return 0; 
 }

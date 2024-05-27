@@ -1,6 +1,7 @@
 #ifndef IMPORTS_SKILLISSUE_H
 #define IMPORTS_SKILLISSUE_H
 
+#include "cursor.h"
 #include "piecetable.h"
 #include "screen.h"
 #include "utils.h"
