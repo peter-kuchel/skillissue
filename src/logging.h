@@ -13,6 +13,10 @@ typedef struct {
 } Logger; 
 
 Logger sk_logger; 
+// int pbuf_size = 256;
+#define PBUF_SIZE 256
+
+char pbuf[PBUF_SIZE];
 
 int log_to_file(Logger* logger, char* msg);
 int setup_logger(Logger* logger, char* log_file);
