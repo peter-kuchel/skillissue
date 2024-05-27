@@ -6,7 +6,13 @@
 // int get_curr_pos(piece_table* pt){
 //    int curr_pos = pt->
 // }
+char get_curr_char_by_entry(piece_table* pt, pt_entry* ent, size_t pos){
+   
+   pt_buffer_t* buf = GET_PT_BUFF(pt, ent->src); 
+   char c = buf->text[pos];
 
+   return c;
+}
 
 int init_piece_table(FILE* f, char* fn, piece_table* pt){
    
@@ -65,7 +71,7 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
    pt->table.org_tail = middle; 
    pt->table.org_num++;  
 
-   pt->curr_ent_ptr = entry_pos;
+   pt->curr_ent_ptr = middle;
 
    pt->table.ent_num++; 
 
@@ -84,5 +90,45 @@ void empty_piece_table(piece_table* pt){
    safeFree(pt->redo.stack);
    safeFree(pt->undo.stack);
    safeFree(pt->reclaim.stack);
+
+}
+
+void log_piece_table_current(Logger* logger, piece_table* pt){
+
+   pt_table_t* tb = &(pt->table);
+   
+   int pbuf_i; 
+   
+   add_buffer_t* adds = &(pt->addition);
+   log_to_file(logger, "Current additions state:\n[");
+
+   pbuf_i = 0;
+   memset(pbuf, 0, PBUF_SIZE);
+   for (size_t j = 0; j < adds->curr_pos; j++){
+      
+      if (j > 0 && j % PBUF_SIZE == 0){
+
+         log_to_file(logger, pbuf);
+         memset(pbuf, 0, PBUF_SIZE);
+         pbuf_i = 0; 
+      }
+      pbuf[pbuf_i] = adds->buf.text[j];
+      pbuf_i++;
+
+   }
+   log_to_file(logger, "]\n");
+
+   int _tail = tb->org_tail;
+   log_to_file(logger, "Current piece table org state:\n");
+   for (int i = tb->org_head; i <= _tail; i++){
+      memset(pbuf, 0, PBUF_SIZE);
+      pt_entry ent = GET_ENT_AT_POS(pt, i);
+
+      sprintf(pbuf, "(%s, %ld, %ld)\n", ent.src == ORG ? "ORG" : "ADD", ent.start, ent.len);
+      log_to_file(logger, pbuf);
+   }
+
+   memset(pbuf, 0, PBUF_SIZE);
+
 
 }
