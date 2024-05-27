@@ -3,6 +3,7 @@
 
 #include <curses.h>
 #include "piecetable.h"
+#include "utils.h"
 
 typedef struct {
     int rows; 

@@ -15,12 +15,12 @@ void render_screen(piece_table* pt){
         int _len   = entry.len; 
         int _end = _start + _len;
 
-        text_buffer* buff; 
+        pt_buffer_t* buff; 
 
         if (entry.src == ORG)
             buff = &(pt->original); 
         else 
-            buff = &(pt->addition); 
+            buff = &(pt->addition.buf); 
         
         char to_print[_len + 1]; 
         int j = 0; 
