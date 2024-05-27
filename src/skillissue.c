@@ -7,7 +7,7 @@
 
 
 static termw_info tinfo; 
-static Logger logger; 
+
 
 void save_file_writes(FILE* f, piece_table* pt){
     // put together the piece table 
@@ -68,7 +68,10 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
     ent = GET_CURR_ENT_PTR(pt);
     size_t chr_ptr = pt->curr_chr_ptr; 
 
-    printf("%ld\n", chr_ptr);
+    // memset(pbuf, 0, PBUF_SIZE);
+    // sprintf(pbuf, "curr_chr_ptr: %ld\n", chr_ptr);
+    // log_to_file(&sk_logger, pbuf);
+    // printf("%ld\n", chr_ptr);
 
     // move to the right 
     if (dir > 0){
@@ -90,6 +93,7 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
         } 
 
         pos->x++;
+        pt->curr_chr_ptr++;
 
         // handle a newline
         char curr_chr = get_curr_char_by_entry(pt, ent, pt->curr_chr_ptr);
@@ -103,10 +107,16 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
     } else {
         size_t lower_bound = ent->start; 
 
+        // memset(pbuf, 0, PBUF_SIZE);
+        // sprintf(pbuf, "chr_ptr %ld ? %ld lower bound: \n", chr_ptr, lower_bound);
+        // log_to_file(&sk_logger, pbuf); 
+
         // go back to prev entry 
-        if (chr_ptr - 1 < lower_bound){
+        if (chr_ptr == lower_bound){
 
             table = &(pt->table);
+
+             
             if (table->org_head == pt->curr_ent_ptr){
                 printf("at pos 0, can't move\n");
                 return 0;
@@ -118,8 +128,8 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
             pt->curr_chr_ptr = ent->start + ent->len; 
         }
 
-
-        pos->x--; 
+        pos->x--;
+        pt->curr_chr_ptr--; 
 
         char curr_chr = get_curr_char_by_entry(pt, ent, pt->curr_chr_ptr);
 
@@ -130,8 +140,6 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
             pos->y--;
         }
     }
-
-
 
     return 0; 
 }
@@ -256,6 +264,8 @@ int edit_file(char* fn){
         
     } while (in_edit);
 
+    // log_piece_table_current(&sk_logger, &pt);
+
     /* if no save was made then keep the contents as they were when the file was opened */
     if (!umode.made_save){
         
@@ -292,7 +302,7 @@ void run_sk(int argc, char** argv){
         getmaxyx(stdscr, tinfo.rows, tinfo.cols);
         int res = edit_file(argv[1]);
 
-        teardown_logger(&logger);
+        teardown_logger(&sk_logger);
         endwin();
 
         if (res < 0) exit(1);
@@ -307,7 +317,7 @@ int main(int argc, char** argv){
 
     
     setup_logger(&sk_logger, LOG_FILE);
-    log_to_file(&sk_logger, "logger has been successfully set up!\n");
+    log_to_file(&sk_logger, "logger has been successfully set up!\n===================================\n\n");
 
     /* run */
     run_sk(argc, argv);
