@@ -95,6 +95,8 @@ void empty_piece_table(piece_table* pt){
 
 void log_piece_table_current(Logger* logger, piece_table* pt){
 
+   if (!LOG_TOGGLE) return; 
+   
    pt_table_t* tb = &(pt->table);
    
    int pbuf_i; 
