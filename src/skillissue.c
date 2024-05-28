@@ -21,8 +21,6 @@ void save_file_writes(FILE* f, piece_table* pt){
 
 int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos, char user_in){
 
-    pt_entry* curr_ent;
-
     /* handle user finishing up insertion mode*/
     if (user_in == USR_MODE_ESC){
         
@@ -36,117 +34,7 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
     /* insert char into additions and update the entry*/
     } else {
 
-        // create the entries needed to handle the insert 
-        if ( !pt->insert_ready ){
-            
-            int ent_ptr = pt->curr_org_ptr; 
-            size_t chr_ptr = pt->curr_chr_ptr; 
-            curr_ent = CURR_ORG_ENT_PTR(pt);
-
-            // if cursor is at the very end or beggining of the file
-            int very_end = ent_ptr == pt->table.org_tail && (curr_ent->start + curr_ent->len) == chr_ptr;
-            int very_beginning = ent_ptr == pt->table.org_head && curr_ent->start == chr_ptr;
-
-            int at_ent_end = (pt->curr_chr_ptr + 1) == (curr_ent->start + curr_ent->len); 
-            if ( very_end || very_beginning ){
-
-                
-
-                // check if entries need to be reallocd 
-                if (pt->table.ent_num + 1 == pt->table.ent_cap){
-
-                }
-
-                pt->table.ent_num++;
-                int new_ent_pos = pt->table.ent_num;
-
-                pt_entry* new_single_entry = &(pt->table.entries[new_ent_pos]);
-                new_single_entry->src = ADD; 
-                new_single_entry->start = pt->addition.curr_pos; 
-                new_single_entry->len = 0; 
-
-                // place either at tail or the head 
-                int pos = very_end ? pt->table.org_tail : pt->table.org_head;
-                int direction = very_end ? pos + 1 : pos - 1; 
-                
-                // check if organizer needs to be reallocd first 
-                if (pt->table.org_num + 1 == pt->table.org_cap){
-
-                }
-
-                // at the very end of the organizer, need to shift things over 
-                // this is the worst case scenario for shifting 
-                if (direction < 0 || direction == pt->table.org_cap){
-                    int shift_start = very_end ? pt->table.org_head : pt->table.org_tail;
-                    int shift_end = pos;
-                    int shift_dir = very_end ? -1 : 1; 
-                    int shift = shift_dir * -1; 
-
-                    for (int i = shift_start; i < shift_end; i += shift_dir){
-                        int ent_i = pt->table.organizer[i];
-                        pt->table.organizer[i + shift] = ent_i; 
-                    }
-
-                    // update the head or tail depending on direction 
-                    if (very_end)
-                        pt->table.org_head += shift;  
-                    else 
-                        pt->table.org_tail += shift; 
-                
-                } 
-
-                // update head or tail depending on direction
-                pt->table.organizer[direction] = new_ent_pos;  
-                pt->curr_org_ptr = direction;
-
-                memset(pbuf, 0, PBUF_SIZE);
-                sprintf(pbuf, "ent pos: %d, dir: %d\n", new_ent_pos, direction);
-                log_to_file(&sk_logger, pbuf);
-
-                if (very_end) 
-                    pt->table.org_tail = direction;
-                else 
-                    pt->table.org_head = direction; 
-            
-            /* handle case where curr_chr_ptr is at the end of an existing entry */
-            } else if (at_ent_end){
-            /* handle case where insert is in the middle of an existing entry */
-            } else {
-
-            }   
-
-            pt->insert_ready++;
-        }
-
-        curr_ent = CURR_ORG_ENT_PTR(pt);
-
-         
-        add_buffer_t* adds = &(pt->addition);
-
-        // check that there is space in additions
-        if (adds->curr_pos + 1 == adds->buf.size){
-
-        }
-
-        adds->buf.text[adds->curr_pos] = user_in; 
-        curr_ent->len++; 
-
-        memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, 
-            "[INSERT {%c}] ent_org_ptr: %d, len: %ld, curr_pos: %ld, src: %d\n", adds->buf.text[adds->curr_pos],
-            pt->curr_org_ptr, curr_ent->len, adds->curr_pos, curr_ent->src);
-        log_to_file(&sk_logger, pbuf);
-
-        adds->curr_pos++; 
-        pt->curr_chr_ptr = adds->curr_pos;
-
-        if (user_in == '\n'){
-
-        } else {
-            curs_pos->x++;
-        }
-
-
+        insert_manager(pt, curs_pos, user_in);
     }
 
 

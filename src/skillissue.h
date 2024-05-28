@@ -3,6 +3,7 @@
 
 #include "cursor.h"
 #include "piecetable.h"
+#include "pt_insert.h"
 #include "screen.h"
 #include "utils.h"
 

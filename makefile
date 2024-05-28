@@ -21,4 +21,5 @@ sk:
 	$(SRC)/skillissue.c \
 	$(SRC)/logging.c	\
 	$(SRC)/cursor.c     \
+	$(SRC)/pt_insert.c  \
 	-o $(BIN)/$(TARGET) $(NCURSES)
