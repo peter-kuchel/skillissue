@@ -126,9 +126,9 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
    log_to_file(logger, "Current piece table state:\n");
    for (i = tb->org_head; i <= _tail; i++){
       memset(pbuf, 0, PBUF_SIZE);
-      pt_entry ent = GET_ENT_AT_POS(pt, i);
+      pt_entry* ent = ENT_PTR_AT_POS(pt, i);
 
-      sprintf(pbuf, "(%s, %ld, %ld)\n", ent.src == ORGN ? "ORG" : "ADD", ent.start, ent.len);
+      sprintf(pbuf, "(%s, %ld, %ld)\n", ent->src == ORGN ? "ORG" : "ADD", ent->start, ent->len);
       log_to_file(logger, pbuf);
    }
 

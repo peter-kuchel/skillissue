@@ -83,18 +83,24 @@ typedef struct{
 } piece_table; 
 
 /* I know these macros are ugly af... */
-#define GET_ENT_AT_POS(pt_ptr, pos) \
-( pt_ptr->table.entries[pt_ptr->table.organizer[pos]] )
+#define ENT_AT_POS(pt_ptr, pos) \
+    ( pt_ptr->table.entries[pt_ptr->table.organizer[pos]] )
+
+#define ENT_PTR_AT_POS(pt_ptr, pos) \
+    ( &( ENT_AT_POS(pt_ptr, pos) ) )
+
+#define ENT_POS_FROM_ORG_PTR(pt_ptr) \
+    ( pt_ptr->table.organizer[pt_ptr->curr_org_ptr] )
 
 #define CURR_ORG_ENT(pt_ptr) \
-( pt_ptr->table.entries[pt_ptr->table.organizer[pt_ptr->curr_org_ptr]] ) 
+    ( pt_ptr->table.entries[pt_ptr->table.organizer[pt_ptr->curr_org_ptr]] ) 
 
 #define CURR_ORG_ENT_PTR(pt_ptr) ( &( CURR_ORG_ENT(pt_ptr) ) )
 
 #define GET_PT_BUFF(pt_ptr, src) ( src == ORGN ? &(pt_ptr->original) : &(pt_ptr->addition.buf) )
 
 #define CURR_PTR_AT_CHR(pt_ptr) \
-( ((GET_PT_BUFF(pt_ptr, (CURR_ORG_ENT_PTR(pt_ptr))->src ))->text )[pt_ptr->curr_chr_ptr] )
+    ( ((GET_PT_BUFF(pt_ptr, (CURR_ORG_ENT_PTR(pt_ptr))->src ))->text )[pt_ptr->curr_chr_ptr] )
 
 
 void log_piece_table_current(Logger* logger, piece_table* pt);
