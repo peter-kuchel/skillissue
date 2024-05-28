@@ -1,0 +1,13 @@
+#ifndef PT_REALLOC_SKILLISSUE_H
+#define PT_REALLOC_SKILLISSUE_H
+
+#include <stdio.h> 
+
+#define PT_INC_CAP(cap) (cap << 1)
+
+#define PT_REALLOC(type, ptr, new_cap) \
+( (type*)handle_realloc(ptr, sizeof(type) * new_cap) )
+
+void* handle_realloc(void* ptr, size_t new_cap);
+
+#endif
