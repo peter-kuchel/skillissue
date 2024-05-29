@@ -128,7 +128,8 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
       memset(pbuf, 0, PBUF_SIZE);
       pt_entry* ent = ENT_PTR_AT_POS(pt, i);
 
-      sprintf(pbuf, "(%s, %ld, %ld)\n", ent->src == ORGN ? "ORG" : "ADD", ent->start, ent->len);
+      sprintf(pbuf, "(%s, %ld, %ld) @ [%d]\n", 
+                     ent->src == ORGN ? "ORG" : "ADD", ent->start, ent->len, i);
       log_to_file(logger, pbuf);
    }
 
@@ -143,6 +144,19 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
 
       log_to_file(logger, pbuf);
    }
+   log_to_file(logger, "]\n");
+
+   log_to_file(logger, "Current undo stack state:\n[");
+   for (i = 0; i < pt->undo.ptr; i++){
+      memset(pbuf, 0, PBUF_SIZE);
+      if (i == pt->undo.ptr - 1) 
+         sprintf(pbuf, "%d", pt->undo.stack[i]);
+      else 
+         sprintf(pbuf, "%d, ", pt->undo.stack[i]);
+
+      log_to_file(logger, pbuf);
+   }
+
    log_to_file(logger, "]\n");
 
 

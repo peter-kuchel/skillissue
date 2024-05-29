@@ -18,7 +18,7 @@ void check_organizer_size(piece_table* pt){
         table->org_num + 1 == table->org_cap || 
         (curr_org_ptr == 0 || curr_org_ptr == table->org_cap - 1)
     ){
-
+            
         int new_cap = PT_INC_CAP(table->org_cap);
         int* new_ptr = PT_REALLOC(int, table->organizer, new_cap);
 
