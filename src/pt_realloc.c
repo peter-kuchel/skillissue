@@ -12,7 +12,7 @@ void* handle_realloc(void* ptr, size_t new_cap){
 
 void check_organizer_size(piece_table* pt){
     pt_table_t* table = &(pt->table);
-    int curr_org_ptr = pt->curr_chr_ptr;
+    int curr_org_ptr = pt->curr_org_ptr;
 
     if (
         table->org_num + 1 == table->org_cap || 

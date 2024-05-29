@@ -22,4 +22,6 @@ sk:
 	$(SRC)/logging.c	\
 	$(SRC)/cursor.c     \
 	$(SRC)/pt_insert.c  \
+	$(SRC)/pt_realloc.c \
+	$(SRC)/pt_stacks.c  \
 	-o $(BIN)/$(TARGET) $(NCURSES)

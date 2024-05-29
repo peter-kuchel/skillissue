@@ -2,6 +2,8 @@
 #define PT_INSERT_SKILLISSUE_H
 
 #include "piecetable.h"
+#include "pt_realloc.h"
+#include "pt_stacks.h"
 #include "screen.h"
 #include "utils.h"
 

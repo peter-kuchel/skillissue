@@ -83,6 +83,9 @@ typedef struct{
 } piece_table; 
 
 /* I know these macros are ugly af... */
+#define ENT_AT_POS_ENTRIES(pt_ptr, pos) \
+    (&(pt_ptr->table.entries[pos]))
+
 #define ENT_AT_POS(pt_ptr, pos) \
     ( pt_ptr->table.entries[pt_ptr->table.organizer[pos]] )
 
@@ -109,10 +112,6 @@ void empty_piece_table(piece_table* pt);
 
 char get_curr_char_by_entry(piece_table* pt, pt_entry* ent, size_t pos);
 // int get_curr_pos(piece_table* pt);
-
-
-void push_pt_stack_t(pt_stack_t* _stack, pt_entry* entry);
-pt_entry* pop_pt_stack_t(pt_stack_t* _stack);
 
 
 #endif 
