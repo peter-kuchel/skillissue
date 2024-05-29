@@ -3,16 +3,21 @@
 static int shift_organizer(piece_table* pt, int shift_start, int shift_end, int shift_dir){
 
     // check that a shift in this direction is possible - not already at an edge 
-
+    memset(pbuf, 0, PBUF_SIZE);
+    sprintf(pbuf, "[Shift Details]: start: %d, end: %d, dir: %d \n", 
+                shift_start, shift_end, shift_dir);
+    log_to_file(&sk_logger, pbuf);
 
     int inc_ent = shift_dir * -1; 
-    for (int i = shift_start; i < shift_end; i+= inc_ent){
+    for (int i = shift_end; i >= shift_start; i += inc_ent){
         int ent_i = pt->table.organizer[i];
         pt->table.organizer[i + shift_dir] = ent_i;
     }
 
-    // update the head or tail depending on next_pos 
-    if (inc_ent > 0)
+    // // update the head or tail depending on next_pos 
+    // if (pt->table.org_head == pt->table.org_tail) return 0; 
+
+    if (inc_ent < 0)
         pt->table.org_tail += shift_dir;  
     else 
         pt->table.org_head += shift_dir; 
@@ -112,11 +117,12 @@ static int create_middle_insert(piece_table* pt){
 
     // get the information for the currently pointd at entry 
     pt_entry* curr_ent = CURR_ORG_ENT_PTR(pt);
-    int curr_org_ent = ENT_POS_FROM_ORG_PTR(pt);
+    int curr_ent_pos = ENT_POS_FROM_ORG_PTR(pt);
+    int curr_org_ptr = pt->curr_org_ptr;
     size_t curs_pos =  pt->curr_chr_ptr; 
 
     // add curr ptr at positon in org to undo stack 
-    push_pt_stack(&(pt->undo), curr_org_ent);
+    push_pt_stack(&(pt->undo), curr_ent_pos);
     
     // get the info from the curr_ent being split 
     pt_entry* _ent; 
@@ -132,28 +138,57 @@ static int create_middle_insert(piece_table* pt){
     _ent->len =  orgn_end - _ent->start;
     _ent->src = orgn_ent_src; 
 
-    shift_start = pt->table.org_tail;
-    shift_end = curr_org_ent + 1; 
-    shift_dir = 1; 
-    shift_organizer(pt, shift_start, shift_end, shift_dir);
-    pt->table.organizer[pt->curr_org_ptr + 1] = right; 
+    int right_org_pos = pt->curr_org_ptr + 1; 
 
+    shift_start = pt->table.org_tail;
+    shift_end = right_org_pos; 
+    shift_dir = 1; 
+
+    
+    if (pt->table.org_tail == pt->curr_org_ptr)
+        pt->table.org_tail = right_org_pos;
+    
+    else
+        shift_organizer(pt, shift_start, shift_end, shift_dir);
+    
+
+    pt->table.organizer[right_org_pos] = right; 
+    
     size_t right_len = _ent->len; 
+
+    log_piece_table_current(&sk_logger, pt);
+
     int left = new_pt_insert_entry(pt);
 
-    _ent = ENT_AT_POS_ENTRIES(pt, right);
+    _ent = ENT_AT_POS_ENTRIES(pt, left);
     _ent->start = curr_ent->start; 
     _ent->len = orgn_end - right_len; 
     _ent->src = orgn_ent_src;
 
+    int left_org_pos = curr_org_ptr - 1; 
+
     shift_start = pt->table.org_head; 
-    shift_end = curr_org_ent - 1; 
+    shift_end = left_org_pos; 
     shift_dir = -1; 
-    shift_organizer(pt, shift_start, shift_end, shift_dir);
-    pt->table.organizer[pt->curr_org_ptr - 1] = left;
+
+    
+    if (pt->table.org_head == curr_org_ptr)
+        pt->table.org_head = left_org_pos;
+    
+    else
+        shift_organizer(pt, shift_start, shift_end, shift_dir);
+    
+    pt->table.organizer[left_org_pos] = left;
+
+    log_piece_table_current(&sk_logger, pt);
 
     int new_addition = new_pt_insert_entry(pt);
     pt->table.organizer[pt->curr_org_ptr] = new_addition; 
+
+    memset(pbuf, 0, PBUF_SIZE);
+    sprintf(pbuf, "after insertion: org_pos: %d, head: %d, tail: %d\n", 
+        pt->curr_org_ptr, pt->table.org_head, pt->table.org_tail);
+    log_to_file(&sk_logger, pbuf);
      
     return 0; 
 }

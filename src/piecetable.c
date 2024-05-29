@@ -102,7 +102,7 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
    int pbuf_i; 
    
    add_buffer_t* adds = &(pt->addition);
-   log_to_file(logger, "Current additions state:\n[");
+   log_to_file(logger, "----------------------\nCurrent additions state:\n[");
 
    pbuf_i = 0;
    memset(pbuf, 0, PBUF_SIZE);
