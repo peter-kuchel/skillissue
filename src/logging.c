@@ -26,7 +26,7 @@ int log_to_file(Logger* logger, char* msg){
 }
 
 int setup_logger(Logger* logger, char* log_file){
-    FILE* f = fopen(log_file, "a");
+    FILE* f = fopen(log_file, "w");
     if (f == NULL){
         printf("[Error]: Something went wrong opening log file");
         exit(1); 

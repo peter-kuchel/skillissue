@@ -81,6 +81,8 @@ int edit_file(char* fn){
     cursor_pos pos = { .x = 0, .y = 0 };
     move(pos.y, pos.x);
 
+    log_piece_table_current(&sk_logger, &pt);
+
     char user_in;
     // int 
     // pt_entry ent; 
@@ -155,8 +157,10 @@ int edit_file(char* fn){
         }
 
         /* re-render the screen */
+        // need to be in this order 
         render_screen(&pt);
         move(pos.y , pos.x);
+       
 
         if (edit_status < 0) in_edit--;
         
