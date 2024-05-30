@@ -70,7 +70,7 @@ static int create_end_insert(piece_table* pt, int very_end){
     pt->curr_ins_org = new_ent_pos;
 
     if (very_end){
-        pt->curr_chr_ptr = pt->addition.curr_pos - 1; // point to last char added
+        pt->curr_chr_ptr = pt->addition.curr_pos; // point to where the char will be added
         pt->curr_org_ptr = next_pos; 
     }
         
