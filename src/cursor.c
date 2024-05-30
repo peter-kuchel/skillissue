@@ -31,14 +31,14 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
             } 
         } 
 
-        char _c = CURR_PTR_AT_CHR(pt);
-        memset(pbuf, 0, PBUF_SIZE);
-        sprintf(
-            pbuf, 
-            "chr_ptr before: %ld, after: %ld| %c | ub: %ld| org_pos: %d, org_head: %d\n", 
-            chr_ptr, pt->curr_chr_ptr, _c, 
-            upper_bound, pt->curr_org_ptr, pt->table.org_head);
-        log_to_file(&sk_logger, pbuf);
+        // char _c = CURR_PTR_AT_CHR(pt);
+        // memset(pbuf, 0, PBUF_SIZE);
+        // sprintf(
+        //     pbuf, 
+        //     "chr_ptr before: %ld, after: %ld| %c | ub: %ld| org_pos: %d, org_head: %d\n", 
+        //     chr_ptr, pt->curr_chr_ptr, _c, 
+        //     upper_bound, pt->curr_org_ptr, pt->table.org_head);
+        // log_to_file(&sk_logger, pbuf);
 
         pos->x++;
         pt->curr_chr_ptr++;
@@ -101,14 +101,14 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
         pos->x--;
         pt->curr_chr_ptr--; 
 
-        char _c = CURR_PTR_AT_CHR(pt);
-        memset(pbuf, 0, PBUF_SIZE);
-        sprintf(
-            pbuf, 
-            "chr_ptr before: %ld, after: %ld| %c | lb: %ld| org_pos: %d, org_head: %d\n", 
-            chr_ptr, pt->curr_chr_ptr, _c, 
-            lower_bound, pt->curr_org_ptr, pt->table.org_head);
-        log_to_file(&sk_logger, pbuf);
+        // char _c = CURR_PTR_AT_CHR(pt);
+        // memset(pbuf, 0, PBUF_SIZE);
+        // sprintf(
+        //     pbuf, 
+        //     "chr_ptr before: %ld, after: %ld| %c | lb: %ld| org_pos: %d, org_head: %d\n", 
+        //     chr_ptr, pt->curr_chr_ptr, _c, 
+        //     lower_bound, pt->curr_org_ptr, pt->table.org_head);
+        // log_to_file(&sk_logger, pbuf);
 
         char curr_chr = get_curr_char_by_entry(pt, ent, pt->curr_chr_ptr);
 

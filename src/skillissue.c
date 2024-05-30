@@ -187,6 +187,9 @@ void run_sk(int argc, char** argv){
 
         // get size of the terminal 
         getmaxyx(stdscr, tinfo.rows, tinfo.cols);
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "[Screen Size] rows: %d, cols: %d\n", tinfo.rows, tinfo.cols);
+        log_to_file(&sk_logger, pbuf);
         int res = edit_file(argv[1]);
 
         teardown_logger(&sk_logger);
