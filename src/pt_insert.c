@@ -102,7 +102,7 @@ static int create_ent_end_insert(piece_table* pt){
     // shift whichever side has less entries 
     int going_left = lefthand_num < righthand_num;
     int shift_start = going_left ? pt->table.org_head : pt->table.org_tail; 
-    int shift_end = going_left ? curr_ent : curr_ent + 1;  
+    int shift_end = going_left ? curr_ent - 1 : curr_ent;  
 
     if (going_left)
         shift_organizer_left(pt, shift_start, shift_end);
@@ -110,8 +110,8 @@ static int create_ent_end_insert(piece_table* pt){
         shift_organizer_right(pt, shift_start, shift_end);
 
     // if shifting to the right happens 
-    if (!going_left)
-        pt->curr_org_ptr++;  
+    // if (!going_left)
+    //     pt->curr_org_ptr++;  
     
     pt->table.organizer[pt->curr_org_ptr] = new_ent_pos;
 
