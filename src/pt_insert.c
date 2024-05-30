@@ -62,19 +62,18 @@ static int create_end_insert(piece_table* pt, int very_end){
     int pos = very_end ? pt->table.org_tail : pt->table.org_head;
     int next_pos = very_end ? pos + 1 : pos - 1; 
 
-    // at the very end of the organizer, need to shift things over 
-    // this is the worst case scenario for shifting 
-    // if (next_pos < 0 || next_pos == pt->table.org_cap){
-    //     // int shift_start = very_end ? pt->table.org_head : pt->table.org_tail;
-    //     // int shift_end = pos;
-
-    //     // shift_organizer(pt, shift_start, shift_end, shift_dir);
-    
-    // } 
+    // check the organizer 
+    check_organizer_size(pt);
 
     // update head or tail depending on next_pos
-    pt->table.organizer[next_pos] = new_ent_pos;  
-    pt->curr_org_ptr = next_pos;
+    pt->table.organizer[next_pos] = new_ent_pos; 
+    pt->curr_ins_org = new_ent_pos;
+
+    if (very_end){
+        pt->curr_chr_ptr = pt->addition.curr_pos - 1; // point to last char added
+        pt->curr_org_ptr = next_pos; 
+    }
+        
 
     if (very_end) 
         pt->table.org_tail = next_pos;
@@ -82,7 +81,7 @@ static int create_end_insert(piece_table* pt, int very_end){
         pt->table.org_head = next_pos;
 
     memset(pbuf, 0, PBUF_SIZE);
-    sprintf(pbuf, "[Side insert]: ent pos: %d, org_new_pos: %d\n", new_ent_pos, next_pos);
+    sprintf(pbuf, "[Ends insert]: ent pos: %d, org_new_pos: %d\n", new_ent_pos, next_pos);
     log_to_file(&sk_logger, pbuf);
 
     return 0; 
@@ -94,29 +93,30 @@ static int create_ent_end_insert(piece_table* pt){
     // check if organizer needs to be reallocd and re-organized 
     check_organizer_size(pt);
 
-    int curr_ent = pt->curr_org_ptr;
+    int curr_org_ent = pt->curr_org_ptr;
 
-    int lefthand_num = curr_ent - pt->table.org_head; 
-    int righthand_num = curr_ent - pt->table.org_tail;
+    int lefthand_num = curr_org_ent - pt->table.org_head; 
+    int righthand_num = curr_org_ent - pt->table.org_tail;
 
     // shift whichever side has less entries 
     int going_left = lefthand_num < righthand_num;
     int shift_start = going_left ? pt->table.org_head : pt->table.org_tail; 
-    int shift_end = going_left ? curr_ent - 1 : curr_ent;  
+    int shift_end = going_left ? curr_org_ent - 1 : curr_org_ent;  
 
-    if (going_left)
+    if (going_left){
         shift_organizer_left(pt, shift_start, shift_end);
-    else 
+        pt->table.organizer[pt->curr_org_ptr - 1] = new_ent_pos;
+        pt->curr_ins_org = new_ent_pos;
+        // pt->curr_org_ptr = curr_org_ent;     // stays the same 
+    } else{ 
         shift_organizer_right(pt, shift_start, shift_end);
-
-    // if shifting to the right happens 
-    // if (!going_left)
-    //     pt->curr_org_ptr++;  
-    
-    pt->table.organizer[pt->curr_org_ptr] = new_ent_pos;
-
+        pt->table.organizer[curr_org_ent] = new_ent_pos;
+        pt->curr_ins_org = new_ent_pos;
+        pt->curr_org_ptr = curr_org_ent + 1; 
+    }
+  
     memset(pbuf, 0, PBUF_SIZE);
-    sprintf(pbuf, "[End insert]: ent pos: %d, dir: %d\n", new_ent_pos, pt->curr_org_ptr);
+    sprintf(pbuf, "[Infront Insert]: ent pos: %d, dir: %d\n", new_ent_pos, pt->curr_org_ptr);
     log_to_file(&sk_logger, pbuf);
     
     return 0; 
@@ -194,6 +194,10 @@ static int create_middle_insert(piece_table* pt){
 
     int new_addition = new_pt_insert_entry(pt);
     pt->table.organizer[pt->curr_org_ptr] = new_addition; 
+    pt->curr_ins_org = new_addition;
+
+    pt->curr_org_ptr = right_org_pos;
+    
 
     memset(pbuf, 0, PBUF_SIZE);
     sprintf(pbuf, "[Middle Insert] with - org_pos: %d, head: %d, tail: %d\n", 
@@ -209,7 +213,7 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in){
 
     pt_entry* curr_ent;
     // create the entries needed to handle the insert if they haven't been made already
-    if ( !pt->insert_ready ){
+    if ( pt->curr_ins_org < 0 ){
         
         int ent_ptr = pt->curr_org_ptr; 
         size_t chr_ptr = pt->curr_chr_ptr; 
@@ -236,9 +240,8 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in){
         pt->insert_ready++;
     }
 
-    curr_ent = CURR_ORG_ENT_PTR(pt);
+    curr_ent = INSERT_ENT_PTR(pt);
 
-        
     add_buffer_t* adds = &(pt->addition);
 
     // check that there is space in additions
@@ -249,19 +252,21 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in){
 
     memset(pbuf, 0, PBUF_SIZE);
     sprintf(pbuf, 
-        "[INSERT {%c}] ent_org_ptr: %d, len: %ld, curr_pos: %ld, src: %s\n", 
+        "[INSERT {%c}] src: %s, ent_ins_ptr: %d, len: %ld, adds pos: %ld, chr_ptr: %ld\n", 
         adds->buf.text[adds->curr_pos],
-        pt->curr_org_ptr, 
+        curr_ent->src == ORGN ? "ORG" : "ADD",
+        pt->curr_ins_org, 
         curr_ent->len, 
         adds->curr_pos, 
-        curr_ent->src == ORGN ? "ORG" : "ADD");
+        pt->curr_chr_ptr);
     log_to_file(&sk_logger, pbuf);
 
-    adds->curr_pos++; 
-    pt->curr_chr_ptr = adds->curr_pos;
-
     curs_pos->x++;
+    adds->curr_pos++; 
 
+    if (pt->table.organizer[pt->table.org_tail] == pt->curr_ins_org)
+        pt->curr_chr_ptr++;
+    
     log_piece_table_current(&sk_logger, pt);
 
     // if (user_in == '\n'){

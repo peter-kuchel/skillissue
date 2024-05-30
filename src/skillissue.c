@@ -24,7 +24,8 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
     /* handle user finishing up insertion mode*/
     if (user_in == USR_MODE_ESC){
         
-        if (pt->insert_ready) pt->insert_ready--;
+        // if (pt->insert_ready) pt->insert_ready--;
+        pt->curr_ins_org = -1;
         umode->mode &= 0;
          
     /* handle when backspace is pressed */

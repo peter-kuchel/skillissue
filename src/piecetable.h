@@ -79,18 +79,28 @@ typedef struct{
 
     int         insert_ready;
 
+    int         curr_ins_org;                               // current ptr to position in the organizer being inserted to
+
 
 } piece_table; 
 
 /* I know these macros are ugly af... */
+
+
 #define ENT_AT_POS_ENTRIES(pt_ptr, pos) \
     (&(pt_ptr->table.entries[pos]))
 
-#define ENT_AT_POS(pt_ptr, pos) \
+// get entry by the position in the organizer
+#define ENT_AT_POS_IN_ORG(pt_ptr, pos) \
     ( pt_ptr->table.entries[pt_ptr->table.organizer[pos]] )
 
-#define ENT_PTR_AT_POS(pt_ptr, pos) \
-    ( &( ENT_AT_POS(pt_ptr, pos) ) )
+// get entry ptr by the position in the organizer
+#define ENT_PTR_AT_POS_IN_ORG(pt_ptr, pos) \
+    ( &( ENT_AT_POS_IN_ORG(pt_ptr, pos) ) )
+
+// get the current insert entry 
+#define INSERT_ENT_PTR(pt_ptr) \
+    (  ENT_AT_POS_ENTRIES(pt_ptr, pt_ptr->curr_ins_org) )
 
 #define ENT_POS_FROM_ORG_PTR(pt_ptr) \
     ( pt_ptr->table.organizer[pt_ptr->curr_org_ptr] )
@@ -100,6 +110,7 @@ typedef struct{
 
 #define CURR_ORG_ENT_PTR(pt_ptr) ( &( CURR_ORG_ENT(pt_ptr) ) )
 
+// get the underlying pt_buffer_t depending on the origin given
 #define GET_PT_BUFF(pt_ptr, src) ( src == ORGN ? &(pt_ptr->original) : &(pt_ptr->addition.buf) )
 
 #define CURR_PTR_AT_CHR(pt_ptr) \

@@ -13,7 +13,7 @@ void render_screen(piece_table* pt){
 
     for (int i = _head ; i <= _tail; i++){
         
-        entry = ENT_PTR_AT_POS(pt, i);
+        entry = ENT_PTR_AT_POS_IN_ORG(pt, i);
 
         int _start = entry->start; 
         int _len   = entry->len; 

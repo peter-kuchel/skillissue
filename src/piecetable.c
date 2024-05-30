@@ -72,6 +72,7 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
    pt->table.org_num++;  
 
    pt->curr_org_ptr = middle;
+   pt->curr_ins_org = -1;
 
    // pt->table.ent_num++; 
 
@@ -126,7 +127,7 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
    log_to_file(logger, "Current piece table state:\n");
    for (i = tb->org_head; i <= _tail; i++){
       memset(pbuf, 0, PBUF_SIZE);
-      pt_entry* ent = ENT_PTR_AT_POS(pt, i);
+      pt_entry* ent = ENT_PTR_AT_POS_IN_ORG(pt, i);
 
       sprintf(pbuf, "(%s, %ld, %ld) @ [%d]\n", 
                      ent->src == ORGN ? "ORG" : "ADD", ent->start, ent->len, i);
