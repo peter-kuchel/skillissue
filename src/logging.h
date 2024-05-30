@@ -5,8 +5,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define LOG_FILE "skillissue_log_file.log"
+#define LOG_FILE "skillissue_debug.log"
 #define LOG_TOGGLE 1
+
+#define LOG_INSERTS 1 
+#define LOG_MOVEMENT 1
 
 typedef struct {
     char* fname; 

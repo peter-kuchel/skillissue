@@ -2,13 +2,15 @@
 
 static int shift_organizer_right(piece_table* pt, int start, int end){
 
-    memset(pbuf, 0, PBUF_SIZE);
-    sprintf(pbuf, "[Shift Right Details]: start: %d, end: %d\n",start, end);
-    log_to_file(&sk_logger, pbuf);
+    if (LOG_MOVEMENT){
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "[Shift Right Details]: start: %d, end: %d\n",start, end);
+        log_to_file(&sk_logger, pbuf);
+    }
 
     // check that a shift does not go outside of the bounds of the organizer
     // by making sure the organizer is big enough 
-    check_organizer_size(pt);
+    // check_organizer_size(pt);
 
     for (int i = start; i >= end; i--){
         int ent_i = pt->table.organizer[i];
@@ -23,11 +25,14 @@ static int shift_organizer_right(piece_table* pt, int start, int end){
 
 static int shift_organizer_left(piece_table* pt, int start, int end){
     
-    memset(pbuf, 0, PBUF_SIZE);
-    sprintf(pbuf, "[Shift Left Details]: start: %d, end: %d\n",start, end);
-    log_to_file(&sk_logger, pbuf);
+    if (LOG_MOVEMENT){
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "[Shift Left Details]: start: %d, end: %d\n",start, end);
+        log_to_file(&sk_logger, pbuf);
+    }
 
     // check that a shift does not go outside of the bounds of the organizer
+    // check_organizer_size(pt);
 
     for (int i = start; i <= end; i++){
         int ent_i = pt->table.organizer[i];
@@ -80,9 +85,11 @@ static int create_end_insert(piece_table* pt, int very_end){
     else 
         pt->table.org_head = next_pos;
 
-    memset(pbuf, 0, PBUF_SIZE);
-    sprintf(pbuf, "[Ends insert]: ent pos: %d, org_new_pos: %d\n", new_ent_pos, next_pos);
-    log_to_file(&sk_logger, pbuf);
+    if (LOG_INSERTS){
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "[Ends insert]: ent pos: %d, org_new_pos: %d\n", new_ent_pos, next_pos);
+        log_to_file(&sk_logger, pbuf);
+    }
 
     return 0; 
 }
@@ -115,9 +122,11 @@ static int create_ent_end_insert(piece_table* pt){
         pt->curr_org_ptr = curr_org_ent + 1; 
     }
   
-    memset(pbuf, 0, PBUF_SIZE);
-    sprintf(pbuf, "[Infront Insert]: ent pos: %d, dir: %d\n", new_ent_pos, pt->curr_org_ptr);
-    log_to_file(&sk_logger, pbuf);
+    if (LOG_INSERTS){
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "[Infront Insert]: ent pos: %d, dir: %d\n", new_ent_pos, pt->curr_org_ptr);
+        log_to_file(&sk_logger, pbuf);
+    }
     
     return 0; 
 }
@@ -162,10 +171,12 @@ static int create_middle_insert(piece_table* pt){
     
     size_t right_len = _ent->len; 
 
-    memset(pbuf, 0, PBUF_SIZE);
-    sprintf(pbuf, "[Middle Insert - RIGHT] with start: %ld, len: %ld, org pos: %d, ent num: %d\n", 
-        _ent->start, _ent->len, right_org_pos, right);
-    log_to_file(&sk_logger, pbuf);
+    if (LOG_INSERTS){
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "[Middle Insert - RIGHT] with start: %ld, len: %ld, org pos: %d, ent num: %d\n", 
+            _ent->start, _ent->len, right_org_pos, right);
+        log_to_file(&sk_logger, pbuf);
+    }
 
     int left = new_pt_insert_entry(pt);
 
@@ -187,10 +198,12 @@ static int create_middle_insert(piece_table* pt){
     
     pt->table.organizer[left_org_pos] = left;
 
-    memset(pbuf, 0, PBUF_SIZE);
-    sprintf(pbuf, "[Middle Insert - LEFT] with start: %ld, len: %ld, org pos: %d, ent num: %d\n", 
-        _ent->start, _ent->len, left_org_pos, left);
-    log_to_file(&sk_logger, pbuf);
+    if (LOG_INSERTS){
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "[Middle Insert - LEFT] with start: %ld, len: %ld, org pos: %d, ent num: %d\n", 
+            _ent->start, _ent->len, left_org_pos, left);
+        log_to_file(&sk_logger, pbuf);
+    }
 
     int new_addition = new_pt_insert_entry(pt);
     pt->table.organizer[pt->curr_org_ptr] = new_addition; 
@@ -199,13 +212,13 @@ static int create_middle_insert(piece_table* pt){
     pt->curr_org_ptr = right_org_pos;
     
 
-    memset(pbuf, 0, PBUF_SIZE);
-    sprintf(pbuf, "[Middle Insert] with - org_pos: %d, head: %d, tail: %d\n", 
-        pt->curr_org_ptr, pt->table.org_head, pt->table.org_tail);
-    log_to_file(&sk_logger, pbuf);
+    if (LOG_INSERTS){
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "[Middle Insert] with - org_pos: %d, head: %d, tail: %d\n", 
+            pt->curr_org_ptr, pt->table.org_head, pt->table.org_tail);
+        log_to_file(&sk_logger, pbuf);
+   }
 
-    
-     
     return 0; 
 }
 
@@ -250,16 +263,18 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in){
     adds->buf.text[adds->curr_pos] = user_in; 
     curr_ent->len++; 
 
-    memset(pbuf, 0, PBUF_SIZE);
-    sprintf(pbuf, 
-        "[INSERT {%c}] src: %s, ent_ins_ptr: %d, len: %ld, adds pos: %ld, chr_ptr: %ld\n", 
-        adds->buf.text[adds->curr_pos],
-        curr_ent->src == ORGN ? "ORG" : "ADD",
-        pt->curr_ins_org, 
-        curr_ent->len, 
-        adds->curr_pos, 
-        pt->curr_chr_ptr);
-    log_to_file(&sk_logger, pbuf);
+    if (LOG_INSERTS){
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, 
+            "[INSERT {%c}] src: %s, ent_ins_ptr: %d, len: %ld, adds pos: %ld, chr_ptr: %ld\n", 
+            adds->buf.text[adds->curr_pos],
+            curr_ent->src == ORGN ? "ORG" : "ADD",
+            pt->curr_ins_org, 
+            curr_ent->len, 
+            adds->curr_pos, 
+            pt->curr_chr_ptr);
+        log_to_file(&sk_logger, pbuf);
+    }
 
     curs_pos->x++;
     adds->curr_pos++; 
