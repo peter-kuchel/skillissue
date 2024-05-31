@@ -3,6 +3,7 @@
 
 #include <stdio.h> 
 #include "piecetable.h"
+#include "utils.h"
 
 #define PT_INC_CAP(cap) (cap << 1)
 
@@ -11,11 +12,12 @@
 
 void* handle_realloc(void* ptr, size_t new_cap);
 
-
 void check_organizer_size(piece_table* pt);
 void check_entries_size(piece_table* pt);
 void check_additions_size(add_buffer_t* adds);
 void check_pt_stack_size(pt_stack_t* stack);
 int new_pt_insert_entry(piece_table* pt);
+int shift_organizer_right(piece_table* pt, int start, int end);
+int shift_organizer_left(piece_table* pt, int start, int end);
 
 #endif

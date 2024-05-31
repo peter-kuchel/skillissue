@@ -1,49 +1,5 @@
 #include "pt_insert.h"
 
-static int shift_organizer_right(piece_table* pt, int start, int end){
-
-    #ifdef DEBUG_MOVEMENT
-        memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, "[Shift Right Details]: start: %d, end: %d\n",start, end);
-        log_to_file(&sk_logger, pbuf);
-    #endif 
-
-    // check that a shift does not go outside of the bounds of the organizer
-    // by making sure the organizer is big enough 
-    // check_organizer_size(pt);
-
-    for (int i = start; i >= end; i--){
-        int ent_i = pt->table.organizer[i];
-        pt->table.organizer[i + 1] = ent_i;
-    }
-
-    pt->table.org_tail++; 
-
-    return 0; 
- 
-}
-
-static int shift_organizer_left(piece_table* pt, int start, int end){
-    
-    #ifdef DEBUG_MOVEMENT
-        memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, "[Shift Left Details]: start: %d, end: %d\n",start, end);
-        log_to_file(&sk_logger, pbuf);
-    #endif 
-
-    // check that a shift does not go outside of the bounds of the organizer
-    // check_organizer_size(pt);
-
-    for (int i = start; i <= end; i++){
-        int ent_i = pt->table.organizer[i];
-        pt->table.organizer[i - 1] = ent_i;
-    }
-
-    pt->table.org_head--; 
-
-    return 0; 
-}
-
 static int create_end_insert(piece_table* pt, int very_end){
     
     int new_ent_pos = new_pt_insert_entry(pt);
