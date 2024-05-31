@@ -2,11 +2,11 @@
 
 static int shift_organizer_right(piece_table* pt, int start, int end){
 
-    if (LOG_MOVEMENT){
+    #ifdef DEBUG_MOVEMENT
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, "[Shift Right Details]: start: %d, end: %d\n",start, end);
         log_to_file(&sk_logger, pbuf);
-    }
+    #endif 
 
     // check that a shift does not go outside of the bounds of the organizer
     // by making sure the organizer is big enough 
@@ -25,11 +25,11 @@ static int shift_organizer_right(piece_table* pt, int start, int end){
 
 static int shift_organizer_left(piece_table* pt, int start, int end){
     
-    if (LOG_MOVEMENT){
+    #ifdef DEBUG_MOVEMENT
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, "[Shift Left Details]: start: %d, end: %d\n",start, end);
         log_to_file(&sk_logger, pbuf);
-    }
+    #endif 
 
     // check that a shift does not go outside of the bounds of the organizer
     // check_organizer_size(pt);
@@ -70,11 +70,11 @@ static int create_end_insert(piece_table* pt, int very_end){
     else 
         pt->table.org_head = next_pos;
 
-    if (LOG_INSERTS){
+    #ifdef DEBUG_INSERT
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, "[Ends insert]: ent pos: %d, org_new_pos: %d\n", new_ent_pos, next_pos);
         log_to_file(&sk_logger, pbuf);
-    }
+    #endif 
 
     return 0; 
 }
@@ -107,11 +107,11 @@ static int create_ent_end_insert(piece_table* pt){
         pt->curr_org_ptr = curr_org_ent + 1; 
     }
   
-    if (LOG_INSERTS){
+    #ifdef DEBUG_INSERT
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, "[Infront Insert]: ent pos: %d, dir: %d\n", new_ent_pos, pt->curr_org_ptr);
         log_to_file(&sk_logger, pbuf);
-    }
+    #endif 
     
     return 0; 
 }
@@ -156,12 +156,12 @@ static int create_middle_insert(piece_table* pt){
     
     size_t right_len = _ent->len; 
 
-    if (LOG_INSERTS){
+    #ifdef DEBUG_INSERT
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, "[Middle Insert - RIGHT] with start: %ld, len: %ld, org pos: %d, ent num: %d\n", 
             _ent->start, _ent->len, right_org_pos, right);
         log_to_file(&sk_logger, pbuf);
-    }
+    #endif 
 
     int left = new_pt_insert_entry(pt);
 
@@ -183,12 +183,12 @@ static int create_middle_insert(piece_table* pt){
     
     pt->table.organizer[left_org_pos] = left;
 
-    if (LOG_INSERTS){
+    #ifdef DEBUG_INSERT
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, "[Middle Insert - LEFT] with start: %ld, len: %ld, org pos: %d, ent num: %d\n", 
             _ent->start, _ent->len, left_org_pos, left);
         log_to_file(&sk_logger, pbuf);
-    }
+    #endif 
 
     int new_addition = new_pt_insert_entry(pt);
     pt->table.organizer[pt->curr_org_ptr] = new_addition; 
@@ -197,12 +197,12 @@ static int create_middle_insert(piece_table* pt){
     pt->curr_org_ptr = right_org_pos;
     
 
-    if (LOG_INSERTS){
+    #ifdef DEBUG_INSERT
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, "[Middle Insert] with - org_pos: %d, head: %d, tail: %d\n", 
             pt->curr_org_ptr, pt->table.org_head, pt->table.org_tail);
         log_to_file(&sk_logger, pbuf);
-   }
+    #endif 
 
     return 0; 
 }
@@ -248,7 +248,7 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in){
     adds->buf.text[adds->curr_pos] = user_in; 
     curr_ent->len++; 
 
-    if (LOG_INSERTS){
+    #ifdef DEBUG_INSERT
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, 
             "[INSERT {%c}] src: %s, ent_ins_ptr: %d, len: %ld, adds pos: %ld, chr_ptr: %ld\n", 
@@ -259,7 +259,7 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in){
             adds->curr_pos, 
             pt->curr_chr_ptr);
         log_to_file(&sk_logger, pbuf);
-    }
+    #endif 
 
     curs_pos->x++;
     adds->curr_pos++; 
@@ -267,7 +267,9 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in){
     if (pt->table.organizer[pt->table.org_tail] == pt->curr_ins_org)
         pt->curr_chr_ptr++;
     
-    log_piece_table_current(&sk_logger, pt);
+    #ifdef DEBUG_PT
+        log_piece_table_current(&sk_logger, pt);
+    #endif 
 
     // if (user_in == '\n'){
 

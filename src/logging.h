@@ -6,10 +6,10 @@
 #include <string.h>
 
 #define LOG_FILE "skillissue_debug.log"
-#define LOG_TOGGLE 1
+// #define LOG_TOGGLE 1
 
-#define LOG_INSERTS 1 
-#define LOG_MOVEMENT 1
+// #define LOG_INSERTS 1 
+// #define LOG_MOVEMENT 0
 
 typedef struct {
     char* fname; 

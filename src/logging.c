@@ -3,8 +3,6 @@
 
 int log_to_file(Logger* logger, char* msg){
 
-    if (!LOG_TOGGLE) return 0; 
-
     FILE* log_file = logger->fstream; 
     size_t msg_len = strlen(msg);
 
