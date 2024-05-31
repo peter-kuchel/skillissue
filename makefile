@@ -2,7 +2,12 @@ SRC = src
 BIN = bin
 
 CC = gcc
-CFLAGS = -Wall -Wextra -std=gnu99 -g
+
+CFLAGS = -Wall -Wextra -Wpedantic \
+         -std=c99 \
+		 -g
+CFLAGS += -O1
+
 NCURSES = -lncurses
 
 TARGET = skillissue
@@ -22,6 +27,7 @@ sk:
 	$(SRC)/logging.c \
 	$(SRC)/cursor.c \
 	$(SRC)/pt_insert.c \
+	$(SRC)/pt_delete.c \
 	$(SRC)/pt_realloc.c \
 	$(SRC)/pt_stacks.c \
 	$(NCURSES) \
