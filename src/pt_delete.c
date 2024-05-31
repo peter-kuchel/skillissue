@@ -51,7 +51,7 @@ int delete_in_middle(piece_table* pt){
     int new_del_ent = new_pt_insert_entry(pt);
     int new_split_ent = new_pt_insert_entry(pt);
 
-    int del_org_pos = pt->curr_org_ptr - 1;
+    // int del_org_pos = pt->curr_org_ptr - 1;
 
     pt_entry* del_ent = ENT_AT_POS_ENTRIES(pt, new_del_ent);
     pt_entry* split_ent = ENT_AT_POS_ENTRIES(pt, new_split_ent);
@@ -66,11 +66,26 @@ int delete_in_middle(piece_table* pt){
 
     split_ent->start = pt->curr_chr_ptr; 
     split_ent->src = ADD; 
-    split_len->len = (curr_ent->len) - del_ent->len; 
+    split_ent->len = (curr_ent->len) - del_ent->len; 
     
-    // shift 
+    // shift to make space for the del ent
+    int left_size = pt->curr_org_ptr - pt->table.org_head; 
+    int right_size = pt->table.org_tail = pt->curr_org_ptr; 
 
-    pt->curr_del_org = del_org_pos;
+    int going_left = (left_size < right_size);
+    int shift_start = going_left ? pt->table.org_head : pt->table.org_tail; 
+    int shift_end = going_left ? pt->curr_org_ptr - 1 : pt->curr_org_ptr;
+
+    if (going_left){
+        shift_organizer_left(pt, shift_start, shift_end);
+        pt->curr_del_org = pt->curr_org_ptr - 1;  
+    } else {
+        shift_organizer_right(pt, shift_start, shift_end);
+        pt->curr_del_org = pt->curr_org_ptr; 
+        pt->curr_org_ptr++; 
+    }
+
+    pt->table.organizer[pt->curr_del_org] = new_del_ent;
     pt->curr_del_ent = new_del_ent; 
 
     return 0; 
@@ -110,13 +125,16 @@ int delete_manager(piece_table* pt, cursor_pos* curs_pos){
         
 
     // else check current if delete ent has been exhuasted 
-    } else if (del_ent->len == 0){
+    } 
+    
+    del_ent = ENT_AT_POS_ENTRIES(pt, pt->curr_del_ent);
+    if (del_ent->len == 0){
 
     
     // else continue deleting from the current ent (if possible) and update necessary values
     }
         
-    del_ent = ENT_AT_POS_ENTRIES(pt, pt->curr_del_ent);
+    
     del_ent->len--; 
     pt->curr_chr_ptr--; 
     curs_pos->x--; 

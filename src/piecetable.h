@@ -110,10 +110,12 @@ typedef struct{
 #define CURR_ORG_ENT(pt_ptr) \
     ( pt_ptr->table.entries[pt_ptr->table.organizer[pt_ptr->curr_org_ptr]] ) 
 
-#define CURR_ORG_ENT_PTR(pt_ptr) ( &( CURR_ORG_ENT(pt_ptr) ) )
+#define CURR_ORG_ENT_PTR(pt_ptr) \
+    ( &( CURR_ORG_ENT(pt_ptr) ) )
 
 // get the underlying pt_buffer_t depending on the origin given
-#define GET_PT_BUFF(pt_ptr, src) ( src == ORGN ? &(pt_ptr->original) : &(pt_ptr->addition.buf) )
+#define GET_PT_BUFF(pt_ptr, src) \
+    ( src == ORGN ? &(pt_ptr->original) : &(pt_ptr->addition.buf) )
 
 #define CURR_PTR_AT_CHR(pt_ptr) \
     ( ((GET_PT_BUFF(pt_ptr, (CURR_ORG_ENT_PTR(pt_ptr))->src ))->text )[pt_ptr->curr_chr_ptr] )
