@@ -79,7 +79,7 @@ typedef struct{
 
     // int         insert_ready;
 
-    int         curr_ins_org;                               // current ptr to position in the organizer being inserted to
+    int         curr_ins_ent;                               // current ptr to position in the organizer being inserted to
 
     int         curr_del_org;                               // current ptr to position in the organizer being deleted from
     int         curr_del_ent;                               // current ptr to position in entries being deleted from 
@@ -102,7 +102,7 @@ typedef struct{
 
 // get the current insert entry 
 #define INSERT_ENT_PTR(pt_ptr) \
-    (  ENT_AT_POS_ENTRIES(pt_ptr, pt_ptr->curr_ins_org) )
+    (  ENT_AT_POS_ENTRIES(pt_ptr, pt_ptr->curr_ins_ent) )
 
 #define ENT_POS_FROM_ORG_PTR(pt_ptr) \
     ( pt_ptr->table.organizer[pt_ptr->curr_org_ptr] )

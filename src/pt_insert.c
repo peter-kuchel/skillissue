@@ -13,7 +13,7 @@ static int create_end_insert(piece_table* pt, int very_end){
 
     // update head or tail depending on next_pos
     pt->table.organizer[next_pos] = new_ent_pos; 
-    pt->curr_ins_org = new_ent_pos;
+    pt->curr_ins_ent = new_ent_pos;
 
     if (very_end){
         pt->curr_chr_ptr = pt->addition.curr_pos; // point to where the char will be added
@@ -54,12 +54,12 @@ static int create_ent_end_insert(piece_table* pt){
     if (going_left){
         shift_organizer_left(pt, shift_start, shift_end);
         pt->table.organizer[pt->curr_org_ptr - 1] = new_ent_pos;
-        pt->curr_ins_org = new_ent_pos;
+        pt->curr_ins_ent = new_ent_pos;
         // pt->curr_org_ptr = curr_org_ent;     // stays the same 
     } else{ 
         shift_organizer_right(pt, shift_start, shift_end);
         pt->table.organizer[curr_org_ent] = new_ent_pos;
-        pt->curr_ins_org = new_ent_pos;
+        pt->curr_ins_ent = new_ent_pos;
         pt->curr_org_ptr = curr_org_ent + 1; 
     }
   
@@ -148,7 +148,7 @@ static int create_middle_insert(piece_table* pt){
 
     int new_addition = new_pt_insert_entry(pt);
     pt->table.organizer[pt->curr_org_ptr] = new_addition; 
-    pt->curr_ins_org = new_addition;
+    pt->curr_ins_ent = new_addition;
 
     pt->curr_org_ptr = right_org_pos;
     
@@ -167,7 +167,7 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in){
 
     pt_entry* curr_ent;
     // create the entries needed to handle the insert if they haven't been made already
-    if ( pt->curr_ins_org < 0 ){
+    if ( pt->curr_ins_ent < 0 ){
         
         int ent_ptr = pt->curr_org_ptr; 
         size_t chr_ptr = pt->curr_chr_ptr; 
@@ -220,7 +220,7 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in){
     curs_pos->x++;
     adds->curr_pos++; 
 
-    if (pt->table.organizer[pt->table.org_tail] == pt->curr_ins_org)
+    if (pt->table.organizer[pt->table.org_tail] == pt->curr_ins_ent)
         pt->curr_chr_ptr++;
     
     #ifdef DEBUG_PT

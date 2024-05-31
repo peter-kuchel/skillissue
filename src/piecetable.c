@@ -77,8 +77,9 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
    pt->table.org_num++;  
 
    pt->curr_org_ptr = middle;
-   pt->curr_ins_org = -1;
+   pt->curr_ins_ent = -1;
    pt->curr_del_ent = -1;
+   pt->curr_del_org = -1;
 
    // pt->table.ent_num++; 
 
