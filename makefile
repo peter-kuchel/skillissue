@@ -26,8 +26,8 @@ sk:
 	$(SRC)/skillissue.c \
 	$(SRC)/logging.c \
 	$(SRC)/cursor.c \
-	$(SRC)/pt_insert.c \
 	$(SRC)/pt_delete.c \
+	$(SRC)/pt_insert.c \
 	$(SRC)/pt_realloc.c \
 	$(SRC)/pt_stacks.c \
 	$(NCURSES) \

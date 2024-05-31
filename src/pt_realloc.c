@@ -77,3 +77,18 @@ void check_pt_stack_size(pt_stack_t* pt_stack){
         pt_stack->cap  = new_cap;
     }
 }
+
+int new_pt_insert_entry(piece_table* pt){
+    // check if entries need to be reallocd 
+    check_entries_size(pt);
+
+    pt->table.ent_num++; 
+    int new_ent_pos = pt->table.ent_num; 
+    
+    pt_entry* new_single_entry = ENT_AT_POS_ENTRIES(pt, new_ent_pos);
+    new_single_entry->src = ADD;
+    new_single_entry->start = pt->addition.curr_pos; 
+    new_single_entry->len = 0; 
+
+    return new_ent_pos; 
+}

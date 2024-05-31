@@ -16,5 +16,6 @@ void check_organizer_size(piece_table* pt);
 void check_entries_size(piece_table* pt);
 void check_additions_size(add_buffer_t* adds);
 void check_pt_stack_size(pt_stack_t* stack);
+int new_pt_insert_entry(piece_table* pt);
 
 #endif

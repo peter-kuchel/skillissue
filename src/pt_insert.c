@@ -44,21 +44,6 @@ static int shift_organizer_left(piece_table* pt, int start, int end){
     return 0; 
 }
 
-static int new_pt_insert_entry(piece_table* pt){
-    // check if entries need to be reallocd 
-    check_entries_size(pt);
-
-    pt->table.ent_num++; 
-    int new_ent_pos = pt->table.ent_num; 
-    
-    pt_entry* new_single_entry = ENT_AT_POS_ENTRIES(pt, new_ent_pos);
-    new_single_entry->src = ADD;
-    new_single_entry->start = pt->addition.curr_pos; 
-    new_single_entry->len = 0; 
-
-    return new_ent_pos; 
-}
-
 static int create_end_insert(piece_table* pt, int very_end){
     
     int new_ent_pos = new_pt_insert_entry(pt);
@@ -250,7 +235,7 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in){
             create_middle_insert(pt);
         }   
 
-        pt->insert_ready++;
+        // pt->insert_ready++;
     }
 
     curr_ent = INSERT_ENT_PTR(pt);

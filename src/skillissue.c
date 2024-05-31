@@ -12,10 +12,9 @@ static termw_info tinfo;
 void save_file_writes(FILE* f, piece_table* pt){
     // put together the piece table 
 
-    printf("%p %p", f, pt);
+    printf("%p %p", (void*)f, (void*)pt);
 
     // use freopen to clear the contents 
-
 
 }
 
@@ -24,20 +23,19 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
     /* handle user finishing up insertion mode*/
     if (user_in == USR_MODE_ESC){
         
-        // if (pt->insert_ready) pt->insert_ready--;
         pt->curr_ins_org = -1;
+        pt->curr_del_ent = -1; 
+        pt->curr_del_org = -1; 
         umode->mode &= 0;
          
     /* handle when backspace is pressed */
     } else if (user_in == 127) {
-        
+        delete_manager(pt, curs_pos);
     
     /* insert char into additions and update the entry*/
     } else {
-
         insert_manager(pt, curs_pos, user_in);
     }
-
 
     return 0; 
 }

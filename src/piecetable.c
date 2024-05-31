@@ -21,7 +21,12 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
    char* org_buf = (char*)malloc(f_size * sizeof(char));
    char* add_buf = (char*)malloc(STARTING_ADD_BUF_SIZE * sizeof(char));
 
-   fread(org_buf, sizeof(char), f_size, f);
+   size_t bytes_read = fread(org_buf, sizeof(char), f_size, f);
+
+   if (bytes_read < f_size){
+      perror("Something went wrong reading from the file"); 
+      return -1;
+   }
 
    if (ferror(f) != 0) return -1;
 
@@ -73,6 +78,7 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
 
    pt->curr_org_ptr = middle;
    pt->curr_ins_org = -1;
+   pt->curr_del_ent = -1;
 
    // pt->table.ent_num++; 
 
