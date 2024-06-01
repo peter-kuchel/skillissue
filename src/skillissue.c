@@ -23,17 +23,29 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
     /* handle user finishing up insertion mode*/
     if (user_in == USR_MODE_ESC){
         
-        pt->curr_ins_org = -1;
+        pt->curr_ins_ent = -1;
         pt->curr_del_ent = -1; 
         pt->curr_del_org = -1; 
         umode->mode &= 0;
-         
-    /* handle when backspace is pressed */
-    } else if (user_in == 127) {
+    
+     /* handle deletion */
+    } else if (user_in == USR_BACKSPACE) {
+
+        if (pt->curr_ins_ent > 0){
+            pt->curr_del_ent = pt->curr_ins_ent;
+            pt->curr_ins_ent = -1;
+        }
+            
         delete_manager(pt, curs_pos);
     
     /* insert char into additions and update the entry*/
     } else {
+
+        if (pt->curr_del_ent > 0){
+            pt->curr_ins_ent = pt->curr_del_ent; 
+            pt->curr_del_ent = -1; 
+        }
+            
         insert_manager(pt, curs_pos, user_in);
     }
 

@@ -21,6 +21,7 @@ typedef struct {
 
 
 #define USR_MODE_ESC  27
+#define USR_BACKSPACE 127
 // #define USER_DEL      
 
 #define USR_MODE_INS  0x1

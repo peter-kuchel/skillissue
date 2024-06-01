@@ -5,10 +5,10 @@ CFLAGS = -Wall -Wextra -Wpedantic \
 		 -g \
 		 -O2
 
-DEBUG_INSERT_TOGGLE = 0
+DEBUG_INSERT_TOGGLE = 1
 DEBUG_DELETE_TOGGLE = 1
-DEBUG_MOVEMENT_TOGGLE = 0 
-DEBUG_PT_TOGGLE = 0
+DEBUG_MOVEMENT_TOGGLE = 1
+DEBUG_PT_TOGGLE = 1
 DEBUG_GENERAL_TOGGLE = 1
 
 ifeq ($(DEBUG_INSERT_TOGGLE), 1)
@@ -36,7 +36,6 @@ NCURSES = -lncurses
 SRC = src
 BIN = bin
 TARGET = skillissue
-
 
 all: mk-bin sk 
 

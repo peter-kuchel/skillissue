@@ -210,7 +210,7 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in){
             "[INSERT {%c}] src: %s, ent_ins_ptr: %d, len: %ld, adds pos: %ld, chr_ptr: %ld\n", 
             adds->buf.text[adds->curr_pos],
             curr_ent->src == ORGN ? "ORG" : "ADD",
-            pt->curr_ins_org, 
+            pt->curr_ins_ent, 
             curr_ent->len, 
             adds->curr_pos, 
             pt->curr_chr_ptr);
