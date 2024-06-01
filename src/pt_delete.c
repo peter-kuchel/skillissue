@@ -205,8 +205,9 @@ int delete_manager(piece_table* pt, cursor_pos* curs_pos){
         log_to_file(&sk_logger, pbuf); 
     #endif 
 
+    
+    // pt->curr_chr_ptr++; 
     del_ent->len--; 
-    pt->curr_chr_ptr--; 
     curs_pos->x--; 
 
     #ifdef DEBUG_DELETE
