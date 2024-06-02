@@ -177,9 +177,12 @@ static int delete_curr_exhuasted(piece_table* pt){
     } else {
         shift_organizer_left(pt, shift_start, shift_end);
         pt->table.org_tail--; 
-        replacement_org = pt->curr_org_ptr - 1; // whatever is left of the curr_org_ptr 
+        
         pt->curr_del_org--;
         pt->curr_org_ptr--;
+
+        replacement_org = pt->curr_org_ptr - 1; // whatever is left of the curr_org_ptr 
+        
     }
 
     // reclaim the empty del ent ?
@@ -210,7 +213,13 @@ static int delete_curr_exhuasted(piece_table* pt){
     return 0; 
 }
 
-int delete_manager(piece_table* pt, cursor_pos* curs_pos){
+int delete_manager(piece_table* pt, cursor_pos* curs_pos, int key_pressed){
+
+    // handle delete key presses 
+    if (key_pressed == KEY_DC){
+
+        return 0; 
+    }
 
     pt_entry* del_ent; 
     // delete setup - handle the 2 delete cases with the setup first 
