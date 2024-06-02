@@ -95,7 +95,7 @@ int new_pt_insert_entry(piece_table* pt){
 
 int shift_organizer_right(piece_table* pt, int start, int end){
 
-    #ifdef DEBUG_MOVEMENT
+    #ifdef DEBUG_MOVE
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, "[Shift Right Details]: start: %d, end: %d\n",start, end);
         log_to_file(&sk_logger, pbuf);
@@ -110,7 +110,7 @@ int shift_organizer_right(piece_table* pt, int start, int end){
         pt->table.organizer[i + 1] = ent_i;
     }
 
-    pt->table.org_tail++; 
+    // pt->table.org_tail++; 
 
     return 0; 
  
@@ -118,7 +118,7 @@ int shift_organizer_right(piece_table* pt, int start, int end){
 
 int shift_organizer_left(piece_table* pt, int start, int end){
     
-    #ifdef DEBUG_MOVEMENT
+    #ifdef DEBUG_MOVE
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, "[Shift Left Details]: start: %d, end: %d\n",start, end);
         log_to_file(&sk_logger, pbuf);
@@ -132,7 +132,7 @@ int shift_organizer_left(piece_table* pt, int start, int end){
         pt->table.organizer[i - 1] = ent_i;
     }
 
-    pt->table.org_head--; 
+    // pt->table.org_head--; 
 
     return 0; 
 }

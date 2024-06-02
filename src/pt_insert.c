@@ -14,6 +14,7 @@ static int create_end_insert(piece_table* pt, int very_end){
     // update head or tail depending on next_pos
     pt->table.organizer[next_pos] = new_ent_pos; 
     pt->curr_ins_ent = new_ent_pos;
+    pt->curr_ins_org = next_pos;
 
     if (very_end){
         pt->curr_chr_ptr = pt->addition.curr_pos; // point to where the char will be added
@@ -53,13 +54,17 @@ static int create_ent_end_insert(piece_table* pt){
 
     if (going_left){
         shift_organizer_left(pt, shift_start, shift_end);
-        pt->table.organizer[pt->curr_org_ptr - 1] = new_ent_pos;
+        pt->table.org_head--; 
+        pt->curr_ins_org = pt->curr_org_ptr - 1;
+        pt->table.organizer[pt->curr_ins_org] = new_ent_pos;
         pt->curr_ins_ent = new_ent_pos;
         // pt->curr_org_ptr = curr_org_ent;     // stays the same 
     } else{ 
         shift_organizer_right(pt, shift_start, shift_end);
+        pt->table.org_tail++; 
         pt->table.organizer[curr_org_ent] = new_ent_pos;
         pt->curr_ins_ent = new_ent_pos;
+        pt->curr_ins_org = curr_org_ent;
         pt->curr_org_ptr = curr_org_ent + 1; 
     }
   
@@ -102,11 +107,12 @@ static int create_middle_insert(piece_table* pt){
     shift_start = pt->table.org_tail;
     shift_end = right_org_pos; 
 
-    if (pt->table.org_tail == pt->curr_org_ptr)
+    if (pt->table.org_tail == pt->curr_org_ptr){
         pt->table.org_tail = right_org_pos;
-    
-    else
+    }else {
         shift_organizer_right(pt, shift_start, shift_end);
+        pt->table.org_tail++; 
+    }
     
     pt->table.organizer[right_org_pos] = right; 
     
@@ -131,11 +137,13 @@ static int create_middle_insert(piece_table* pt){
     shift_start = pt->table.org_head; 
     shift_end = left_org_pos; 
 
-    if (pt->table.org_head == curr_org_ptr)
+    if (pt->table.org_head == curr_org_ptr){
         pt->table.org_head = left_org_pos;
-    
-    else
+    } else{
         shift_organizer_left(pt, shift_start, shift_end);
+        pt->table.org_head--; 
+    }
+        
     
     pt->table.organizer[left_org_pos] = left;
 
@@ -147,9 +155,10 @@ static int create_middle_insert(piece_table* pt){
     #endif 
 
     int new_addition = new_pt_insert_entry(pt);
-    pt->table.organizer[pt->curr_org_ptr] = new_addition; 
+    pt->curr_ins_org = pt->curr_org_ptr;
+    pt->table.organizer[pt->curr_ins_org] = new_addition; 
     pt->curr_ins_ent = new_addition;
-
+     
     pt->curr_org_ptr = right_org_pos;
     
 
