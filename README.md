@@ -2,6 +2,8 @@
 
 An easy to use cli text-editor for the vscode soy-devs like myself who don't know how to type properly on a keyboard, and can't exit from Vim.
 
+*NOTE* This software is unfinished, please don't have any high expectations. See TODO.md for upcoming changes
+
 # Requirements: 
 
 
