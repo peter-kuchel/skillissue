@@ -1,5 +1,24 @@
 #include "pt_insert.h"
 
+static int create_from_empty(piece_table* pt){
+
+    int new_ent_pos = new_pt_insert_entry(pt);
+
+    push_pt_stack(&(pt->undo), pt->table.organizer[pt->curr_org_ptr]);
+
+    pt->table.organizer[pt->curr_org_ptr] = new_ent_pos; 
+    pt->curr_ins_ent = new_ent_pos; 
+    pt->curr_ins_org = pt->curr_org_ptr;
+
+    #ifdef DEBUG_INSERT
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "[Empty insert]: ent pos: %d, org pos: %d\n", new_ent_pos, pt->curr_org_ptr);
+        log_to_file(&sk_logger, pbuf);
+    #endif 
+    
+    return 0; 
+}
+
 static int create_end_insert(piece_table* pt, int very_end){
     
     int new_ent_pos = new_pt_insert_entry(pt);
@@ -188,7 +207,11 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in){
 
         int at_ent_start = pt->curr_chr_ptr == curr_ent->start; 
 
-        if ( very_end || very_beginning ){
+        /* handle case where only ent is one with len == 0 */
+        if ( (very_end || very_beginning) && curr_ent->len == 0){
+            create_from_empty(pt);
+
+        } else if ( very_end || very_beginning ){
             create_end_insert(pt, very_end);
         
         /* handle case where curr_chr_ptr is at the end of an existing entry */
