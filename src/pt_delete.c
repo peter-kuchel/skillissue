@@ -1,7 +1,7 @@
 #include "pt_delete.h"
 
 
-int delete_starting_from_end(piece_table* pt){
+static int delete_starting_from_end(piece_table* pt){
 
     int new_del_ent = new_pt_insert_entry(pt);
 
@@ -32,28 +32,29 @@ int delete_starting_from_end(piece_table* pt){
     return 0; 
 }
 
-int delete_from_side(piece_table* pt){
+static int delete_from_side(piece_table* pt){
 
-    int new_pt_entry = new_pt_insert_entry(pt);
+    int new_del_ent = new_pt_insert_entry(pt);
     int left_pos = pt->curr_org_ptr - 1;
     int left_ent_pos = pt->table.organizer[left_pos];
     
     pt_entry* left_ent = ENT_AT_POS_ENTRIES(pt, left_ent_pos);
-    pt_entry* ent = ENT_AT_POS_ENTRIES(pt, new_pt_entry);
+    pt_entry* ent = ENT_AT_POS_ENTRIES(pt, new_del_ent);
 
     ent->len = left_ent->len; 
     ent->src = left_ent->src; 
     ent->start = left_ent->start; 
 
     pt_stack_t* _undo = &(pt->undo);
-    push_pt_stack(_undo, left_pos);
+    push_pt_stack(_undo, left_ent_pos);
 
     pt->curr_del_org = left_pos; 
-    pt->curr_del_ent = new_pt_entry; 
+    pt->table.organizer[pt->curr_del_org] = new_del_ent;
+    pt->curr_del_ent = new_del_ent; 
 
     #ifdef DEBUG_DELETE 
         memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, "[Delete - Side]: ent: %d, ent_org:%d chr_ptr: %ld\n", 
+        sprintf(pbuf, "[Delete - Side]: del_ent: %d, del_org: %d chr_ptr: %ld\n", 
             pt->curr_del_ent, pt->curr_del_org, pt->curr_chr_ptr);
         log_to_file(&sk_logger, pbuf); 
     #endif 
@@ -61,7 +62,7 @@ int delete_from_side(piece_table* pt){
     return 0; 
 }
 
-int delete_in_middle(piece_table* pt){
+static int delete_in_middle(piece_table* pt){
     
     int new_del_ent = new_pt_insert_entry(pt);
     int new_split_ent = new_pt_insert_entry(pt);
@@ -126,7 +127,7 @@ int delete_in_middle(piece_table* pt){
     return 0; 
 }
 
-int delete_curr_exhuasted(piece_table* pt){
+static int delete_curr_exhuasted(piece_table* pt){
     #ifdef DEBUG_DELETE
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, "[Delete]: Exhuasted current delete ent\n");
@@ -167,6 +168,8 @@ int delete_curr_exhuasted(piece_table* pt){
     int shift_end = going_right ? pt->table.org_head : pt->table.org_tail; 
     int replacement_org; 
 
+    push_pt_stack(&(pt->undo), pt->table.organizer[pt->curr_del_org]);
+
     if (going_right){
         shift_organizer_right(pt, shift_start, shift_end);
         pt->table.org_head++; 
@@ -176,9 +179,12 @@ int delete_curr_exhuasted(piece_table* pt){
         pt->table.org_tail--; 
         replacement_org = pt->curr_org_ptr - 1; // whatever is left of the curr_org_ptr 
         pt->curr_del_org--;
+        pt->curr_org_ptr--;
     }
 
     // reclaim the empty del ent ?
+
+    
 
     #ifdef DEBUG_DELETE 
         memset(pbuf, 0, PBUF_SIZE);
@@ -196,7 +202,7 @@ int delete_curr_exhuasted(piece_table* pt){
     new_del_ent->len = curr_ent->len; 
     new_del_ent->start = curr_ent->start; 
 
-    push_pt_stack(&(pt->undo), pt->table.organizer[replacement_org]);
+    // pt->curr_chr_ptr = (new_del_ent->len + new_del_ent->start) - 1; 
 
     pt->table.organizer[pt->curr_del_org] = new_del_pos; 
     pt->curr_del_ent = new_del_pos;
@@ -275,7 +281,9 @@ int delete_manager(piece_table* pt, cursor_pos* curs_pos){
     #endif 
 
     
-    // pt->curr_chr_ptr++; 
+    if (pt->curr_del_org == pt->table.org_tail)
+        pt->curr_chr_ptr--;
+
     del_ent->len--; 
     curs_pos->x--; 
 
