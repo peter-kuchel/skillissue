@@ -43,8 +43,13 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
             }
 
             if (chr_ptr + 1 == upper_bound){
-                pt->curr_org_ptr++; 
-                ent = CURR_ORG_ENT_PTR(pt);
+                // pt->curr_org_ptr++; 
+                // ent = CURR_ORG_ENT_PTR(pt);
+
+                do {
+                    pt->curr_org_ptr++; 
+                    ent = CURR_ORG_ENT_PTR(pt);
+                } while (ent->len == 0);
 
                 pt->curr_chr_ptr = ent->start;
 
@@ -118,8 +123,13 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
             }
             
             if (chr_ptr == lower_bound){
-                pt->curr_org_ptr--; 
-                ent = CURR_ORG_ENT_PTR(pt);
+                // pt->curr_org_ptr--; 
+                // ent = CURR_ORG_ENT_PTR(pt);
+
+                do {
+                    pt->curr_org_ptr--; 
+                    ent = CURR_ORG_ENT_PTR(pt);
+                } while (ent->len == 0);
 
                 pt->curr_chr_ptr = (ent->start + ent->len); 
 
