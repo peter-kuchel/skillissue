@@ -28,8 +28,8 @@ void exit_insertion_mode(piece_table* pt, usermode* umode){
 
 void swap_ins_with_del(piece_table* pt){
     if (pt->curr_ins_ent > 0){
-        pt->curr_del_ent = pt->curr_ins_ent;
-        pt->curr_del_org = pt->curr_ins_org; 
+        // pt->curr_del_ent = pt->curr_ins_ent;
+        // pt->curr_del_org = pt->curr_ins_org; 
         pt->curr_ins_ent = -1;
         pt->curr_ins_org = -1;
         }
@@ -55,11 +55,11 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
         #ifdef DEBUG_DELETE 
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(pbuf, "[Delete Pressed]: which: %s, char val: %d\n", 
-                USR_BACKSPACE ? "Backspace" : "Delete Key", user_in);
+                user_in == KEY_BACKSPACE ? "Backspace" : "Delete Key", user_in);
             log_to_file(&sk_logger, pbuf);
         #endif  
         swap_ins_with_del(pt);
-        delete_manager(pt, curs_pos);
+        delete_manager(pt, curs_pos, user_in);
     
     /* insert char into additions and update the entry*/
     } else {
