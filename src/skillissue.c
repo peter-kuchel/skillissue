@@ -36,28 +36,36 @@ void swap_ins_with_del(piece_table* pt){
 }
 void swap_del_with_ins(piece_table* pt){
     if (pt->curr_del_ent > 0){
-        pt->curr_ins_ent = pt->curr_del_ent; 
-        pt->curr_ins_org = pt->curr_del_org;
+        // pt->curr_ins_ent = pt->curr_del_ent; 
+        // pt->curr_ins_org = pt->curr_del_org;
         pt->curr_del_ent = -1; 
         pt->curr_del_org = -1;
     }
 }
 
-int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos, char user_in){
+int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos, int user_in){
 
     /* handle user finishing up insertion mode*/
     if (user_in == USR_MODE_ESC){
         exit_insertion_mode(pt, umode);
         
      /* handle deletion */
-    } else if (user_in == USR_BACKSPACE) {
+    } else if (user_in == KEY_BACKSPACE || user_in == KEY_DC) {
+
+        #ifdef DEBUG_DELETE 
+            memset(pbuf, 0, PBUF_SIZE);
+            sprintf(pbuf, "[Delete Pressed]: which: %s, char val: %d\n", 
+                USR_BACKSPACE ? "Backspace" : "Delete Key", user_in);
+            log_to_file(&sk_logger, pbuf);
+        #endif  
         swap_ins_with_del(pt);
         delete_manager(pt, curs_pos);
     
     /* insert char into additions and update the entry*/
     } else {
         swap_del_with_ins(pt);    
-        insert_manager(pt, curs_pos, user_in);
+        char _usr_in = (char)user_in;
+        insert_manager(pt, curs_pos, _usr_in);
     }
 
     return 0; 
@@ -103,7 +111,7 @@ int edit_file(char* fn){
 
     log_piece_table_current(&sk_logger, &pt);
 
-    char user_in;
+    int user_in;
     // int 
     // pt_entry ent; 
     do {
@@ -111,7 +119,12 @@ int edit_file(char* fn){
         /* render piece table to output */
         
         user_in = getch(); 
-        printw("user in is: %c", user_in);
+        #ifdef DEBUG_GEN 
+            memset(pbuf, 0, PBUF_SIZE);
+            sprintf(pbuf, "[User In]: %d\n", user_in);
+            log_to_file(&sk_logger, pbuf);
+        #endif  
+        // printw("user in is: %c", user_in);
         int insert_res; 
 
         /* determine the mode first if one is active */
@@ -209,6 +222,9 @@ void run_sk(int argc, char** argv){
 
         // get size of the terminal 
         getmaxyx(stdscr, tinfo.rows, tinfo.cols);
+
+        // enable getting int from getch 
+        keypad(stdscr, TRUE);   
 
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, "[Screen Size] rows: %d, cols: %d\n", tinfo.rows, tinfo.cols);
