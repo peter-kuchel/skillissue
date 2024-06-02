@@ -38,16 +38,10 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
    pt->addition.buf.text = add_buf; 
    pt->addition.buf.size = STARTING_ADD_BUF_SIZE; 
 
-   int* _orger = (int*)malloc(sizeof(int) * DEFAULT_PT_ENT_SIZE);
-   pt->table.organizer = _orger; 
-   pt->table.ent_cap = DEFAULT_PT_ENT_SIZE;
-   pt->table.org_midd = (pt->table.ent_cap >> 1) - 1; 
-
    pt_entry*  table_ents = (pt_entry*)malloc( sizeof(pt_entry) * DEFAULT_PT_ENT_SIZE);
-   pt->table.entries = table_ents; 
-   pt->table.ent_cap = DEFAULT_PT_ENT_SIZE;
+   pt->entries = table_ents; 
+   pt->ent_cap = DEFAULT_PT_ENT_SIZE;
 
-   // pt_entry** redo_ents = (pt_entry**)malloc( sizeof(pt_entry*) * DEFAULT_PT_ENT_SIZE);
    int* redo_ents = (int*)malloc( sizeof(int) * DEFAULT_PT_ENT_SIZE);
    pt->redo.stack = redo_ents;
    pt->redo.cap = DEFAULT_PT_ENT_SIZE;
@@ -62,27 +56,22 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
 
    // add the first element - which is the original buffer 
 
-   int entry_pos = pt->table.ent_num;       // will be 0 because of memset
+   int first_entry = pt->ent_num;       // will be 0 because of memset
 
-   pt_entry* org_entry = &(pt->table.entries[entry_pos]);
+   pt_entry* orgn_entry = &(pt->entries[first_entry]);
 
-   org_entry->src = ORGN; 
-   org_entry->start = 0; 
-   org_entry->len = f_size;
+   orgn_entry->src = ORGN; 
+   orgn_entry->start = 0; 
+   orgn_entry->len = f_size;
 
-   int middle = pt->table.org_midd; 
-   pt->table.organizer[middle] = entry_pos;
-   pt->table.org_head = middle; 
-   pt->table.org_tail = middle; 
-   pt->table.org_num++;  
+   orgn_entry->left = NULL_ENT;
+   orgn_entry->right = NULL_ENT; 
 
-   pt->curr_org_ptr = middle;
-   pt->curr_ins_ent = -1;
-   pt->curr_del_ent = -1;
-   pt->curr_del_org = -1;
-   pt->curr_ins_org = -1;
+   pt->ent_head = first_entry; 
+   pt->ent_tail = first_entry;
 
-   // pt->table.ent_num++; 
+   pt->curr_ins_ent = NULL_ENT;
+   pt->curr_del_ent = NULL_ENT;
 
    return 0; 
 
@@ -93,8 +82,7 @@ void empty_piece_table(piece_table* pt){
    safeFree(pt->original.text);
    safeFree(pt->addition.buf.text);
 
-   safeFree(pt->table.organizer);
-   safeFree(pt->table.entries); 
+   safeFree(pt->entries); 
 
    safeFree(pt->redo.stack);
    safeFree(pt->undo.stack);
@@ -106,7 +94,7 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
 
    // if (!LOG_TOGGLE) return; 
    
-   pt_table_t* tb = &(pt->table);
+   // pt_table_t* tb = &(pt->table);
    
    int pbuf_i; 
    
@@ -131,41 +119,78 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
    log_to_file(logger, "]\n");
 
    memset(pbuf, 0, PBUF_SIZE); 
-   sprintf(pbuf, "\ncurr_chr_ptr: %ld\ncurr_org_ptr: %d\n\ncurr_ins_org: %d\ncurr_ins_ent: %d\n\ncurr_del_org: %d\ncurr_del_ent: %d\n",
-               pt->curr_chr_ptr, pt->curr_org_ptr, pt->curr_ins_org, pt->curr_ins_ent,
-               pt->curr_del_org, pt->curr_del_ent
+   sprintf(pbuf, "\nhead: %d, tail: %d, curr_ent_ptr: %d, del_ent: %d, ins_ent: %d, chr_ptr:%ld\n",
+               pt->ent_head, pt->ent_tail, pt->curr_ent_ptr, pt->curr_del_ent, pt->curr_ins_ent,
+               pt->curr_chr_ptr
    );
 
    log_to_file(logger, pbuf);
 
-   memset(pbuf, 0, PBUF_SIZE);
-   sprintf(pbuf, "\norg_head: %d\norg_tail: %d\n", tb->org_head, tb->org_tail);
-   log_to_file(logger, pbuf);
+   // memset(pbuf, 0, PBUF_SIZE);
+   // sprintf(pbuf, "\norg_head: %d\norg_tail: %d\n", tb->org_head, tb->org_tail);
+   // log_to_file(logger, pbuf);
 
-   int i; 
-   int _tail = tb->org_tail;
+   int i = 0; 
+   int _ent = pt->ent_head; 
+   // int _tail = tb->org_tail;
    log_to_file(logger, "Current piece table state:\n");
-   for (i = tb->org_head; i <= _tail; i++){
-      memset(pbuf, 0, PBUF_SIZE);
-      pt_entry* ent = ENT_PTR_AT_POS_IN_ORG(pt, i);
 
-      sprintf(pbuf, "(%s, %ld, %ld) @ [%d]\n", 
-                     ent->src == ORGN ? "ORG" : "ADD", ent->start, ent->len, i);
+   pt_entry* ent; 
+
+   int all_ent_ptrs[pt->ent_num];
+   do {
+      memset(pbuf, 0, PBUF_SIZE);
+
+      ent = &(pt->entries[_ent]);
+      sprintf(pbuf, "( %d | %s, %ld, %ld | %d ) @ [%d]\n",
+               ent->left, 
+               ent->src == ORGN ? "ORG": "ADD",
+               ent->start,
+               ent->len, 
+               ent->right, _ent  
+      );
+      log_to_file(logger, pbuf);
+
+      all_ent_ptrs[i] = _ent; 
+      i++; 
+      _ent = ent->right;
+      
+   }while (_ent != NULL_ENT);
+
+
+   log_to_file(logger, "\nCurrent organizer state:\n[");
+   for (i = 0; i < pt->ent_num; i++){
+      memset(pbuf, 0, PBUF_SIZE);
+      if (all_ent_ptrs[i] == pt->ent_tail) 
+         sprintf(pbuf, "%d", all_ent_ptrs[i]);
+      else 
+         sprintf(pbuf, "%d, ", all_ent_ptrs[i]);
+
       log_to_file(logger, pbuf);
    }
+
+   log_to_file(logger, "]\n");
+   // for (i = tb->org_head; i <= _tail; i++){
+   //    memset(pbuf, 0, PBUF_SIZE);
+   //    pt_entry* ent = ENT_PTR_AT_POS_IN_ORG(pt, i);
+
+   //    sprintf(pbuf, "(%s, %ld, %ld) @ [%d]\n", 
+   //                   ent->src == ORGN ? "ORG" : "ADD", ent->start, ent->len, i);
+   //    log_to_file(logger, pbuf);
+   // }
 
    
-   log_to_file(logger, "Current organizer state:\n[");
-   for (i = tb->org_head; i <= tb->org_tail; i++){
-      memset(pbuf, 0, PBUF_SIZE);
-      if (i == tb->org_tail) 
-         sprintf(pbuf, "%d", tb->organizer[i]);
-      else 
-         sprintf(pbuf, "%d, ", tb->organizer[i]);
+   // log_to_file(logger, "Current organizer state:\n[");
+   // for (i = tb->org_head; i <= tb->org_tail; i++){
+   //    memset(pbuf, 0, PBUF_SIZE);
+   //    if (i == tb->org_tail) 
+   //       sprintf(pbuf, "%d", tb->organizer[i]);
+   //    else 
+   //       sprintf(pbuf, "%d, ", tb->organizer[i]);
 
-      log_to_file(logger, pbuf);
-   }
-   log_to_file(logger, "]\n");
+   //    log_to_file(logger, pbuf);
+   // }
+   // log_to_file(logger, "]\n");
 
    log_to_file(logger, "Current undo stack state:\n[");
    for (i = 0; i < pt->undo.ptr; i++){

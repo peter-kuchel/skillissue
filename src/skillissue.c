@@ -19,28 +19,11 @@ void save_file_writes(FILE* f, piece_table* pt){
 }
 
 void exit_insertion_mode(piece_table* pt, usermode* umode){
-    pt->curr_ins_ent = -1;
-    pt->curr_ins_org = -1;
-    pt->curr_del_ent = -1; 
-    pt->curr_del_org = -1; 
+    pt->curr_ins_ent = NULL_ENT;
+    // pt->curr_ins_org = -1;
+    pt->curr_del_ent = NULL_ENT; 
+    // pt->curr_del_org = -1; 
     umode->mode &= 0;
-}
-
-void swap_ins_with_del(piece_table* pt){
-    if (pt->curr_ins_ent > 0){
-        // pt->curr_del_ent = pt->curr_ins_ent;
-        // pt->curr_del_org = pt->curr_ins_org; 
-        pt->curr_ins_ent = -1;
-        pt->curr_ins_org = -1;
-        }
-}
-void swap_del_with_ins(piece_table* pt){
-    if (pt->curr_del_ent > 0){
-        // pt->curr_ins_ent = pt->curr_del_ent; 
-        // pt->curr_ins_org = pt->curr_del_org;
-        pt->curr_del_ent = -1; 
-        pt->curr_del_org = -1;
-    }
 }
 
 int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos, int user_in){
@@ -58,12 +41,19 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
                 user_in == KEY_BACKSPACE ? "Backspace" : "Delete Key", user_in);
             log_to_file(&sk_logger, pbuf);
         #endif  
-        swap_ins_with_del(pt);
+
+        // swap_ins_with_del(pt);
+        if (pt->curr_ins_ent > 0) 
+            pt->curr_ins_ent = NULL_ENT; 
+
         delete_manager(pt, curs_pos, user_in);
     
     /* insert char into additions and update the entry*/
     } else {
-        swap_del_with_ins(pt);    
+        
+        if (pt->curr_del_ent > 0) 
+            pt->curr_del_ent = NULL_ENT;     
+
         char _usr_in = (char)user_in;
         insert_manager(pt, curs_pos, _usr_in);
     }
@@ -112,8 +102,7 @@ int edit_file(char* fn){
     log_piece_table_current(&sk_logger, &pt);
 
     int user_in;
-    // int 
-    // pt_entry ent; 
+    
     do {
 
         /* render piece table to output */
@@ -124,7 +113,7 @@ int edit_file(char* fn){
             sprintf(pbuf, "[User In]: %d\n", user_in);
             log_to_file(&sk_logger, pbuf);
         #endif  
-        // printw("user in is: %c", user_in);
+        
         int insert_res; 
 
         /* determine the mode first if one is active */
