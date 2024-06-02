@@ -1,6 +1,14 @@
 # TODO (and possible future functionality): 
 
 * handle deletes
+    * debug case where an empty entry is left over
+
+* change the structure of entries and the organizer
+    * don't need the organizer - can make a doubly linked-list from the entries list 
+      by adding a 'left' and 'right' field to the pt_entry struct 
+    * this will make it so that there doesn't need to be any shifting - increased 
+      performance if there are a lot of entries in the organizer 
+    * may make undo / redo easier too 
 
 * handling redo and undo 
     * stack functions to handle the arrays

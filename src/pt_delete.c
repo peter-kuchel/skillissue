@@ -182,12 +182,10 @@ static int delete_curr_exhuasted(piece_table* pt){
         pt->curr_org_ptr--;
 
         replacement_org = pt->curr_org_ptr - 1; // whatever is left of the curr_org_ptr 
-        
+
     }
 
     // reclaim the empty del ent ?
-
-    
 
     #ifdef DEBUG_DELETE 
         memset(pbuf, 0, PBUF_SIZE);
