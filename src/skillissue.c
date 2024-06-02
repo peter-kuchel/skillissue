@@ -18,41 +18,50 @@ void save_file_writes(FILE* f, piece_table* pt){
 
 }
 
+void exit_insertion_mode(piece_table* pt, usermode* umode){
+    pt->curr_ins_ent = -1;
+    pt->curr_ins_org = -1;
+    pt->curr_del_ent = -1; 
+    pt->curr_del_org = -1; 
+    umode->mode &= 0;
+}
+
+void swap_ins_with_del(piece_table* pt){
+    if (pt->curr_ins_ent > 0){
+        pt->curr_del_ent = pt->curr_ins_ent;
+        pt->curr_del_org = pt->curr_ins_org; 
+        pt->curr_ins_ent = -1;
+        pt->curr_ins_org = -1;
+        }
+}
+void swap_del_with_ins(piece_table* pt){
+    if (pt->curr_del_ent > 0){
+        pt->curr_ins_ent = pt->curr_del_ent; 
+        pt->curr_ins_org = pt->curr_del_org;
+        pt->curr_del_ent = -1; 
+        pt->curr_del_org = -1;
+    }
+}
+
 int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos, char user_in){
 
     /* handle user finishing up insertion mode*/
     if (user_in == USR_MODE_ESC){
+        exit_insertion_mode(pt, umode);
         
-        pt->curr_ins_ent = -1;
-        pt->curr_del_ent = -1; 
-        pt->curr_del_org = -1; 
-        umode->mode &= 0;
-    
      /* handle deletion */
     } else if (user_in == USR_BACKSPACE) {
-
-        if (pt->curr_ins_ent > 0){
-            pt->curr_del_ent = pt->curr_ins_ent;
-            pt->curr_ins_ent = -1;
-        }
-            
+        swap_ins_with_del(pt);
         delete_manager(pt, curs_pos);
     
     /* insert char into additions and update the entry*/
     } else {
-
-        if (pt->curr_del_ent > 0){
-            pt->curr_ins_ent = pt->curr_del_ent; 
-            pt->curr_del_ent = -1; 
-        }
-            
+        swap_del_with_ins(pt);    
         insert_manager(pt, curs_pos, user_in);
     }
 
     return 0; 
 }
-
-
 
 int edit_file(char* fn){
      
@@ -230,6 +239,3 @@ int main(int argc, char** argv){
  
     return 0; 
 }
-/*
-aaaaaaaaa
-*/

@@ -17,7 +17,7 @@ typedef struct {
 } Logger; 
 
 Logger sk_logger; 
-// int pbuf_size = 256;
+
 #define PBUF_SIZE 256
 
 char pbuf[PBUF_SIZE];

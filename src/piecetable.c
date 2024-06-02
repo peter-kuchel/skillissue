@@ -80,6 +80,7 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
    pt->curr_ins_ent = -1;
    pt->curr_del_ent = -1;
    pt->curr_del_org = -1;
+   pt->curr_ins_org = -1;
 
    // pt->table.ent_num++; 
 
@@ -129,6 +130,18 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
    }
    log_to_file(logger, "]\n");
 
+   memset(pbuf, 0, PBUF_SIZE); 
+   sprintf(pbuf, "\ncurr_chr_ptr: %ld\ncurr_org_ptr: %d\n\ncurr_ins_org: %d\ncurr_ins_ent: %d\n\ncurr_del_org: %d\ncurr_del_ent: %d\n",
+               pt->curr_chr_ptr, pt->curr_org_ptr, pt->curr_ins_org, pt->curr_ins_ent,
+               pt->curr_del_org, pt->curr_del_ent
+   );
+
+   log_to_file(logger, pbuf);
+
+   memset(pbuf, 0, PBUF_SIZE);
+   sprintf(pbuf, "\norg_head: %d\norg_tail: %d\n", tb->org_head, tb->org_tail);
+   log_to_file(logger, pbuf);
+
    int i; 
    int _tail = tb->org_tail;
    log_to_file(logger, "Current piece table state:\n");
@@ -165,7 +178,7 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
       log_to_file(logger, pbuf);
    }
 
-   log_to_file(logger, "]\n");
+   log_to_file(logger, "]\n\n----------\n");
 
 
 
