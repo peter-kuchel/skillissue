@@ -6,11 +6,11 @@ An easy to use cli text-editor for the vscode soy-devs like myself who don't kno
 
 # Requirements: 
 
+Requires gcc 7.5.0 or greater, and ncurses plus associated headerfiles. 
 
 # Installing: 
 
-Git clone the repo, navigate into the directory and run 'make'. make will compile everything into a single
-binary
+Git clone the repo, navigate into the directory and run ```make```. This will compile everything into a single binary which will be found in a created directory named ```bin```
 
 # Functionality:    
 

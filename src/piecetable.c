@@ -1,11 +1,6 @@
 #include "piecetable.h"
 
 
-
-
-// int get_curr_pos(piece_table* pt){
-//    int curr_pos = pt->
-// }
 char get_curr_char_by_entry(piece_table* pt, pt_entry* ent, size_t pos){
    
    pt_buffer_t* buf = GET_PT_BUFF(pt, ent->src); 
@@ -91,10 +86,6 @@ void empty_piece_table(piece_table* pt){
 }
 
 void log_piece_table_current(Logger* logger, piece_table* pt){
-
-   // if (!LOG_TOGGLE) return; 
-   
-   // pt_table_t* tb = &(pt->table);
    
    int pbuf_i; 
    
@@ -126,9 +117,6 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
 
    log_to_file(logger, pbuf);
 
-   // memset(pbuf, 0, PBUF_SIZE);
-   // sprintf(pbuf, "\norg_head: %d\norg_tail: %d\n", tb->org_head, tb->org_tail);
-   // log_to_file(logger, pbuf);
 
    int i = 0; 
    int _ent = pt->ent_head; 
@@ -172,27 +160,6 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
    }
 
    log_to_file(logger, "]\n");
-   // for (i = tb->org_head; i <= _tail; i++){
-   //    memset(pbuf, 0, PBUF_SIZE);
-   //    pt_entry* ent = ENT_PTR_AT_POS_IN_ORG(pt, i);
-
-   //    sprintf(pbuf, "(%s, %ld, %ld) @ [%d]\n", 
-   //                   ent->src == ORGN ? "ORG" : "ADD", ent->start, ent->len, i);
-   //    log_to_file(logger, pbuf);
-   // }
-
-   
-   // log_to_file(logger, "Current organizer state:\n[");
-   // for (i = tb->org_head; i <= tb->org_tail; i++){
-   //    memset(pbuf, 0, PBUF_SIZE);
-   //    if (i == tb->org_tail) 
-   //       sprintf(pbuf, "%d", tb->organizer[i]);
-   //    else 
-   //       sprintf(pbuf, "%d, ", tb->organizer[i]);
-
-   //    log_to_file(logger, pbuf);
-   // }
-   // log_to_file(logger, "]\n");
 
    log_to_file(logger, "Current undo stack state:\n[");
    for (i = 0; i < pt->undo.ptr; i++){
@@ -206,7 +173,5 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
    }
 
    log_to_file(logger, "]\n\n----------\n");
-
-
 
 }

@@ -6,10 +6,6 @@
 #include <string.h>
 
 #define LOG_FILE "skillissue_debug.log"
-// #define LOG_TOGGLE 1
-
-// #define LOG_INSERTS 1 
-// #define LOG_MOVEMENT 0
 
 typedef struct {
     char* fname; 
@@ -25,6 +21,5 @@ char pbuf[PBUF_SIZE];
 int log_to_file(Logger* logger, char* msg);
 int setup_logger(Logger* logger, char* log_file);
 int teardown_logger(Logger* logger); 
-
 
 #endif 

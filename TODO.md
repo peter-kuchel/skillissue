@@ -18,11 +18,9 @@
 * selecting text ( H? ) to do copy, cut, and paste ( C, X, P)
 
 * line numbering and formating 
-* text colouring - for stuff such as int, {}, [], etc.
+* text colouring - for stuff such as 'int', {}, [], etc.
 * jumping to a certain line number in the document
 
 * something that displays the command that has been toggled (similar to vim?)
-
-* during a save, re-building the piece table (?) (so to stop future allocations and potential performance degration?)
 
 * searching the file for certain words

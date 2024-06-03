@@ -10,40 +10,6 @@ void* handle_realloc(void* ptr, size_t new_cap){
     return result;
 }
 
-// void check_organizer_size(piece_table* pt){
-//     pt_table_t* table = &(pt->table);
-//     int curr_org_ptr = pt->curr_org_ptr;
-
-//     if (
-//         table->org_num + 1 == table->org_cap || 
-//         (curr_org_ptr == 0 || curr_org_ptr == table->org_cap - 1)
-//     ){
-            
-//         int new_cap = PT_INC_CAP(table->org_cap);
-//         int* new_ptr = PT_REALLOC(int, table->organizer, new_cap);
-
-//         table->organizer = new_ptr;
-//         table->org_cap = new_cap;
-
-//         // recalc middle to potentially shift 
-//         int old_midd = (table->org_tail - table->org_head) >> 1;
-//         int midd_shift = (new_cap >> 1) - old_midd; 
-
-//         // shift everything right by midd_shift if too left skewed
-//         if (midd_shift > 0){
-
-//             for (int i = table->org_tail ; i  >= table->org_head ; i--){
-//                 int ent_i = table->organizer[i];
-//                 pt->table.organizer[i + midd_shift] = ent_i;
-//             }
-
-//             // update head and tail 
-//             table->org_head += midd_shift; 
-//             table->org_tail += midd_shift; 
-//         }
-//     }
-// }
-
 void check_entries_size(piece_table* pt){
     if (pt->ent_num + 1 == pt->ent_cap){
 
@@ -96,47 +62,3 @@ int new_pt_entry(piece_table* pt){
 
     return new_ent_pos; 
 }
-
-// int shift_organizer_right(piece_table* pt, int start, int end){
-
-//     #ifdef DEBUG_MOVE
-//         memset(pbuf, 0, PBUF_SIZE);
-//         sprintf(pbuf, "[Shift Right Details]: start: %d, end: %d\n",start, end);
-//         log_to_file(&sk_logger, pbuf);
-//     #endif 
-
-//     // check that a shift does not go outside of the bounds of the organizer
-//     // by making sure the organizer is big enough 
-//     // check_organizer_size(pt);
-
-//     for (int i = start; i >= end; i--){
-//         int ent_i = pt->table.organizer[i];
-//         pt->table.organizer[i + 1] = ent_i;
-//     }
-
-//     // pt->table.org_tail++; 
-
-//     return 0; 
- 
-// }
-
-// int shift_organizer_left(piece_table* pt, int start, int end){
-    
-//     #ifdef DEBUG_MOVE
-//         memset(pbuf, 0, PBUF_SIZE);
-//         sprintf(pbuf, "[Shift Left Details]: start: %d, end: %d\n",start, end);
-//         log_to_file(&sk_logger, pbuf);
-//     #endif 
-
-//     // check that a shift does not go outside of the bounds of the organizer
-//     // check_organizer_size(pt);
-
-//     for (int i = start; i <= end; i++){
-//         int ent_i = pt->table.organizer[i];
-//         pt->table.organizer[i - 1] = ent_i;
-//     }
-
-//     // pt->table.org_head--; 
-
-//     return 0; 
-// }

@@ -41,23 +41,6 @@ typedef struct{
     int right; 
 } pt_entry; 
 
-// typedef struct{
-    
-//     int*        organizer; 
-//     pt_entry*   entries;
-
-//     /* for organizer*/ 
-//     int org_cap; 
-//     int org_num;
-//     int org_head;                           
-//     int org_midd;
-//     int org_tail;
-
-//     /* for entries - as entries might reference ptrs in one of the various stacks */
-//     int ent_cap; 
-//     int ent_num; 
-// } pt_table_t;
-
 typedef struct{
     int* stack; 
     int cap; 
@@ -82,22 +65,14 @@ typedef struct{
 
     size_t      curr_chr_ptr;                               // currently pointed to char in the table 
     int         curr_ent_ptr;                               // index of currently pointed to entry 
-    int         ent_head;
-    int         ent_tail;
+    int         ent_head;                                   // head in the list
+    int         ent_tail;                                   // tail in the list 
 
-    int         ent_cap; 
-    int         ent_num; 
+    int         ent_cap;                                    // capacity of the array
+    int         ent_num;                                    // current number of entries in the array
 
-    int         curr_del_ent; 
-    int         curr_ins_ent; 
-
-    // int         curr_org_ptr;                               // current ptr to position in the organizer
-
-    // int         curr_ins_org;                               // current ptr to position in the organizer being inserted to
-    // int         curr_ins_ent;                               // current ptr to position in entries being inserted to
-
-    // int         curr_del_org;                               // current ptr to position in the organizer being deleted from
-    // int         curr_del_ent;                               // current ptr to position in entries being deleted from 
+    int         curr_del_ent;                               // index of current entry handling deletes
+    int         curr_ins_ent;                               // index of current entry handling inserts
 
 } piece_table; 
 
@@ -114,7 +89,6 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt);
 void empty_piece_table(piece_table* pt);
 
 char get_curr_char_by_entry(piece_table* pt, pt_entry* ent, size_t pos);
-// int get_curr_pos(piece_table* pt);
 
 
 #endif 

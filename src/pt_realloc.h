@@ -17,7 +17,4 @@ void check_additions_size(add_buffer_t* adds);
 void check_pt_stack_size(pt_stack_t* stack);
 int new_pt_entry(piece_table* pt);
 
-// int shift_organizer_right(piece_table* pt, int start, int end);
-// int shift_organizer_left(piece_table* pt, int start, int end);
-
 #endif
