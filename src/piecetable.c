@@ -157,9 +157,10 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
       
    }while (_ent != NULL_ENT);
 
+   int size = i; 
 
    log_to_file(logger, "\nCurrent organizer state:\n[");
-   for (i = 0; i < pt->ent_num; i++){
+   for (i = 0; i < size; i++){
       memset(pbuf, 0, PBUF_SIZE);
       if (all_ent_ptrs[i] == pt->ent_tail) 
          sprintf(pbuf, "%d", all_ent_ptrs[i]);

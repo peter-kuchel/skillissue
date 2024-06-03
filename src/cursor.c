@@ -44,16 +44,13 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
             }
 
             if (chr_ptr + 1 == upper_bound){
-                // pt->curr_org_ptr++; 
-                // ent = CURR_ORG_ENT_PTR(pt);
+                
+                int right = (&(pt->entries[pt->curr_ent_ptr]))->right;
 
-                // do {
-                //     pt->curr_org_ptr++; 
-                //     // ent = CURR_ORG_ENT_PTR(pt);
-                //     ent = 
-                // } while (ent->len == 0);
+                ent = &(pt->entries[right]);
 
                 pt->curr_chr_ptr = ent->start;
+                pt->curr_ent_ptr = right;
 
                 #ifdef DEBUG_MOVE
                     memset(pbuf, 0, PBUF_SIZE);
@@ -125,15 +122,13 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
             }
             
             if (chr_ptr == lower_bound){
-                // pt->curr_org_ptr--; 
-                // ent = CURR_ORG_ENT_PTR(pt);
 
-                // do {
-                //     pt->curr_org_ptr--; 
-                //     ent = CURR_ORG_ENT_PTR(pt);
-                // } while (ent->len == 0);
+                int left = (&(pt->entries[pt->curr_ent_ptr]))->left;
+
+                ent = &(pt->entries[left]);
 
                 pt->curr_chr_ptr = (ent->start + ent->len); 
+                pt->curr_ent_ptr = left;
 
                 #ifdef DEBUG_MOVE
                     memset(pbuf, 0, PBUF_SIZE);

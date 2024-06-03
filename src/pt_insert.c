@@ -11,9 +11,7 @@ static int create_from_empty(piece_table* pt){
 
     pt->ent_tail = new_ent_pos;
     pt->ent_head = new_ent_pos;
-    // pt->table.organizer[pt->curr_org_ptr] = new_ent_pos; 
-    // pt->curr_ins_ent = new_ent_pos; 
-    // pt->curr_ins_org = pt->curr_org_ptr;
+    
 
     #ifdef DEBUG_INSERT
         memset(pbuf, 0, PBUF_SIZE);
@@ -63,7 +61,7 @@ static int create_end_insert(piece_table* pt, int very_end){
 
 static int create_ent_end_insert(piece_table* pt){
 
-    pt_entry *curr_ent, *new_ent; 
+    pt_entry *curr_ent, *new_ent, *old_left_ent; 
     int new_ent_pos = new_pt_entry(pt);
 
     new_ent = &(pt->entries[new_ent_pos]);
@@ -71,13 +69,16 @@ static int create_ent_end_insert(piece_table* pt){
 
     int old_left = curr_ent->left; 
 
+    old_left_ent = &(pt->entries[old_left]);
+
     curr_ent->left = new_ent_pos; 
     new_ent->left = old_left; 
     new_ent->right = pt->curr_ent_ptr;
 
+    old_left_ent->right = new_ent_pos;
+
     pt->curr_ins_ent = new_ent_pos; 
 
-  
     #ifdef DEBUG_INSERT
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, "[Infront Insert]: ent pos: %d\n", new_ent_pos);
@@ -90,11 +91,12 @@ static int create_ent_end_insert(piece_table* pt){
 static int create_middle_insert(piece_table* pt){
 
     // get info needed to be saved 
+    pt_entry *_ent, *_side_ents; 
 
     int old_ent_ptr = pt->curr_ent_ptr; 
     size_t chr_ptr = pt->curr_chr_ptr;
 
-    pt_entry* _ent = &(pt->entries[old_ent_ptr]);
+    _ent = &(pt->entries[old_ent_ptr]);
 
     // push curr ent ptr to the undo stack 
     push_pt_stack(&(pt->undo), old_ent_ptr);
@@ -105,7 +107,7 @@ static int create_middle_insert(piece_table* pt){
 
     int old_left = _ent->left; 
     int old_right = _ent->right; 
-
+    
     // create each of the new entries 
     int new_right_ent = new_pt_entry(pt);
     int new_midd_ent = new_pt_entry(pt); 
@@ -116,7 +118,7 @@ static int create_middle_insert(piece_table* pt){
     _ent->start = chr_ptr; 
     _ent->src = old_src; 
 
-    size_t old_end = old_src + old_len; 
+    size_t old_end = old_start + old_len; 
     size_t new_right_len = old_end - _ent->start; 
 
     _ent->len = new_right_len; 
@@ -128,6 +130,10 @@ static int create_middle_insert(piece_table* pt){
 
     if (old_ent_ptr == pt->ent_tail)
         pt->ent_tail = new_right_ent;
+    else {
+        _side_ents = &(pt->entries[old_right]);
+        _side_ents->left = new_right_ent; 
+    }
 
     #ifdef DEBUG_INSERT
         memset(pbuf, 0, PBUF_SIZE);
@@ -148,6 +154,10 @@ static int create_middle_insert(piece_table* pt){
 
     if (old_ent_ptr == pt->ent_head)
         pt->ent_head = new_left_ent; 
+    else{
+        _side_ents = &(pt->entries[old_left]);
+        _side_ents->right = new_left_ent; 
+    }
 
     #ifdef DEBUG_INSERT
         memset(pbuf, 0, PBUF_SIZE);
@@ -167,84 +177,6 @@ static int create_middle_insert(piece_table* pt){
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, "[Middle Insert] @ %d with head: %d, tail: %d\n", 
             pt->curr_ins_ent, pt->ent_head, pt->ent_tail);
-        log_to_file(&sk_logger, pbuf);
-    #endif 
-
-    // get the information for the currently pointd at entry 
-    // pt_entry* curr_ent = CURR_ORG_ENT_PTR(pt);
-    // int curr_ent_pos = ENT_POS_FROM_ORG_PTR(pt);
-    // int curr_org_ptr = pt->curr_org_ptr;
-    // size_t curs_pos =  pt->curr_chr_ptr; 
-
-    // // add curr ptr at positon in org to undo stack 
-    // push_pt_stack(&(pt->undo), curr_ent_pos);
-    
-    // // get the info from the curr_ent being split 
-    // pt_entry* _ent; 
-    // int shift_start, shift_end; 
-
-    // pt_src_t orgn_ent_src = curr_ent->src; 
-    // size_t orgn_end = (curr_ent->start + curr_ent->len);
-
-    // int right = new_pt_insert_entry(pt);
-
-    // _ent = ENT_AT_POS_ENTRIES(pt, right);
-    // _ent->start = curs_pos; 
-    // _ent->len =  orgn_end - _ent->start;
-    // _ent->src = orgn_ent_src; 
-
-    // int right_org_pos = pt->curr_org_ptr + 1; 
-
-    // shift_start = pt->table.org_tail;
-    // shift_end = right_org_pos; 
-
-    // if (pt->table.org_tail == pt->curr_org_ptr){
-    //     pt->table.org_tail = right_org_pos;
-    // }else {
-    //     shift_organizer_right(pt, shift_start, shift_end);
-    //     pt->table.org_tail++; 
-    // }
-    
-    // pt->table.organizer[right_org_pos] = right; 
-    
-    // size_t right_len = _ent->len; 
-
-    
-
-    // int left = new_pt_insert_entry(pt);
-
-    // _ent = ENT_AT_POS_ENTRIES(pt, left);
-    // _ent->start = curr_ent->start; 
-    // _ent->len = curr_ent->len - right_len; 
-    // _ent->src = orgn_ent_src;
-
-    // int left_org_pos = curr_org_ptr - 1; 
-
-    // shift_start = pt->table.org_head; 
-    // shift_end = left_org_pos; 
-
-    // if (pt->table.org_head == curr_org_ptr){
-    //     pt->table.org_head = left_org_pos;
-    // } else{
-    //     shift_organizer_left(pt, shift_start, shift_end);
-    //     pt->table.org_head--; 
-    // }
-        
-    
-    // pt->table.organizer[left_org_pos] = left;
-
-    // int new_addition = new_pt_insert_entry(pt);
-    // pt->curr_ins_org = pt->curr_org_ptr;
-    // pt->table.organizer[pt->curr_ins_org] = new_addition; 
-    // pt->curr_ins_ent = new_addition;
-     
-    // pt->curr_org_ptr = right_org_pos;
-    
-
-    #ifdef DEBUG_INSERT
-        memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, "[Middle Insert] with - org_pos: %d, head: %d, tail: %d\n", 
-            pt->curr_ent_ptr, pt->ent_head, pt->ent_tail);
         log_to_file(&sk_logger, pbuf);
     #endif 
 

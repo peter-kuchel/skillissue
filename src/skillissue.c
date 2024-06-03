@@ -20,9 +20,7 @@ void save_file_writes(FILE* f, piece_table* pt){
 
 void exit_insertion_mode(piece_table* pt, usermode* umode){
     pt->curr_ins_ent = NULL_ENT;
-    // pt->curr_ins_org = -1;
     pt->curr_del_ent = NULL_ENT; 
-    // pt->curr_del_org = -1; 
     umode->mode &= 0;
 }
 
