@@ -2,7 +2,8 @@
 
 int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
     
-    pt_entry* ent = CURR_ORG_ENT_PTR(pt);
+    // pt_entry* ent = CURR_ORG_ENT_PTR(pt);
+    pt_entry* ent = &(pt->entries[pt->curr_ent_ptr]);
     size_t chr_ptr = pt->curr_chr_ptr; 
 
     // move to the right 
@@ -18,7 +19,7 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
                 log_to_file(&sk_logger, pbuf);
             #endif 
 
-            if (pt->table.org_tail == pt->curr_org_ptr){
+            if (pt->ent_tail == pt->curr_ent_ptr){
                 
                 #ifdef DEBUG_MOVE
                     memset(pbuf, 0, PBUF_SIZE);
@@ -43,21 +44,19 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
             }
 
             if (chr_ptr + 1 == upper_bound){
-                // pt->curr_org_ptr++; 
-                // ent = CURR_ORG_ENT_PTR(pt);
+                
+                int right = (&(pt->entries[pt->curr_ent_ptr]))->right;
 
-                do {
-                    pt->curr_org_ptr++; 
-                    ent = CURR_ORG_ENT_PTR(pt);
-                } while (ent->len == 0);
+                ent = &(pt->entries[right]);
 
                 pt->curr_chr_ptr = ent->start;
+                pt->curr_ent_ptr = right;
 
                 #ifdef DEBUG_MOVE
                     memset(pbuf, 0, PBUF_SIZE);
                     sprintf(pbuf, 
                     "[going into next entry + 1]: curr_org_ptr: %d, curr_chr_ptr before: %ld, after: %ld\n", 
-                        pt->curr_org_ptr, chr_ptr, pt->curr_chr_ptr);
+                        pt->curr_ent_ptr, chr_ptr, pt->curr_chr_ptr);
                     log_to_file(&sk_logger, pbuf);
                 #endif 
             } 
@@ -71,9 +70,9 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(
                 pbuf, 
-                "[LEFT MOVE] chr_ptr before: %ld, after: %ld | %c | ub: %ld| org_pos: %d, org_tail: %d\n", 
+                "[RIGHT MOVE] chr_ptr before: %ld, after: %ld | %c | ub: %ld| org_pos: %d, org_tail: %d\n", 
                 chr_ptr, pt->curr_chr_ptr, _c, 
-                upper_bound, pt->curr_org_ptr, pt->table.org_tail);
+                upper_bound, pt->curr_ent_ptr, pt->ent_tail);
             log_to_file(&sk_logger, pbuf);
         #endif 
 
@@ -98,7 +97,7 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
                 log_to_file(&sk_logger, pbuf); 
             #endif 
             
-            if (pt->table.org_head == pt->curr_org_ptr){
+            if (pt->ent_head == pt->curr_ent_ptr){
 
                 #ifdef DEBUG_MOVE
                     memset(pbuf, 0, PBUF_SIZE);
@@ -123,21 +122,19 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
             }
             
             if (chr_ptr == lower_bound){
-                // pt->curr_org_ptr--; 
-                // ent = CURR_ORG_ENT_PTR(pt);
 
-                do {
-                    pt->curr_org_ptr--; 
-                    ent = CURR_ORG_ENT_PTR(pt);
-                } while (ent->len == 0);
+                int left = (&(pt->entries[pt->curr_ent_ptr]))->left;
+
+                ent = &(pt->entries[left]);
 
                 pt->curr_chr_ptr = (ent->start + ent->len); 
+                pt->curr_ent_ptr = left;
 
                 #ifdef DEBUG_MOVE
                     memset(pbuf, 0, PBUF_SIZE);
                     sprintf(pbuf, 
                         "[going into next entry - 1]: curr_org_ptr: %d, curr_chr_ptr before: %ld, after: %ld\n", 
-                        pt->curr_org_ptr, chr_ptr, pt->curr_chr_ptr);
+                        pt->curr_ent_ptr, chr_ptr, pt->curr_chr_ptr);
                     log_to_file(&sk_logger, pbuf);
                 #endif 
             }
@@ -151,9 +148,9 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(
                 pbuf, 
-                "[RIGHT MOVE] chr_ptr before: %ld, after: %ld| %c | lb: %ld| org_pos: %d, org_head: %d\n", 
+                "[LEFT MOVE] chr_ptr before: %ld, after: %ld| %c | lb: %ld| org_pos: %d, org_head: %d\n", 
                 chr_ptr, pt->curr_chr_ptr, _c, 
-                lower_bound, pt->curr_org_ptr, pt->table.org_head);
+                lower_bound, pt->curr_ent_ptr, pt->ent_head);
             log_to_file(&sk_logger, pbuf);
         #endif 
 
