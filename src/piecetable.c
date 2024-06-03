@@ -119,7 +119,7 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
    log_to_file(logger, "]\n");
 
    memset(pbuf, 0, PBUF_SIZE); 
-   sprintf(pbuf, "\nhead: %d, tail: %d, curr_ent_ptr: %d, del_ent: %d, ins_ent: %d, chr_ptr:%ld\n",
+   sprintf(pbuf, "\nhead: %d\ntail: %d\ncurr_ent_ptr: %d\ndel_ent: %d\nins_ent: %d\nchr_ptr: %ld\n",
                pt->ent_head, pt->ent_tail, pt->curr_ent_ptr, pt->curr_del_ent, pt->curr_ins_ent,
                pt->curr_chr_ptr
    );
@@ -133,7 +133,7 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
    int i = 0; 
    int _ent = pt->ent_head; 
    // int _tail = tb->org_tail;
-   log_to_file(logger, "Current piece table state:\n");
+   log_to_file(logger, "\nCurrent piece table state:\n");
 
    pt_entry* ent; 
 
@@ -142,7 +142,8 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
       memset(pbuf, 0, PBUF_SIZE);
 
       ent = &(pt->entries[_ent]);
-      sprintf(pbuf, "( %d | %s, %ld, %ld | %d ) @ [%d]\n",
+      sprintf(pbuf, "[%d] @ ( %d | %s, %ld, %ld | %d ) @ [%d]\n",
+               _ent,
                ent->left, 
                ent->src == ORGN ? "ORG": "ADD",
                ent->start,
