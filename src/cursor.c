@@ -2,7 +2,6 @@
 
 int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
     
-    // pt_entry* ent = CURR_ORG_ENT_PTR(pt);
     pt_entry* ent = &(pt->entries[pt->curr_ent_ptr]);
     size_t chr_ptr = pt->curr_chr_ptr; 
 
@@ -168,4 +167,83 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
     }
 
     return 0; 
+}
+
+int move_chr_ptr(piece_table* pt, int dist, int dir){
+
+    int d = 0; 
+    int curr_ent = pt->curr_ent_ptr; 
+    
+    pt_entry *curr = &(pt->entries[curr_ent]);
+    size_t end = dir > 0 ? curr->start : curr->len - 1; 
+
+    while (d < dist){
+
+        if (dir > 0) 
+            pt->curr_chr_ptr++;
+        else         
+            pt->curr_chr_ptr--; 
+
+        d++; 
+
+        if (pt->curr_chr_ptr == end){
+
+            curr_ent = dir > 0 ? curr->left : curr->right; 
+            curr = &(pt->entries[curr_ent]);
+            
+            pt->curr_chr_ptr = dir > 0 ? curr->start : curr->start + (curr->len - 1); 
+            end = dir > 0 ? curr->len - 1: curr->start; 
+        }
+    }
+
+    return 0; 
+}
+
+int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir){
+    line *curr, *jump_to;
+    int dist;
+    // check for going up the file
+
+    int _curr_line = pt->lh.curr_line; 
+    if (dir > 0){
+        
+        if (pt->lh.top_line == _curr_line) return 0; 
+
+        pos->y--; 
+
+        // handle x position 
+        
+        curr = &(pt->lh.lines[_curr_line]);
+
+        jump_to = &(pt->lh.lines[curr->next_line]); 
+
+        // calculate distance from current line to beginning of the new line 
+        if (jump_to->line_size < curr->line_size)
+            dist = pos->x; 
+        // calculate how many steps to walk through to get at the same x
+        else 
+             dist = (jump_to->line_size - pos->x) + pos->x; 
+        
+        move_chr_ptr(pt, dist, -1);
+
+    // check for going down the file
+    } else {
+        if (pt->lh.bottom_line == _curr_line) return 0;
+
+        pos->y++; 
+
+        curr = &(pt->lh.lines[_curr_line]);
+        jump_to = &(pt->lh.lines[curr->prev_line]);
+
+        if (jump_to->line_size < curr->line_size)
+            dist = pos->x; 
+        else 
+            dist = (jump_to->line_size - pos->x) + pos->x; 
+        
+
+        move_chr_ptr(pt, dist, 1);
+    
+     
+    } 
+    return 0;
 }
