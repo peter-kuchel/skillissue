@@ -11,6 +11,28 @@
 #define DEFAULT_PT_ENT_SIZE     64
 
 #define NULL_ENT -1
+#define NULL_LINE -1
+
+typedef struct {
+    int next_line; 
+    int prev_line; 
+
+    int line_size; 
+} line; 
+
+typedef struct {
+
+    line *lines;
+    int cap;
+    int size; 
+
+    int top_line; 
+    int curr_line;
+    int bottom_line; 
+
+    int line_number;
+
+} line_handler; 
 
 typedef enum {
     ORGN = 0, 
@@ -54,7 +76,9 @@ typedef struct{
     add_buffer_t addition; 
 
     /* main table along with undo / redo and reclaim stacks */
-    pt_entry* entries;  
+
+    pt_entry* entries;                                      //   
+    line_handler lh;                                        // handle new lines
 
     // pt_table_t table; 
     pt_stack_t redo; 
@@ -90,5 +114,6 @@ void empty_piece_table(piece_table* pt);
 
 char get_curr_char_by_entry(piece_table* pt, pt_entry* ent, size_t pos);
 
+void init_line_handler(line_handler* lh, char* original_buffer);
 
 #endif 

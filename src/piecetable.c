@@ -37,6 +37,8 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
    pt->entries = table_ents; 
    pt->ent_cap = DEFAULT_PT_ENT_SIZE;
 
+   // line* file_lines = (line*)malloc( sizeof(line) *)
+
    int* redo_ents = (int*)malloc( sizeof(int) * DEFAULT_PT_ENT_SIZE);
    pt->redo.stack = redo_ents;
    pt->redo.cap = DEFAULT_PT_ENT_SIZE;
@@ -78,6 +80,7 @@ void empty_piece_table(piece_table* pt){
    safeFree(pt->addition.buf.text);
 
    safeFree(pt->entries); 
+   safeFree(pt->lh.lines);
 
    safeFree(pt->redo.stack);
    safeFree(pt->undo.stack);
