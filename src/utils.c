@@ -23,6 +23,14 @@ size_t file_size(char* fname){
      return (size_t)fin.st_size;
  
 }
+void* handle_realloc(void* ptr, size_t new_cap){
+    void* result = realloc(ptr, new_cap); 
+
+    // allocation can fail if there isn't enough memory to realloc 
+    if (result == NULL) exit(-1);
+
+    return result;
+}
 
 // from Understanding and Using C Pointers by Richard Reese 
 void saferFree(void**pp){
