@@ -292,11 +292,20 @@ int delete_manager(piece_table* pt, cursor_pos* curs_pos, int key_pressed){
     
     if (pt->curr_del_ent == pt->ent_tail)
         pt->curr_chr_ptr--;
-
+    
+    // get the character before decrementing the len 
+    int char_pos = (del_ent->start + del_ent->len) - 1;
+    char _c = (( GET_PT_BUFF(pt, del_ent->src) )->text)[char_pos];
     del_ent->len--; 
 
     // check if a new line was removed 
-    curs_pos->x--; 
+    if (_c == '\n'){
+
+    } else {
+        line* curr_line = LH_CURR_LINE(pt);
+        curr_line->line_size--;
+        curs_pos->x--;
+    } 
 
     #ifdef DEBUG_DELETE
         memset(pbuf, 0, PBUF_SIZE);
