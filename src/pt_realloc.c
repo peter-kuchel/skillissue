@@ -1,5 +1,13 @@
 #include "pt_realloc.h"
 
+void* handle_realloc(void* ptr, size_t new_cap){
+    void* result = realloc(ptr, new_cap); 
+
+    // allocation can fail if there isn't enough memory to realloc 
+    if (result == NULL) exit(-1);
+
+    return result;
+}
 
 void check_entries_size(piece_table* pt){
     if (pt->ent_num + 1 == pt->ent_cap){
@@ -119,7 +127,7 @@ int init_line_handler(line_handler* lh, pt_buffer_t* original_buffer){
         if (c == '\n' || at_last){
 
             if (at_last) s++;
-            
+
             new_line = get_new_line(lh);
             _curr_line = &(lh->lines[new_line]);
 
