@@ -242,21 +242,26 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in){
         log_to_file(&sk_logger, pbuf);
     #endif 
 
-    curs_pos->x++;
+    
     adds->curr_pos++; 
 
     if (pt->ent_tail == pt->curr_ins_ent)
         pt->curr_chr_ptr++;
+
+    // handle when a new line is added 
+    if (user_in == '\n'){
+        
+    } else {
+        
+        line* curr_line = LH_CURR_LINE(pt);
+        curr_line->line_size++;
+        curs_pos->x++;
+    }
     
     #ifdef DEBUG_PT
         log_piece_table_current(&sk_logger, pt);
     #endif 
 
-    // if (user_in == '\n'){
-
-    // } else {
-    //     curs_pos->x++;
-    // }
 
     return 0; 
 }

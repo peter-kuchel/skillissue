@@ -1,7 +1,3 @@
-#include <stdio.h> 
-#include <stdlib.h>
-#include <string.h>
-
 
 #include "skillissue.h"
 
@@ -90,6 +86,8 @@ int edit_file(char* fn){
         // goto handle_error; 
         exit(1);
     }
+
+    init_line_handler(&(pt.lh), &(pt.original));
     
     render_screen(&pt);
 
@@ -106,6 +104,7 @@ int edit_file(char* fn){
         /* render piece table to output */
         
         user_in = getch(); 
+
         #ifdef DEBUG_GEN 
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(pbuf, "[User In]: %d\n", user_in);
@@ -161,13 +160,17 @@ int edit_file(char* fn){
                     break; 
                     
                 case 'a':
+                    pt.prev_chr_ptr = pt.curr_chr_ptr;
                     handle_side_movement(&pt, &pos, -1);
+                    handle_jump_up(&pt, &pos);
                     break;
                 case 's':
 
                     break;
                 case 'd':
+                    pt.prev_chr_ptr = pt.curr_chr_ptr;
                     handle_side_movement(&pt, &pos, 1);
+                    handle_jump_down(&pt, &pos);
                     break; 
                 
                 default:

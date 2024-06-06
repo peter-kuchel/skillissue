@@ -1,7 +1,12 @@
 #ifndef IMPORTS_SKILLISSUE_H
 #define IMPORTS_SKILLISSUE_H
 
+#include <stdio.h> 
+#include <stdlib.h>
+#include <string.h>
+
 #include <curses.h>
+
 #include "cursor.h"
 #include "piecetable.h"
 #include "pt_delete.h"

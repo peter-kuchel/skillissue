@@ -1,13 +1,6 @@
 #include "piecetable.h"
 
 
-char get_curr_char_by_entry(piece_table* pt, pt_entry* ent, size_t pos){
-   
-   pt_buffer_t* buf = GET_PT_BUFF(pt, ent->src); 
-   char c = buf->text[pos];
-
-   return c;
-}
 
 int init_piece_table(FILE* f, char* fn, piece_table* pt){
    
@@ -38,6 +31,10 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
    pt->ent_cap = DEFAULT_PT_ENT_SIZE;
 
    // line* file_lines = (line*)malloc( sizeof(line) *)
+
+   line* _lines = (line*)malloc( sizeof(line) * DEFAULT_LINES_SIZE);
+   pt->lh.lines = _lines; 
+   pt->lh.cap = DEFAULT_LINES_SIZE; 
 
    int* redo_ents = (int*)malloc( sizeof(int) * DEFAULT_PT_ENT_SIZE);
    pt->redo.stack = redo_ents;

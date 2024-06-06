@@ -292,6 +292,8 @@ int delete_manager(piece_table* pt, cursor_pos* curs_pos, int key_pressed){
         pt->curr_chr_ptr--;
 
     del_ent->len--; 
+
+    // check if a new line was removed 
     curs_pos->x--; 
 
     #ifdef DEBUG_DELETE

@@ -5,7 +5,7 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
     pt_entry* ent = &(pt->entries[pt->curr_ent_ptr]);
     size_t chr_ptr = pt->curr_chr_ptr; 
 
-    // move to the right 
+    /* move to the right */  
     if (dir > 0){
         size_t upper_bound = ent->start + ent->len;
 
@@ -65,7 +65,7 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
 
 
         #ifdef DEBUG_MOVE
-            char _c = CURR_PTR_AT_CHR(pt);
+            char _c = PTR_AT_CHR(pt, pt->curr_chr_ptr);
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(
                 pbuf, 
@@ -77,15 +77,8 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
 
         pos->x++;
         
-        // handle a newline
-        char curr_chr = get_curr_char_by_entry(pt, ent, pt->curr_chr_ptr);
 
-        if (curr_chr == '\n'){
-            pos->x = 0; 
-            pos->y++;
-        }
-
-
+    /* move to the left */ 
     } else {
         size_t lower_bound = ent->start; 
 
@@ -143,7 +136,7 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
         pt->curr_chr_ptr--; 
 
         #ifdef DEBUG_MOVE
-            char _c = CURR_PTR_AT_CHR(pt);
+            char _c = PTR_AT_CHR(pt, pt->curr_chr_ptr);
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(
                 pbuf, 
@@ -153,19 +146,38 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
             log_to_file(&sk_logger, pbuf);
         #endif 
 
-        char curr_chr = get_curr_char_by_entry(pt, ent, pt->curr_chr_ptr);
-
-        if (curr_chr == '\n'){
-
-            // memset(pbuf, 0, PBUF_SIZE);
-            // sprintf(pbuf, "chr_ptr %ld ? %ld lower bound: \n", chr_ptr, lower_bound);
-            // log_to_file(&sk_logger, pbuf); 
-            // need to find position for x at the end of the line 
-            pos->x = 0; 
-            pos->y--;
-        }
     }
 
+    return 0; 
+}
+
+int handle_jump_down(piece_table* pt, cursor_pos* pos){
+    if ( PTR_AT_CHR(pt, pt->prev_chr_ptr) == '\n'){
+                        // handle_side_movement(&pt, &pos, 1);
+        pt->lh.curr_line++; 
+        pos->y++;
+        pos->x = 0;
+        
+        #ifdef DEBUG_MOVE
+            memset(pbuf, 0, PBUF_SIZE);
+            sprintf(pbuf, 
+                "[going to next line from the right]");
+            log_to_file(&sk_logger, pbuf);
+        #endif 
+    }
+
+    return 0; 
+}
+
+int handle_jump_up(piece_table* pt, cursor_pos* pos){
+
+    if (PTR_AT_CHR(pt, pt->curr_chr_ptr) == '\n'){
+        
+        pt->lh.curr_line--; 
+        pos->y--; 
+        pos->x = CURR_LINE_SIZE(pt);
+        
+    }
     return 0; 
 }
 
@@ -242,8 +254,6 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir){
         
 
         move_chr_ptr(pt, dist, 1);
-    
-     
     } 
     return 0;
 }

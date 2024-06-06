@@ -46,16 +46,28 @@ void check_line_handler_size(line_handler* lh){
     }
 }
 
+static int get_new_line(line_handler* lh){
+    check_line_handler_size(lh);
+    
+    int new_line = lh->size;
+    lh->size++; 
+     
+
+    line* _line = &(lh->lines[new_line]);
+    _line->line_size = 0;
+    _line->prev_line = NULL_LINE; 
+    _line->next_line = NULL_LINE; 
+
+   return new_line; 
+}
+
 int add_new_line(line_handler* lh, int dir){
 
-    line *new_line, *_curr_line, *neighbour;
-    check_line_handler_size(lh);
+    // needs to handle cases for head and tail 
+    // needs to handle cases where there is less than 3 lines already 
+    line *new_line, *_curr_line, *neighbour; 
 
-    lh->size++; 
-    int new_line_num = lh->size; 
-
-    new_line = &(lh->lines[new_line_num]);
-    new_line->line_size = 0; 
+    int new_line_num = get_new_line(lh);
 
     _curr_line = &(lh->lines[lh->curr_line]);
 
@@ -80,14 +92,74 @@ int add_new_line(line_handler* lh, int dir){
     return new_line_num;
 }
 
+int init_line_handler(line_handler* lh, pt_buffer_t* original_buffer){
+
+    int s = 0, prev_line = NULL_LINE, new_line; 
+    size_t i = 0; 
+
+    if (original_buffer->size == 0){
+
+        return 0; 
+    }
+
+    #ifdef DEBUG_PT
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "[Creating Line Handler]\n");
+        log_to_file(&sk_logger, pbuf);
+    #endif 
+
+    char c; 
+    line *_prev_line = NULL, *_curr_line = NULL;
+    while (i < original_buffer->size){
+
+        c = original_buffer->text[i];
+
+        if (c == '\n'){
+            
+            new_line = get_new_line(lh);
+            _curr_line = &(lh->lines[new_line]);
+
+            _curr_line->line_size = s; 
+
+            #ifdef DEBUG_PT
+                memset(pbuf, 0, PBUF_SIZE);
+                sprintf(pbuf, 
+                    "[New line found in original at position]: %ld, new line is: %d\n", i, new_line);
+                log_to_file(&sk_logger, pbuf);
+            #endif 
+
+            if (lh->size == 1){
+               lh->top_line = new_line;
+                
+            } else {
+                _prev_line->next_line = new_line;
+                _curr_line->prev_line = prev_line;
+            }
+
+            _prev_line = _curr_line;
+            prev_line = new_line;
+
+            s = 0; 
+        } else {
+            s++; 
+        }
+
+        i++;
+    
+    }
+    lh->bottom_line = prev_line;
+    lh->curr_line = lh->top_line;
+
+    return 0; 
+}
+
 int new_pt_entry(piece_table* pt){
-    // check if entries need to be reallocd 
+     
     check_entries_size(pt);
 
     pt->ent_num++; 
     int new_ent_pos = pt->ent_num; 
     
-    // pt_entry* new_single_entry = ENT_AT_POS_ENTRIES(pt, new_ent_pos);
     pt_entry* new_single_entry = &(pt->entries[new_ent_pos]); 
     new_single_entry->src = ADD;
     new_single_entry->start = pt->addition.curr_pos; 

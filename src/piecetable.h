@@ -9,6 +9,7 @@
 
 #define STARTING_ADD_BUF_SIZE   4096
 #define DEFAULT_PT_ENT_SIZE     64
+#define DEFAULT_LINES_SIZE      512
 
 #define NULL_ENT -1
 #define NULL_LINE -1
@@ -30,7 +31,8 @@ typedef struct {
     int curr_line;
     int bottom_line; 
 
-    int line_number;
+    int line_number;                    // actual line number of the current line
+    // int nl_side_hit;
 
 } line_handler; 
 
@@ -87,7 +89,8 @@ typedef struct{
 
     /* information about the piece table state */
 
-    size_t      curr_chr_ptr;                               // currently pointed to char in the table 
+    size_t      curr_chr_ptr;                               // currently pointed to char in the table
+    size_t      prev_chr_ptr;                               // previously pointed to char (to handle moving between \n) 
     int         curr_ent_ptr;                               // index of currently pointed to entry 
     int         ent_head;                                   // head in the list
     int         ent_tail;                                   // tail in the list 
@@ -102,18 +105,21 @@ typedef struct{
 
 
 // get the underlying pt_buffer_t depending on the origin given
-#define GET_PT_BUFF(pt_ptr, src) \
-    ( src == ORGN ? &(pt_ptr->original) : &(pt_ptr->addition.buf) )
+#define GET_PT_BUFF(pt, src) \
+    ( src == ORGN ? &(pt->original) : &(pt->addition.buf) )
 
-#define CURR_PTR_AT_CHR(pt) \
-    ( (GET_PT_BUFF(pt, (pt->entries[pt->curr_ent_ptr]).src )->text)[pt->curr_chr_ptr] )
+#define PTR_AT_CHR(pt, pos) \
+    ( (GET_PT_BUFF(pt, (pt->entries[pt->curr_ent_ptr]).src )->text)[pos] )
+
+#define LH_CURR_LINE(pt) \
+    ( &(pt->lh.lines[pt->lh.curr_line]) )
+
+#define CURR_LINE_SIZE(pt) \
+    ( (LH_CURR_LINE(pt))->line_size )    
 
 void log_piece_table_current(Logger* logger, piece_table* pt);
 int init_piece_table(FILE* f, char* fn, piece_table* pt);
 void empty_piece_table(piece_table* pt);
 
-char get_curr_char_by_entry(piece_table* pt, pt_entry* ent, size_t pos);
-
-void init_line_handler(line_handler* lh, char* original_buffer);
 
 #endif 
