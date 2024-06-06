@@ -117,13 +117,15 @@ static int delete_in_middle(piece_table* pt){
     split_ent->left = new_del_ent;
     split_ent->right = old_curr_ent->right;
 
+    // if we are at the tail
     if (pt->ent_tail == pt->curr_ent_ptr){
         pt->ent_tail = new_split_ent;
-    }{
+    } else {
         _side_ent = &(pt->entries[old_right]);
         _side_ent->left = new_split_ent;
     }
     
+    // if we are at the head 
     if (pt->ent_head == pt->curr_ent_ptr){
         pt->ent_head = new_del_ent;
     } else {
