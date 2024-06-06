@@ -174,4 +174,23 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
 
    log_to_file(logger, "]\n\n----------\n");
 
+   log_to_file(logger, "Lines state: \n[");
+
+   line_handler* _lh = &(pt->lh);
+   // line all_lines[_lh->size];
+
+   int _l = _lh->curr_line; 
+   // int i = 0; 
+   line* _line; 
+
+   do {  
+      _line = &(_lh->lines[_l]);
+
+      memset(pbuf, 0, PBUF_SIZE);
+      sprintf(pbuf, "\t( L: %d | sz: %d| R: %d )\n", _line->prev_line, _line->line_size, _line->next_line );
+      log_to_file(logger, pbuf);
+
+      _l = _line->next_line; 
+   } while (_l != NULL_LINE);
+
 }

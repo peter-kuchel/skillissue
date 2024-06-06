@@ -114,7 +114,11 @@ int init_line_handler(line_handler* lh, pt_buffer_t* original_buffer){
 
         c = original_buffer->text[i];
 
-        if (c == '\n'){
+        int at_last = (i + 1 == original_buffer->size);
+
+        if (c == '\n' || at_last){
+
+            if (at_last) s++;
             
             new_line = get_new_line(lh);
             _curr_line = &(lh->lines[new_line]);
@@ -147,6 +151,8 @@ int init_line_handler(line_handler* lh, pt_buffer_t* original_buffer){
         i++;
     
     }
+
+    // add last line
     lh->bottom_line = prev_line;
     lh->curr_line = lh->top_line;
 

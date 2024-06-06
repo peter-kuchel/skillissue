@@ -176,6 +176,13 @@ int handle_jump_up(piece_table* pt, cursor_pos* pos){
         pt->lh.curr_line--; 
         pos->y--; 
         pos->x = CURR_LINE_SIZE(pt);
+
+        #ifdef DEBUG_MOVE
+            memset(pbuf, 0, PBUF_SIZE);
+            sprintf(pbuf, 
+                "[going up to next line from the left]");
+            log_to_file(&sk_logger, pbuf);
+        #endif
         
     }
     return 0; 
