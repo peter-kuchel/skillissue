@@ -58,7 +58,7 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
 int edit_file(char* fn){
      
     usermode umode; 
-    umode.mode &= 0; 
+    memset((char*)&umode, 0, sizeof(usermode));
 
     int in_edit = 1;
 
@@ -101,8 +101,6 @@ int edit_file(char* fn){
     
     do {
 
-        /* render piece table to output */
-        
         user_in = getch(); 
 
         #ifdef DEBUG_GEN 
@@ -157,6 +155,7 @@ int edit_file(char* fn){
                 
                 /* move around file*/
                 case 'w':
+                    handle_line_movement(&pt, &pos, 1);
                     break; 
                     
                 case 'a':
@@ -165,8 +164,9 @@ int edit_file(char* fn){
                     handle_jump_up(&pt, &pos);
                     break;
                 case 's':
-
+                    handle_line_movement(&pt, &pos, -1);
                     break;
+
                 case 'd':
                     pt.prev_chr_ptr = pt.curr_chr_ptr;
                     handle_side_movement(&pt, &pos, 1);
