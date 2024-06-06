@@ -51,7 +51,7 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
    // add the first element - which is the original buffer 
 
    int first_entry = pt->ent_num;       // will be 0 because of memset
-
+   pt->ent_num++;
    pt_entry* orgn_entry = &(pt->entries[first_entry]);
 
    orgn_entry->src = ORGN; 
@@ -75,7 +75,7 @@ void empty_piece_table(piece_table* pt){
 
    safeFree(pt->original.text);
    safeFree(pt->addition.buf.text);
-
+   
    safeFree(pt->entries); 
    safeFree(pt->lh.lines);
 
@@ -174,23 +174,23 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
 
    log_to_file(logger, "]\n\n----------\n");
 
-   log_to_file(logger, "Lines state: \n[");
+   // log_to_file(logger, "Lines state: \n");
 
-   line_handler* _lh = &(pt->lh);
-   // line all_lines[_lh->size];
+   // line_handler* _lh = &(pt->lh);
+   // // line all_lines[_lh->size];
 
-   int _l = _lh->curr_line; 
-   // int i = 0; 
-   line* _line; 
+   // int _l = _lh->curr_line; 
+   // // int i = 0; 
+   // line* _line; 
 
-   do {  
-      _line = &(_lh->lines[_l]);
+   // do {  
+   //    _line = &(_lh->lines[_l]);
 
-      memset(pbuf, 0, PBUF_SIZE);
-      sprintf(pbuf, "\t( L: %d | sz: %d| R: %d )\n", _line->prev_line, _line->line_size, _line->next_line );
-      log_to_file(logger, pbuf);
+   //    memset(pbuf, 0, PBUF_SIZE);
+   //    sprintf(pbuf, "\t( L: %d | sz: %d| R: %d ) @ [%d]\n", _l, _line->prev_line, _line->line_size, _line->next_line );
+   //    log_to_file(logger, pbuf);
 
-      _l = _line->next_line; 
-   } while (_l != NULL_LINE);
+   //    _l = _line->next_line; 
+   // } while (_l != NULL_LINE);
 
 }

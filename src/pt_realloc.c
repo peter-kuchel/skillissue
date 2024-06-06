@@ -171,8 +171,8 @@ int new_pt_entry(piece_table* pt){
      
     check_entries_size(pt);
 
-    pt->ent_num++; 
-    int new_ent_pos = pt->ent_num; 
+    int new_ent_pos = pt->ent_num;
+    pt->ent_num++;  
     
     pt_entry* new_single_entry = &(pt->entries[new_ent_pos]); 
     new_single_entry->src = ADD;
