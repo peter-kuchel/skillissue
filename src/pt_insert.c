@@ -186,7 +186,7 @@ static int create_middle_insert(piece_table* pt){
 static int handle_new_line_insert(piece_table* pt, cursor_pos* curs_pos){
 
     // current line won't be updated here 
-    int new_line = add_new_line(lh, (pt->curr_ins_ent == pt->ent_head ? -1 : 1));
+    int new_line = add_new_line(&(pt->lh), (pt->curr_ins_ent == pt->ent_head ? -1 : 1));
 
     // calc new line sizes with the new addition 
     int move_ent = pt->curr_ins_ent;
@@ -195,7 +195,7 @@ static int handle_new_line_insert(piece_table* pt, cursor_pos* curs_pos){
     pt_buffer_t* src_buff; 
 
     int parsing = 1; 
-    int right_dir_size;
+    int right_dir_size = 0;
    
     while (parsing){
 
@@ -206,7 +206,7 @@ static int handle_new_line_insert(piece_table* pt, cursor_pos* curs_pos){
         
         do {
 
-            if (src_buff[chr_ptr] == '\n'){
+            if (src_buff->text[chr_ptr] == '\n'){
                 parsing--; 
                 break; 
             }
@@ -231,6 +231,8 @@ static int handle_new_line_insert(piece_table* pt, cursor_pos* curs_pos){
     _new_line->line_size = right_dir_size;
 
     pt->lh.curr_line = new_line;
+
+    curs_pos->x = 0; 
 
     return 0; 
 }
