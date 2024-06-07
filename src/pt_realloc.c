@@ -85,9 +85,10 @@ int add_new_line(line_handler* lh, int dir){
         new_line->prev_line = lh->curr_line;
 
         _curr_line->next_line = new_line_num;
-
+        
+        // check if the new line needs to be come the bottom line
         if (lh->curr_line == lh->bottom_line){
-            lh->bottom = new_line_num;
+            lh->bottom_line = new_line_num;
         } else {
             neighbour = &(lh->lines[_curr_line->next_line]);
             neighbour->prev_line = new_line_num;
@@ -99,6 +100,7 @@ int add_new_line(line_handler* lh, int dir){
 
         _curr_line->prev_line = new_line_num;
         
+        // check if the new line needs to be come the top line
         if (lh->curr_line == lh->top_line){
             lh->top_line = new_line_num;
         } else {
@@ -107,6 +109,9 @@ int add_new_line(line_handler* lh, int dir){
         }
         
     }
+
+    // handle update after if needed 
+    // lh->curr_line = new_line_num;
 
     return new_line_num;
 }

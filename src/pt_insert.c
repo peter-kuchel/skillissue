@@ -183,12 +183,55 @@ static int create_middle_insert(piece_table* pt){
     return 0; 
 }
 
-static int handle_new_line_insert(piece_table* pt, curs_pos* curs_pos){
-    // get current line 
-    line* curr_line = LH_CURR_LINE(pt);
+static int handle_new_line_insert(piece_table* pt, cursor_pos* curs_pos){
 
-    // create new line under it and swap out next_line / 
-    add_new_line()
+    // current line won't be updated here 
+    int new_line = add_new_line(lh, (pt->curr_ins_ent == pt->ent_head ? -1 : 1));
+
+    // calc new line sizes with the new addition 
+    int move_ent = pt->curr_ins_ent;
+    size_t chr_ptr;
+    pt_entry* _ent; 
+    pt_buffer_t* src_buff; 
+
+    int parsing = 1; 
+    int right_dir_size;
+   
+    while (parsing){
+
+        _ent = &(pt->entries[move_ent]);
+        chr_ptr = _ent->start; 
+
+        src_buff = GET_PT_BUFF(pt, _ent->src);
+        
+        do {
+
+            if (src_buff[chr_ptr] == '\n'){
+                parsing--; 
+                break; 
+            }
+
+            chr_ptr++;
+            right_dir_size++;
+        } while (chr_ptr < _ent->len);
+        
+        // update to the next ent
+        if (parsing){
+            move_ent = _ent->left;
+            if (move_ent == NULL_ENT)
+                parsing--;
+        }
+    }; 
+
+    // get current line 
+    line* _new_line = &(pt->lh.lines[new_line]);
+    line* curr_line = LH_CURR_LINE(pt);
+    
+    curr_line->line_size = curr_line->line_size - right_dir_size;
+    _new_line->line_size = right_dir_size;
+
+    pt->lh.curr_line = new_line;
+
     return 0; 
 }
 
