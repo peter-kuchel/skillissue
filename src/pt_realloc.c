@@ -78,6 +78,7 @@ int add_new_line(line_handler* lh, int dir){
     int new_line_num = get_new_line(lh);
 
     _curr_line = &(lh->lines[lh->curr_line]);
+    new_line = &(lh->lines[new_line_num]);
 
     if (dir > 0){
         new_line->next_line = _curr_line->next_line;
@@ -85,16 +86,26 @@ int add_new_line(line_handler* lh, int dir){
 
         _curr_line->next_line = new_line_num;
 
-        neighbour = &(lh->lines[_curr_line->next_line]);
-        neighbour->prev_line = new_line_num;  
+        if (lh->curr_line == lh->bottom_line){
+            lh->bottom = new_line_num;
+        } else {
+            neighbour = &(lh->lines[_curr_line->next_line]);
+            neighbour->prev_line = new_line_num;
+        }
+          
     } else {
         new_line->prev_line = _curr_line->prev_line;
         new_line->next_line = lh->curr_line;
 
         _curr_line->prev_line = new_line_num;
         
-        neighbour = &(lh->lines[_curr_line->prev_line]);
-        neighbour->next_line = new_line_num;
+        if (lh->curr_line == lh->top_line){
+            lh->top_line = new_line_num;
+        } else {
+            neighbour = &(lh->lines[_curr_line->prev_line]);
+            neighbour->next_line = new_line_num;
+        }
+        
     }
 
     return new_line_num;

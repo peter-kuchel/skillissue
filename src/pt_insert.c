@@ -183,6 +183,15 @@ static int create_middle_insert(piece_table* pt){
     return 0; 
 }
 
+static int handle_new_line_insert(piece_table* pt, curs_pos* curs_pos){
+    // get current line 
+    line* curr_line = LH_CURR_LINE(pt);
+
+    // create new line under it and swap out next_line / 
+    add_new_line()
+    return 0; 
+}
+
 int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in){
 
     pt_entry *curr_ent, *curr_ins;
@@ -250,7 +259,7 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in){
 
     // handle when a new line is added 
     if (user_in == '\n'){
-        
+        handle_new_line_insert(pt, curs_pos);
     } else {
         
         line* curr_line = LH_CURR_LINE(pt);
