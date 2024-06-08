@@ -2,6 +2,9 @@
 
 int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
     
+    // reset the column memory when moving across the line
+    pt->lh.col_mem = -1; 
+
     pt_entry* ent = &(pt->entries[pt->curr_ent_ptr]);
     size_t chr_ptr = pt->curr_chr_ptr; 
 
@@ -161,7 +164,7 @@ int handle_jump_down(piece_table* pt, cursor_pos* pos){
         #ifdef DEBUG_MOVE
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(pbuf, 
-                "[going to next line from the right]");
+                "[going to next line from the right]\n");
             log_to_file(&sk_logger, pbuf);
         #endif 
     }
@@ -180,7 +183,7 @@ int handle_jump_up(piece_table* pt, cursor_pos* pos){
         #ifdef DEBUG_MOVE
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(pbuf, 
-                "[going up to next line from the left]");
+                "[going up to next line from the left]\n");
             log_to_file(&sk_logger, pbuf);
         #endif
         
@@ -194,9 +197,9 @@ int move_chr_ptr(piece_table* pt, int dist, int dir){
     int curr_ent = pt->curr_ent_ptr; 
     
     pt_entry *curr = &(pt->entries[curr_ent]);
-    size_t end = dir > 0 ? curr->start : curr->len - 1; 
+    size_t end = dir > 0 ? curr->len - 1 : curr->start; 
 
-    while (d < dist){
+    while (d <= dist){
 
         if (dir > 0) 
             pt->curr_chr_ptr++;
@@ -207,7 +210,7 @@ int move_chr_ptr(piece_table* pt, int dist, int dir){
 
         if (pt->curr_chr_ptr == end){
 
-            curr_ent = dir > 0 ? curr->left : curr->right; 
+            curr_ent = dir < 0 ? curr->left : curr->right; 
             curr = &(pt->entries[curr_ent]);
             
             pt->curr_chr_ptr = dir > 0 ? curr->start : curr->start + (curr->len - 1); 
@@ -220,47 +223,80 @@ int move_chr_ptr(piece_table* pt, int dist, int dir){
 
 int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir){
     line *curr, *jump_to;
-    int dist;
-    // check for going up the file
+    int dist, jump_size, curr_size, curr_col_mem;
 
+    // save the current column for the movement 
+    if (pt->lh.col_mem < 0)
+        pt->lh.col_mem = pos->x; 
+    
+    curr_col_mem = pt->lh.col_mem;
+  
     int _curr_line = pt->lh.curr_line; 
+    curr = &(pt->lh.lines[_curr_line]);
+    curr_size = curr->line_size;
+
     if (dir > 0){
-        
+
         if (pt->lh.top_line == _curr_line) return 0; 
 
         pos->y--; 
 
-        // handle x position 
-        
-        curr = &(pt->lh.lines[_curr_line]);
+        jump_to = &(pt->lh.lines[curr->prev_line]); 
+        jump_size = jump_to->line_size;
 
-        jump_to = &(pt->lh.lines[curr->next_line]); 
-
-        // calculate distance from current line to beginning of the new line 
-        if (jump_to->line_size < curr->line_size)
-            dist = pos->x; 
-        // calculate how many steps to walk through to get at the same x
-        else 
-             dist = (jump_to->line_size - pos->x) + pos->x; 
+        //  
+        if (jump_size >= curr_col_mem){
+            dist = pos->x + (curr_size - pos->x) + 1; 
+            pos->x = curr_col_mem;
+        } else{
+            dist = jump_size + pos->x;
+            pos->x = jump_size;
+        } 
         
         move_chr_ptr(pt, dist, -1);
+        pt->lh.curr_line = curr->prev_line;
+
+        #ifdef DEBUG_MOVE
+            memset(pbuf, 0, PBUF_SIZE);
+            sprintf(pbuf, 
+                "[moving up 1 line mem: (%d)]: xpos: %d, curr: %d, chr_ptr: %ld, dist: %d, line size: %d\n",
+                curr_col_mem, pos->x, pt->lh.curr_line, pt->curr_chr_ptr, dist, jump_to->line_size
+                );
+            log_to_file(&sk_logger, pbuf);
+        #endif
 
     // check for going down the file
     } else {
+
         if (pt->lh.bottom_line == _curr_line) return 0;
 
         pos->y++; 
 
-        curr = &(pt->lh.lines[_curr_line]);
-        jump_to = &(pt->lh.lines[curr->prev_line]);
+        jump_to = &(pt->lh.lines[curr->next_line]);
+        jump_size = jump_to->line_size;
 
-        if (jump_to->line_size < curr->line_size)
-            dist = pos->x; 
-        else 
-            dist = (jump_to->line_size - pos->x) + pos->x; 
+        if (jump_size >= curr_col_mem){
+            dist = curr_col_mem + (curr_size - pos->x) + 1;
+            pos->x = curr_col_mem;
+        } 
+        
+        else{
+            dist = jump_size + (curr_size - pos->x); 
+            pos->x = jump_size;
+        }
         
 
         move_chr_ptr(pt, dist, 1);
+        pt->lh.curr_line = curr->next_line;
+
+        #ifdef DEBUG_MOVE
+            memset(pbuf, 0, PBUF_SIZE);
+            sprintf(pbuf, 
+                "[moving down 1 line mem: (%d)]: xpos: %d, curr: %d, chr_ptr: %ld, dist: %d, line size: %d\n",
+                curr_col_mem, pos->x, pt->lh.curr_line, pt->curr_chr_ptr, dist, jump_to->line_size
+                );
+            log_to_file(&sk_logger, pbuf);
+        #endif
     } 
     return 0;
 }

@@ -95,7 +95,10 @@ int edit_file(char* fn){
     cursor_pos pos = { .x = 0, .y = 0 };
     move(pos.y, pos.x);
 
-    log_piece_table_current(&sk_logger, &pt);
+    #ifdef DEBUG_PT
+        log_piece_table_current(&sk_logger, &pt);
+    #endif 
+    // log_piece_table_current(&sk_logger, &pt);
 
     int user_in;
     
@@ -163,6 +166,7 @@ int edit_file(char* fn){
                     handle_side_movement(&pt, &pos, -1);
                     handle_jump_up(&pt, &pos);
                     break;
+                    
                 case 's':
                     handle_line_movement(&pt, &pos, -1);
                     break;
@@ -183,6 +187,10 @@ int edit_file(char* fn){
         // need to be in this order 
         render_screen(&pt);
         move(pos.y , pos.x);
+
+        // #ifdef DEBUG_PT
+        //     log_piece_table_current(&sk_logger, &pt);
+        // #endif 
        
 
         if (edit_status < 0) in_edit--;

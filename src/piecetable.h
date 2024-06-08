@@ -34,6 +34,8 @@ typedef struct {
     int line_number;                    // actual line number of the current line
     // int nl_side_hit;
 
+    int col_mem;                        // remember which col the cursor is on
+
 } line_handler; 
 
 typedef enum {
