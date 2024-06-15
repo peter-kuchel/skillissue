@@ -1,5 +1,7 @@
 #include "logging.h"
 
+Logger sk_logger = { .fname = NULL, .fstream = NULL};
+char pbuf[PBUF_SIZE];
 
 int log_to_file(Logger* logger, char* msg){
 
