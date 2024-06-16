@@ -246,7 +246,7 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir){
 
         //  
         if (jump_size >= curr_col_mem){
-            dist = pos->x + (curr_size - pos->x) + 1; 
+            dist = pos->x + (curr_size - pos->x); 
             pos->x = curr_col_mem;
         } else{
             dist = jump_size + pos->x;
@@ -257,10 +257,11 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir){
         pt->lh.curr_line = curr->prev_line;
 
         #ifdef DEBUG_MOVE
+            char _c = PTR_AT_CHR(pt,pt->curr_chr_ptr);
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(pbuf, 
-                "[moving up 1 line mem: (%d)]: xpos: %d, curr: %d, chr_ptr: %ld, dist: %d, line size: %d\n",
-                curr_col_mem, pos->x, pt->lh.curr_line, pt->curr_chr_ptr, dist, jump_to->line_size
+                "[moving up 1 with col mem: (%d)]: xpos: %d, curr: %d, chr_ptr: %ld, dist: %d, line size: %d | %c,\n",
+                curr_col_mem, pos->x, pt->lh.curr_line, pt->curr_chr_ptr, dist, jump_to->line_size, _c
                 );
             log_to_file(&sk_logger, pbuf);
         #endif
@@ -276,7 +277,7 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir){
         jump_size = jump_to->line_size;
 
         if (jump_size >= curr_col_mem){
-            dist = curr_col_mem + (curr_size - pos->x) + 1;
+            dist = curr_col_mem + (curr_size - pos->x);
             pos->x = curr_col_mem;
         } 
         
@@ -290,10 +291,11 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir){
         pt->lh.curr_line = curr->next_line;
 
         #ifdef DEBUG_MOVE
+            char _c = PTR_AT_CHR(pt,pt->curr_chr_ptr);
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(pbuf, 
-                "[moving down 1 line mem: (%d)]: xpos: %d, curr: %d, chr_ptr: %ld, dist: %d, line size: %d\n",
-                curr_col_mem, pos->x, pt->lh.curr_line, pt->curr_chr_ptr, dist, jump_to->line_size
+                "[moving down 1 with col mem (%d)]: xpos: %d, curr: %d, chr_ptr: %ld, dist: %d, line size: %d | %c\n",
+                curr_col_mem, pos->x, pt->lh.curr_line, pt->curr_chr_ptr, dist, jump_to->line_size, _c
                 );
             log_to_file(&sk_logger, pbuf);
         #endif
