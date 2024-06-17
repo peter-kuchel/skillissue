@@ -201,21 +201,58 @@ int move_chr_ptr(piece_table* pt, int dist, int dir){
 
     while (d <= dist){
 
-        if (dir > 0) 
-            pt->curr_chr_ptr++;
-        else         
-            pt->curr_chr_ptr--; 
-
-        d++; 
+        #ifdef DEBUG_MOVE
+            char _c = PTR_AT_CHR(pt,pt->curr_chr_ptr);
+            memset(pbuf, 0, PBUF_SIZE);
+            sprintf(pbuf, 
+                "[dir: %d] %d <= %d (dist) | at: {%ld} -> end {%ld}| curr_ent: %d [%c]\n",
+                dir, d, dist, pt->curr_chr_ptr, end, curr_ent, _c  
+            );
+            log_to_file(&sk_logger, pbuf);
+        #endif 
 
         if (pt->curr_chr_ptr == end){
 
-            curr_ent = dir < 0 ? curr->left : curr->right; 
-            curr = &(pt->entries[curr_ent]);
-            
-            pt->curr_chr_ptr = dir > 0 ? curr->start : curr->start + (curr->len - 1); 
-            end = dir > 0 ? curr->len - 1: curr->start; 
+            #ifdef DEBUG_MOVE
+                    memset(pbuf, 0, PBUF_SIZE);
+                    sprintf(pbuf, 
+                        "[REACH END of current ENT]\n");
+                    log_to_file(&sk_logger, pbuf);
+                #endif 
+
+            // check if moving down will hit the end of the file
+            if (pt->ent_tail == curr_ent && dir == 1){
+                pt->curr_chr_ptr++;
+                
+            // else go into the next entry 
+            } else {
+                curr_ent = dir < 0 ? curr->left : curr->right; 
+                curr = &(pt->entries[curr_ent]);
+                
+                pt->curr_chr_ptr = dir > 0 ? curr->start : curr->start + (curr->len - 1); 
+                pt->curr_ent_ptr = curr_ent;
+                end = dir > 0 ? curr->len - 1 : curr->start;
+
+                #ifdef DEBUG_MOVE
+                    memset(pbuf, 0, PBUF_SIZE);
+                    sprintf(pbuf, 
+                        "[REACH END]: new-- end: %ld, curr_ent: %d, curr_chr_ptr: %ld\n",
+                            end, curr_ent, pt->curr_chr_ptr
+                    );
+                    log_to_file(&sk_logger, pbuf);
+                #endif 
+            }
+
+        } else{
+
+            if (dir > 0) 
+                pt->curr_chr_ptr++;
+            else         
+                pt->curr_chr_ptr--; 
         }
+
+        d++; 
+
     }
 
     return 0; 
@@ -235,7 +272,8 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir){
     curr = &(pt->lh.lines[_curr_line]);
     curr_size = curr->line_size;
 
-    if (dir > 0){
+    // going up the file
+    if (dir < 0){
 
         if (pt->lh.top_line == _curr_line) return 0; 
 
@@ -246,21 +284,21 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir){
 
         //  
         if (jump_size >= curr_col_mem){
-            dist = pos->x + (curr_size - pos->x); 
+            dist = pos->x + (jump_size - pos->x); 
             pos->x = curr_col_mem;
         } else{
             dist = jump_size + pos->x;
             pos->x = jump_size;
         } 
         
-        move_chr_ptr(pt, dist, -1);
+        move_chr_ptr(pt, dist, dir);
         pt->lh.curr_line = curr->prev_line;
 
         #ifdef DEBUG_MOVE
             char _c = PTR_AT_CHR(pt,pt->curr_chr_ptr);
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(pbuf, 
-                "[moving up 1 with col mem: (%d)]: xpos: %d, curr: %d, chr_ptr: %ld, dist: %d, line size: %d | %c,\n",
+                "[moving up 1 with col mem: (%d)]: xpos: %d, curr: %d, chr_ptr: %ld, dist: %d, line size: %d | [%c],\n",
                 curr_col_mem, pos->x, pt->lh.curr_line, pt->curr_chr_ptr, dist, jump_to->line_size, _c
                 );
             log_to_file(&sk_logger, pbuf);
@@ -287,14 +325,14 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir){
         }
         
 
-        move_chr_ptr(pt, dist, 1);
+        move_chr_ptr(pt, dist, dir);
         pt->lh.curr_line = curr->next_line;
 
         #ifdef DEBUG_MOVE
             char _c = PTR_AT_CHR(pt,pt->curr_chr_ptr);
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(pbuf, 
-                "[moving down 1 with col mem (%d)]: xpos: %d, curr: %d, chr_ptr: %ld, dist: %d, line size: %d | %c\n",
+                "[moving down 1 with col mem (%d)]: xpos: %d, curr: %d, chr_ptr: %ld, dist: %d, line size: %d | [%c]\n",
                 curr_col_mem, pos->x, pt->lh.curr_line, pt->curr_chr_ptr, dist, jump_to->line_size, _c
                 );
             log_to_file(&sk_logger, pbuf);

@@ -143,6 +143,7 @@ int init_line_handler(line_handler* lh, pt_buffer_t* original_buffer){
         if (c == '\n' || at_last){
 
             if (at_last) s++;
+            // s++; 
 
             new_line = get_new_line(lh);
             _curr_line = &(lh->lines[new_line]);
@@ -152,7 +153,7 @@ int init_line_handler(line_handler* lh, pt_buffer_t* original_buffer){
             #ifdef DEBUG_PT
                 memset(pbuf, 0, PBUF_SIZE);
                 sprintf(pbuf, 
-                    "[New line found in original at position]: %ld, new line is: %d\n", i, new_line);
+                    "[New line found in original at position]: %ld, new line is: %d, size: %d\n", i, new_line, s);
                 log_to_file(&sk_logger, pbuf);
             #endif 
 

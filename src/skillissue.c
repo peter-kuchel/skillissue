@@ -98,7 +98,6 @@ int edit_file(char* fn){
     #ifdef DEBUG_PT
         log_piece_table_current(&sk_logger, &pt);
     #endif 
-    // log_piece_table_current(&sk_logger, &pt);
 
     int user_in;
     
@@ -158,7 +157,7 @@ int edit_file(char* fn){
                 
                 /* move around file*/
                 case 'w':
-                    handle_line_movement(&pt, &pos, 1);
+                    handle_line_movement(&pt, &pos, -1);
                     break; 
                     
                 case 'a':
@@ -168,7 +167,7 @@ int edit_file(char* fn){
                     break;
                     
                 case 's':
-                    handle_line_movement(&pt, &pos, -1);
+                    handle_line_movement(&pt, &pos, 1);
                     break;
 
                 case 'd':
