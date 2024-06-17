@@ -197,7 +197,12 @@ int move_chr_ptr(piece_table* pt, int dist, int dir){
     int curr_ent = pt->curr_ent_ptr; 
     
     pt_entry *curr = &(pt->entries[curr_ent]);
-    size_t end = dir > 0 ? curr->len - 1 : curr->start; 
+    size_t end = dir > 0 ? curr->start + (curr->len - 1) : curr->start; 
+
+    if ( curr_ent == pt->ent_tail && 
+         pt->curr_chr_ptr == curr->start + (curr->len - 1) ){
+        pt->curr_chr_ptr--;
+    }
 
     while (d <= dist){
 
@@ -223,7 +228,7 @@ int move_chr_ptr(piece_table* pt, int dist, int dir){
             // check if moving down will hit the end of the file
             if (pt->ent_tail == curr_ent && dir == 1){
                 pt->curr_chr_ptr++;
-                
+
             // else go into the next entry 
             } else {
                 curr_ent = dir < 0 ? curr->left : curr->right; 
@@ -231,7 +236,7 @@ int move_chr_ptr(piece_table* pt, int dist, int dir){
                 
                 pt->curr_chr_ptr = dir > 0 ? curr->start : curr->start + (curr->len - 1); 
                 pt->curr_ent_ptr = curr_ent;
-                end = dir > 0 ? curr->len - 1 : curr->start;
+                end = dir > 0 ? curr->start + (curr->len - 1) : curr->start;
 
                 #ifdef DEBUG_MOVE
                     memset(pbuf, 0, PBUF_SIZE);
@@ -284,7 +289,7 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir){
 
         //  
         if (jump_size >= curr_col_mem){
-            dist = pos->x + (jump_size - pos->x); 
+            dist = pos->x + (jump_size - curr_col_mem); 
             pos->x = curr_col_mem;
         } else{
             dist = jump_size + pos->x;
