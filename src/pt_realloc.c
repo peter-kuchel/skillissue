@@ -69,9 +69,9 @@ static int get_new_line(line_handler* lh){
    return new_line; 
 }
 
-int add_new_line(line_handler* lh, int dir){
+int add_new_line(line_handler* lh){
 
-    // needs to handle cases for head and tail 
+    // needs to handle cases for tail 
     // needs to handle cases where there is less than 3 lines already 
     line *new_line, *_curr_line, *neighbour; 
 
@@ -80,35 +80,53 @@ int add_new_line(line_handler* lh, int dir){
     _curr_line = &(lh->lines[lh->curr_line]);
     new_line = &(lh->lines[new_line_num]);
 
-    if (dir > 0){
-        new_line->next_line = _curr_line->next_line;
-        new_line->prev_line = lh->curr_line;
+    new_line->next_line = _curr_line->next_line;
+    new_line->prev_line = lh->curr_line;
 
-        _curr_line->next_line = new_line_num;
-        
-        // check if the new line needs to be come the bottom line
-        if (lh->curr_line == lh->bottom_line){
-            lh->bottom_line = new_line_num;
-        } else {
-            neighbour = &(lh->lines[_curr_line->next_line]);
-            neighbour->prev_line = new_line_num;
-        }
-          
+    
+    // check if the new line needs to become the bottom line
+    if (lh->curr_line == lh->bottom_line){
+        lh->bottom_line = new_line_num;
+
     } else {
-        new_line->prev_line = _curr_line->prev_line;
-        new_line->next_line = lh->curr_line;
 
-        _curr_line->prev_line = new_line_num;
-        
-        // check if the new line needs to be come the top line
-        if (lh->curr_line == lh->top_line){
-            lh->top_line = new_line_num;
-        } else {
-            neighbour = &(lh->lines[_curr_line->prev_line]);
-            neighbour->next_line = new_line_num;
-        }
-        
+        neighbour = &(lh->lines[_curr_line->next_line]);
+        neighbour->prev_line = new_line_num;
     }
+
+    _curr_line->next_line = new_line_num;
+
+
+
+    // if (dir > 0){
+    //     new_line->next_line = _curr_line->next_line;
+    //     new_line->prev_line = lh->curr_line;
+
+    //     _curr_line->next_line = new_line_num;
+        
+    //     // check if the new line needs to be come the bottom line
+    //     if (lh->curr_line == lh->bottom_line){
+    //         lh->bottom_line = new_line_num;
+    //     } else {
+    //         neighbour = &(lh->lines[_curr_line->next_line]);
+    //         neighbour->prev_line = new_line_num;
+    //     }
+          
+    // } else {
+    //     new_line->prev_line = _curr_line->prev_line;
+    //     new_line->next_line = lh->curr_line;
+
+    //     _curr_line->prev_line = new_line_num;
+        
+    //     // check if the new line needs to be come the top line
+    //     if (lh->curr_line == lh->top_line){
+    //         lh->top_line = new_line_num;
+    //     } else {
+    //         neighbour = &(lh->lines[_curr_line->prev_line]);
+    //         neighbour->next_line = new_line_num;
+    //     }
+        
+    // }
 
     // handle update after if needed 
     // lh->curr_line = new_line_num;

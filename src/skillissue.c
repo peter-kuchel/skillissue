@@ -129,6 +129,7 @@ int edit_file(char* fn){
 
         /* if not in a particular mode then see if we'll enter a mode */
         } else {
+            int prev_ent, prev_chr_ptr; 
             switch(user_in){
 
                 /* save progress and write to file */
@@ -161,7 +162,9 @@ int edit_file(char* fn){
                     break; 
                     
                 case 'a':
-                    pt.prev_chr_ptr = pt.curr_chr_ptr;
+                    // pt.prev_chr_ptr = pt.curr_chr_ptr;
+                    // prev_chr_ptr = pt.curr_chr_ptr; 
+                    // prev_ent = pt.curr_ent_ptr;
                     handle_side_movement(&pt, &pos, -1);
                     handle_jump_up(&pt, &pos);
                     break;
@@ -171,9 +174,11 @@ int edit_file(char* fn){
                     break;
 
                 case 'd':
-                    pt.prev_chr_ptr = pt.curr_chr_ptr;
+                    // pt.prev_chr_ptr = pt.curr_chr_ptr;
+                    prev_chr_ptr = pt.curr_chr_ptr; 
+                    prev_ent = pt.curr_ent_ptr;
                     handle_side_movement(&pt, &pos, 1);
-                    handle_jump_down(&pt, &pos);
+                    handle_jump_down(&pt, &pos, prev_chr_ptr, prev_ent);
                     break; 
                 
                 default:

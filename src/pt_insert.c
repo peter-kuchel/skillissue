@@ -186,25 +186,35 @@ static int create_middle_insert(piece_table* pt){
 static int handle_new_line_insert(piece_table* pt, cursor_pos* curs_pos){
 
     // current line won't be updated here 
-    int new_line = add_new_line(&(pt->lh), (pt->curr_ins_ent == pt->ent_head ? -1 : 1));
+    // int new_line = add_new_line(&(pt->lh), (pt->curr_ins_ent == pt->ent_head ? -1 : 1));
+    int new_line = add_new_line(&(pt->lh));
 
     // calc new line sizes with the new addition 
-    int move_ent = pt->curr_ins_ent;
+    // int move_ent = pt->curr_ins_ent;
+    int move_ent = (pt->entries[pt->curr_ins_ent]).right; 
     size_t chr_ptr;
     pt_entry* _ent; 
     pt_buffer_t* src_buff; 
 
     int parsing = 1; 
     int right_dir_size = 0;
+
+    chr_ptr = pt->curr_chr_ptr; 
+    _ent = &(pt->entries[move_ent]);
    
     while (parsing){
-
-        _ent = &(pt->entries[move_ent]);
-        chr_ptr = _ent->start; 
 
         src_buff = GET_PT_BUFF(pt, _ent->src);
         
         do {
+
+            #ifdef DEBUG_INSERT
+                char _c = PTR_AT_CHR(pt, chr_ptr);
+                memset(pbuf, 0, PBUF_SIZE);
+                sprintf(pbuf, "[%c] ", 
+                    _c);
+                log_to_file(&sk_logger, pbuf);
+            #endif 
 
             if (src_buff->text[chr_ptr] == '\n'){
                 parsing--; 
@@ -217,9 +227,15 @@ static int handle_new_line_insert(piece_table* pt, cursor_pos* curs_pos){
         
         // update to the next ent
         if (parsing){
-            move_ent = _ent->left;
-            if (move_ent == NULL_ENT)
+            move_ent = _ent->right;
+            
+
+            if (move_ent == NULL_ENT){
                 parsing--;
+            } else {
+                _ent = &(pt->entries[move_ent]);
+                chr_ptr = _ent->start;
+            }
         }
     }; 
 
@@ -233,6 +249,14 @@ static int handle_new_line_insert(piece_table* pt, cursor_pos* curs_pos){
     pt->lh.curr_line = new_line;
 
     curs_pos->x = 0; 
+    curs_pos->y++; 
+
+    #ifdef DEBUG_INSERT
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "[New Line Insert]: {%d} , size = %d\n", 
+            new_line, _new_line->line_size);
+        log_to_file(&sk_logger, pbuf);
+    #endif 
 
     return 0; 
 }

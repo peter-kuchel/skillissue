@@ -20,7 +20,7 @@ void check_line_handler_size(line_handler* lh);
 int new_pt_entry(piece_table* pt);
 
 // int get_new_line(line_handler* lh);
-int add_new_line(line_handler* lh, int dir);
+int add_new_line(line_handler* lh);
 int init_line_handler(line_handler* lh, pt_buffer_t* original_buffer);
 
 #endif

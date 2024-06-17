@@ -223,6 +223,11 @@ static int delete_curr_exhuasted(piece_table* pt){
     return 0; 
 }
 
+static int handle_new_line_delete(piece_table* pt, cursor_pos* curs_pos){
+
+    return 0; 
+}
+
 int delete_manager(piece_table* pt, cursor_pos* curs_pos, int key_pressed){
 
     // handle delete key presses 
@@ -300,7 +305,7 @@ int delete_manager(piece_table* pt, cursor_pos* curs_pos, int key_pressed){
 
     // check if a new line was removed 
     if (_c == '\n'){
-
+        handle_new_line_delete(pt, curs_pos);
     } else {
         line* curr_line = LH_CURR_LINE(pt);
         curr_line->line_size--;

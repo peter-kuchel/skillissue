@@ -154,17 +154,24 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
     return 0; 
 }
 
-int handle_jump_down(piece_table* pt, cursor_pos* pos){
-    if ( PTR_AT_CHR(pt, pt->prev_chr_ptr) == '\n'){
-                        // handle_side_movement(&pt, &pos, 1);
-        pt->lh.curr_line++; 
+int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int prev_ent){
+
+    pt_src_t _prev_src = (pt->entries[prev_ent]).src;
+    pt_buffer_t *src_buffer = GET_PT_BUFF(pt, _prev_src);
+    char prev_char = src_buffer->text[prev_chr_ptr]; 
+
+    if ( prev_char == '\n'){
+                        
+        // pt->lh.curr_line++; 
+        line *curr = LH_CURR_LINE(pt);
+        pt->lh.curr_line = curr->next_line; 
         pos->y++;
         pos->x = 0;
         
         #ifdef DEBUG_MOVE
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(pbuf, 
-                "[going to next line from the right]\n");
+                "[JUMP DOWN]: curr line is: %d\n", pt->lh.curr_line);
             log_to_file(&sk_logger, pbuf);
         #endif 
     }
@@ -176,14 +183,16 @@ int handle_jump_up(piece_table* pt, cursor_pos* pos){
 
     if (PTR_AT_CHR(pt, pt->curr_chr_ptr) == '\n'){
         
-        pt->lh.curr_line--; 
+        // pt->lh.curr_line--; 
+        line *curr = LH_CURR_LINE(pt);
+        pt->lh.curr_line = curr->prev_line; 
         pos->y--; 
         pos->x = CURR_LINE_SIZE(pt);
 
         #ifdef DEBUG_MOVE
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(pbuf, 
-                "[going up to next line from the left]\n");
+                "[JUMP UP]: curr line is: %d\n", pt->lh.curr_line);
             log_to_file(&sk_logger, pbuf);
         #endif
         
@@ -292,7 +301,7 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir){
             dist = pos->x + (jump_size - curr_col_mem); 
             pos->x = curr_col_mem;
         } else{
-            dist = jump_size + pos->x;
+            dist = pos->x;
             pos->x = jump_size;
         } 
         
