@@ -4,9 +4,6 @@
   there is a confirmed delete
 
 * track position of cursor so that it moves correctly on the front end side of things 
-    * handle finding new lines to increment y 
-    * handle keeping the cursor in the same column when going up and down 
-    * bounds checking 
     * rendering only text within the terminal box, based off of the size and position within the file
     * handling the cursor position on a line where it is just '\n'
         * keep a record of lines using indexes into the buffers
@@ -24,3 +21,5 @@
 * something that displays the command that has been toggled (similar to vim?)
 
 * searching the file for certain words
+
+* grammar correction 
