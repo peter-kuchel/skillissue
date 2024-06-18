@@ -225,6 +225,36 @@ static int delete_curr_exhuasted(piece_table* pt){
 
 static int handle_new_line_delete(piece_table* pt, cursor_pos* curs_pos){
 
+    // combine lines together 
+
+    pt_stack_t* reclaim = &(pt->lh.line_reclaim); 
+
+    line *to_remove, *to_merge, *neighbour; 
+
+    int rm_pos = pt->lh.curr_line; 
+    to_remove = LH_CURR_LINE(pt);
+
+    int merge_pos = to_remove->prev_line; 
+
+    pt->lh.curr_line = merge_pos; 
+    to_merge = LH_CURR_LINE(pt);
+
+    to_merge->next_line = to_remove->next_line; 
+
+    if (rm_pos == pt->lh.bottom_line){
+        pt->lh.top_line = merge_pos; 
+    } else {
+        neighbour = &(pt->lh.lines[to_remove->next_line]);
+        neighbour->prev_line = merge_pos;
+    }
+ 
+    curs_pos->y--; 
+    curs_pos->x = to_merge->line_size; 
+
+    to_merge->line_size += to_remove->line_size; 
+
+    push_pt_stack(reclaim, rm_pos); 
+
     return 0; 
 }
 

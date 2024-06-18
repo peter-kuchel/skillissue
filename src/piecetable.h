@@ -14,6 +14,12 @@
 #define NULL_ENT -1
 #define NULL_LINE -1
 
+typedef struct{
+    int* stack; 
+    int cap; 
+    int ptr; 
+} pt_stack_t;
+
 typedef struct {
     int next_line; 
     int prev_line; 
@@ -23,6 +29,7 @@ typedef struct {
 
 typedef struct {
 
+    pt_stack_t line_reclaim; 
     line *lines;
     int cap;
     int size; 
@@ -65,13 +72,7 @@ typedef struct{
 
     int left; 
     int right; 
-} pt_entry; 
-
-typedef struct{
-    int* stack; 
-    int cap; 
-    int ptr; 
-} pt_stack_t; 
+} pt_entry;  
 
 typedef struct{
     /* buffers to hold the text */

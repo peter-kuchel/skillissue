@@ -36,6 +36,10 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
    pt->lh.lines = _lines; 
    pt->lh.cap = DEFAULT_LINES_SIZE; 
 
+   int* _line_reclaim = (int*)malloc( sizeof(int) * DEFAULT_PT_ENT_SIZE);
+   pt->lh.line_reclaim.stack = _line_reclaim; 
+   pt->lh.line_reclaim.cap = DEFAULT_PT_ENT_SIZE; 
+
    int* redo_ents = (int*)malloc( sizeof(int) * DEFAULT_PT_ENT_SIZE);
    pt->redo.stack = redo_ents;
    pt->redo.cap = DEFAULT_PT_ENT_SIZE;
