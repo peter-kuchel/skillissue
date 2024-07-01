@@ -160,9 +160,15 @@ int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int pre
     pt_buffer_t *src_buffer = GET_PT_BUFF(pt, _prev_src);
     char prev_char = src_buffer->text[prev_chr_ptr]; 
 
+    #ifdef DEBUG_MOVE
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, 
+            "[JUMP TEST DOWN]: %x\n", prev_char);
+        log_to_file(&sk_logger, pbuf);
+    #endif 
+
     if ( prev_char == '\n'){
                         
-        // pt->lh.curr_line++; 
         line *curr = LH_CURR_LINE(pt);
         pt->lh.curr_line = curr->next_line; 
         pos->y++;
@@ -181,9 +187,17 @@ int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int pre
 
 int handle_jump_up(piece_table* pt, cursor_pos* pos){
 
-    if (PTR_AT_CHR(pt, pt->curr_chr_ptr) == '\n'){
+    char _c = PTR_AT_CHR(pt, pt->curr_chr_ptr);
+
+    #ifdef DEBUG_MOVE
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, 
+            "[JUMP TEST UP]: %x\n", _c);
+        log_to_file(&sk_logger, pbuf);
+    #endif 
+
+    if ( _c == '\n'){
         
-        // pt->lh.curr_line--; 
         line *curr = LH_CURR_LINE(pt);
         pt->lh.curr_line = curr->prev_line; 
         pos->y--; 

@@ -162,9 +162,6 @@ int edit_file(char* fn){
                     break; 
                     
                 case 'a':
-                    // pt.prev_chr_ptr = pt.curr_chr_ptr;
-                    // prev_chr_ptr = pt.curr_chr_ptr; 
-                    // prev_ent = pt.curr_ent_ptr;
                     handle_side_movement(&pt, &pos, -1);
                     handle_jump_up(&pt, &pos);
                     break;
