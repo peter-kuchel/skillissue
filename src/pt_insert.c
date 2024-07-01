@@ -186,7 +186,6 @@ static int create_middle_insert(piece_table* pt){
 static int handle_new_line_insert(piece_table* pt, cursor_pos* curs_pos){
 
     // current line won't be updated here 
-    // int new_line = add_new_line(&(pt->lh), (pt->curr_ins_ent == pt->ent_head ? -1 : 1));
     int new_line = add_new_line(&(pt->lh));
 
     // calc new line sizes with the new addition 
@@ -199,8 +198,16 @@ static int handle_new_line_insert(piece_table* pt, cursor_pos* curs_pos){
     int parsing = 1; 
     int right_dir_size = 0;
 
-    chr_ptr = pt->curr_chr_ptr; 
     _ent = &(pt->entries[move_ent]);
+    // chr_ptr = pt->curr_chr_ptr; 
+    chr_ptr = _ent->start;
+    
+
+    #ifdef DEBUG_INSERT
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "[current move_ent]: %d, size: %ld\n", move_ent, _ent->len);
+        log_to_file(&sk_logger, pbuf);
+    #endif 
    
     while (parsing){
 
@@ -217,18 +224,29 @@ static int handle_new_line_insert(piece_table* pt, cursor_pos* curs_pos){
             #endif 
 
             if (src_buff->text[chr_ptr] == '\n'){
-                parsing--; 
+
+                parsing--;
+
+                #ifdef DEBUG_INSERT
+                    memset(pbuf, 0, PBUF_SIZE);
+                    sprintf(pbuf, "\n[FINISHED PARSING]\n");
+                    log_to_file(&sk_logger, pbuf);
+                #endif  
                 break; 
             }
 
             chr_ptr++;
             right_dir_size++;
-        } while (chr_ptr < _ent->len);
+        } while (chr_ptr < (_ent->len + _ent->start));
         
         // update to the next ent
         if (parsing){
             move_ent = _ent->right;
-            
+            #ifdef DEBUG_INSERT
+                memset(pbuf, 0, PBUF_SIZE);
+                sprintf(pbuf, "\n[next move_ent in newline]: %d\n", move_ent);
+                log_to_file(&sk_logger, pbuf);
+            #endif 
 
             if (move_ent == NULL_ENT){
                 parsing--;

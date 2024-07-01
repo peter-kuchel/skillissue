@@ -242,7 +242,7 @@ static int handle_new_line_delete(piece_table* pt, cursor_pos* curs_pos){
     to_merge->next_line = to_remove->next_line; 
 
     if (rm_pos == pt->lh.bottom_line){
-        pt->lh.top_line = merge_pos; 
+        pt->lh.bottom_line = merge_pos; 
     } else {
         neighbour = &(pt->lh.lines[to_remove->next_line]);
         neighbour->prev_line = merge_pos;
