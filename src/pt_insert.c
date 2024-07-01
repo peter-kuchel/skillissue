@@ -188,6 +188,26 @@ static int handle_new_line_insert(piece_table* pt, cursor_pos* curs_pos){
     // current line won't be updated here 
     int new_line = add_new_line(&(pt->lh));
 
+    line *_new_line, *curr_line;  
+
+    if (pt->curr_ins_ent == pt->ent_tail){
+        _new_line = &(pt->lh.lines[new_line]);
+        _new_line->line_size = 0; 
+
+        pt->lh.curr_line = new_line;
+
+        curs_pos->x = 0; 
+        curs_pos->y++;
+
+        #ifdef DEBUG_INSERT
+            memset(pbuf, 0, PBUF_SIZE);
+            sprintf(pbuf, "[New Line Insert at tail]");
+            log_to_file(&sk_logger, pbuf);
+        #endif
+
+        return 0; 
+    }
+
     // calc new line sizes with the new addition 
     // int move_ent = pt->curr_ins_ent;
     int move_ent = (pt->entries[pt->curr_ins_ent]).right; 
@@ -258,8 +278,8 @@ static int handle_new_line_insert(piece_table* pt, cursor_pos* curs_pos){
     }; 
 
     // get current line 
-    line* _new_line = &(pt->lh.lines[new_line]);
-    line* curr_line = LH_CURR_LINE(pt);
+    _new_line = &(pt->lh.lines[new_line]);
+    curr_line = LH_CURR_LINE(pt);
     
     curr_line->line_size = curr_line->line_size - right_dir_size;
     _new_line->line_size = right_dir_size;
