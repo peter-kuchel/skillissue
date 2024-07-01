@@ -6,7 +6,7 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
    
    size_t f_size = file_size(fn);
 
-   char* org_buf = (char*)malloc(f_size * sizeof(char));
+   char* org_buf = (char*)malloc( (f_size + 1) * sizeof(char) );
    char* add_buf = (char*)malloc(STARTING_ADD_BUF_SIZE * sizeof(char));
 
    size_t bytes_read = fread(org_buf, sizeof(char), f_size, f);
