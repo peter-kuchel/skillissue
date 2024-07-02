@@ -8,6 +8,6 @@
 #include "utils.h"
 
 
-int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in);
+int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in, line_view* lv);
 
 #endif

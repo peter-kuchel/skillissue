@@ -23,7 +23,6 @@ typedef struct{
 typedef struct {
     int next_line; 
     int prev_line; 
-
     int line_size; 
 } line; 
 
@@ -42,6 +41,8 @@ typedef struct {
     // int nl_side_hit;
 
     int col_mem;                        // remember which col the cursor is on
+    // int top_view;                       // top line in view in the editor
+    // int bot_view;                       // bottom line in view in the editor
 
 } line_handler; 
 

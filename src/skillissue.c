@@ -1,8 +1,4 @@
-
-#include "skillissue.h"
-
-
-static termw_info tinfo; 
+#include "skillissue.h" 
 
 
 void save_file_writes(FILE* f, piece_table* pt){
@@ -14,17 +10,13 @@ void save_file_writes(FILE* f, piece_table* pt){
 
 }
 
-void exit_insertion_mode(piece_table* pt, usermode* umode){
-    pt->curr_ins_ent = NULL_ENT;
-    pt->curr_del_ent = NULL_ENT; 
-    umode->mode &= 0;
-}
-
-int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos, int user_in){
+int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos, int user_in, line_view* lv){
 
     /* handle user finishing up insertion mode*/
     if (user_in == USR_MODE_ESC){
-        exit_insertion_mode(pt, umode);
+        pt->curr_ins_ent = NULL_ENT;
+        pt->curr_del_ent = NULL_ENT; 
+        umode->mode &= 0;
         
      /* handle deletion */
     } else if (user_in == KEY_BACKSPACE || user_in == KEY_DC) {
@@ -49,13 +41,13 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
             pt->curr_del_ent = NULL_ENT;     
 
         char _usr_in = (char)user_in;
-        insert_manager(pt, curs_pos, _usr_in);
+        insert_manager(pt, curs_pos, _usr_in, lv);
     }
 
     return 0; 
 }
 
-int edit_file(char* fn){
+int edit_file(char* fn, termw_info* tinfo){
      
     usermode umode; 
     memset((char*)&umode, 0, sizeof(usermode));
@@ -87,12 +79,15 @@ int edit_file(char* fn){
         exit(1);
     }
 
-    init_line_handler(&(pt.lh), &(pt.original));
-    
-    render_screen(&pt);
 
-    /* set cursor to very beginning of the file */
+
     cursor_pos pos = { .x = 0, .y = 0 };
+    line_view lv;
+
+    init_line_handler(&(pt.lh), &(pt.original));
+    init_line_view(tinfo, &lv, &(pt.lh));
+    
+    render_screen(&pt, &lv);
     move(pos.y, pos.x);
 
     #ifdef DEBUG_PT
@@ -119,7 +114,7 @@ int edit_file(char* fn){
             switch(umode.mode){
 
                 case USR_MODE_INS:
-                    insert_res = handle_insertion_mode(&pt, &umode, &pos, user_in);
+                    insert_res = handle_insertion_mode(&pt, &umode, &pos, user_in, &lv);
                     if (insert_res < 0){}
                     break;
 
@@ -171,7 +166,6 @@ int edit_file(char* fn){
                     break;
 
                 case 'd':
-                    // pt.prev_chr_ptr = pt.curr_chr_ptr;
                     prev_chr_ptr = pt.curr_chr_ptr; 
                     prev_ent = pt.curr_ent_ptr;
                     handle_side_movement(&pt, &pos, 1);
@@ -186,7 +180,8 @@ int edit_file(char* fn){
 
         /* re-render the screen */
         // need to be in this order 
-        render_screen(&pt);
+        // update_line_view(&(pt.lh), &lv);
+        render_screen(&pt, &lv);
         move(pos.y , pos.x);
 
         // #ifdef DEBUG_PT
@@ -217,6 +212,7 @@ void run_sk(int argc, char** argv){
 
     /* started with a file so load this file right away */
     if (argc > 1){
+        termw_info tinfo;
         initscr(); 
 
         // get size of the terminal 
@@ -229,7 +225,7 @@ void run_sk(int argc, char** argv){
         sprintf(pbuf, "[Screen Size] rows: %d, cols: %d\n", tinfo.rows, tinfo.cols);
         log_to_file(&sk_logger, pbuf);
 
-        int res = edit_file(argv[1]);
+        int res = edit_file(argv[1], &tinfo);
 
         teardown_logger(&sk_logger);
         endwin();

@@ -134,7 +134,7 @@ int add_new_line(line_handler* lh){
     return new_line_num;
 }
 
-int init_line_handler(line_handler* lh, pt_buffer_t* original_buffer){
+int init_line_handler(line_handler* lh, pt_buffer_t* original_buffer){ //, int term_rows
 
     int s = 0, prev_line = NULL_LINE, new_line; 
     size_t i = 0; 
@@ -192,12 +192,15 @@ int init_line_handler(line_handler* lh, pt_buffer_t* original_buffer){
         }
 
         i++;
-    
     }
 
     // add last line
     lh->bottom_line = prev_line;
     lh->curr_line = lh->top_line;
+
+    // lh->top_view = lh->top_line; 
+    // lh->bot_view = lh->bottom_line; 
+
 
     return 0; 
 }

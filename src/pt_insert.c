@@ -262,6 +262,7 @@ static int handle_new_line_insert(piece_table* pt, cursor_pos* curs_pos){
         // update to the next ent
         if (parsing){
             move_ent = _ent->right;
+
             #ifdef DEBUG_INSERT
                 memset(pbuf, 0, PBUF_SIZE);
                 sprintf(pbuf, "\n[next move_ent in newline]: %d\n", move_ent);
@@ -299,7 +300,7 @@ static int handle_new_line_insert(piece_table* pt, cursor_pos* curs_pos){
     return 0; 
 }
 
-int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in){
+int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in, line_view* lv){
 
     pt_entry *curr_ent, *curr_ins;
     // create the entries needed to handle the insert if they haven't been made already
@@ -367,6 +368,7 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in){
     // handle when a new line is added 
     if (user_in == '\n'){
         handle_new_line_insert(pt, curs_pos);
+        update_view_ins_nl(&(pt->lh), lv);
     } else {
         
         line* curr_line = LH_CURR_LINE(pt);
