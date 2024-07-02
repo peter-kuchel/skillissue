@@ -3,9 +3,17 @@
 * re-factor delete exhaustion so that it doesn't make a new entry until
   there is a confirmed delete
 
+* get ncurses to stop printing the ascii of the key pressed 
+
 * track position of cursor so that it moves correctly on the front end side of things 
     * rendering only text within the terminal box, based off of the size and position within the file
         * text view changing with terminal resizing
+* only render the screen if there is some change that happens
+    * else just move the cursor position (within ncurses)
+
+* fixed size buffer for printing to the screen(?)
+    * calculate the buffer size using the max screen size 
+        * dynamically alter this size when the screen is resized
 
 * handling redo and undo 
     * stack functions to handle the arrays
