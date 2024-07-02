@@ -1,12 +1,11 @@
-# TODO (and possible future functionality) in order: 
+# TODO (and possible future functionality) in not particular order: 
 
 * re-factor delete exhaustion so that it doesn't make a new entry until
   there is a confirmed delete
 
 * track position of cursor so that it moves correctly on the front end side of things 
     * rendering only text within the terminal box, based off of the size and position within the file
-    * handling the cursor position on a line where it is just '\n'
-        * keep a record of lines using indexes into the buffers
+        * text view changing with terminal resizing
 
 * handling redo and undo 
     * stack functions to handle the arrays
