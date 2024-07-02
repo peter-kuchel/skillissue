@@ -2,11 +2,12 @@
 
 An easy to use cli text-editor for the vscode soy-devs like myself who don't know how to type properly on a keyboard, and can't exit from Vim.
 
-*NOTE* This software is unfinished, please don't have any high expectations. See TODO.md for upcoming changes
+_**`NOTE This software is unfinished, please don't have any high expectations.`**_ 
+See TODO.md for upcoming changes.
 
 # Requirements: 
 
-Requires gcc 7.5.0 or greater, and ncurses plus associated headerfiles. 
+Requires gcc 7.5.0 or greater, and ncurses plus it's associated headerfiles. To install ncurses see [here](https://www.cyberciti.biz/faq/linux-install-ncurses-library-headers-on-debian-ubuntu-centos-fedora/)
 
 # Installing: 
 
