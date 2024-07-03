@@ -88,7 +88,7 @@ static int create_ent_end_insert(piece_table* pt){
     return 0; 
 }
 
-static int create_middle_insert(piece_table* pt){
+static int create_middle_insert(piece_table* pt, line_view* lv){
 
     // get info needed to be saved 
     pt_entry *_ent, *_side_ents; 
@@ -179,6 +179,10 @@ static int create_middle_insert(piece_table* pt){
             pt->curr_ins_ent, pt->ent_head, pt->ent_tail);
         log_to_file(&sk_logger, pbuf);
     #endif 
+
+    // update the line viewer 
+    if (old_ent_ptr == lv->top_view_ent)
+        lv->top_view_ent = new_left_ent;
 
     return 0; 
 }
@@ -330,7 +334,7 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in, line_vie
 
         /* handle case where insert is in the middle of an existing entry */
         } else {
-            create_middle_insert(pt);
+            create_middle_insert(pt, lv);
         }   
 
     }
@@ -368,13 +372,16 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in, line_vie
     // handle when a new line is added 
     if (user_in == '\n'){
         handle_new_line_insert(pt, curs_pos);
-        update_view_ins_nl(&(pt->lh), lv);
+        update_view_ins_nl(pt, lv);
     } else {
         
         line* curr_line = LH_CURR_LINE(pt);
         curr_line->line_size++;
         curs_pos->x++;
     }
+
+    // toggle that a render is required
+    lv->needs_render = 1; 
     
     #ifdef DEBUG_PT
         log_piece_table_current(&sk_logger, pt);

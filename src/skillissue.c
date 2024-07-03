@@ -79,13 +79,13 @@ int edit_file(char* fn, termw_info* tinfo){
         exit(1);
     }
 
-
+    piece_table* pt_ptr = &pt; 
 
     cursor_pos pos = { .x = 0, .y = 0 };
     line_view lv;
 
     init_line_handler(&(pt.lh), &(pt.original));
-    init_line_view(tinfo, &lv, &(pt.lh));
+    init_line_view(pt_ptr, tinfo, &lv, &(pt.lh));
     
     render_screen(&pt, &lv);
     move(pos.y, pos.x);
@@ -95,6 +95,8 @@ int edit_file(char* fn, termw_info* tinfo){
     #endif 
 
     int user_in;
+
+    noecho();
     
     do {
 
@@ -181,6 +183,8 @@ int edit_file(char* fn, termw_info* tinfo){
         /* re-render the screen */
         // need to be in this order 
         // update_line_view(&(pt.lh), &lv);
+
+        // render only if a render is required
         render_screen(&pt, &lv);
         move(pos.y , pos.x);
 

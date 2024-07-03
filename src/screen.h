@@ -30,24 +30,30 @@ typedef struct {
     pt_entry ent; 
 
     size_t ent_end;
+    size_t curr_start_ptr;
+    int curr_ent;
 } pt_track;
 
 typedef struct {
     termw_info* tinfo_ptr;
-    int top_view;
-    int bot_view; 
+    size_t top_view_chr;
+    int top_view_ent;
+    
 
     // sliding view window 
+    int top_win;
+    int bot_win; 
     int left_win; 
     int right_win;
-    // int buff_offset; 
 
     int total_line_chars;           // implement down the line
+
+    int needs_render;               // determine if a screen render is necessary 
 } line_view; 
 
-void init_line_view(termw_info* tinfo, line_view* lv, line_handler* lh); 
-void update_view_ins_nl(line_handler* lh, line_view* lv);
-void update_view_del_nl(line_handler* lh, line_view* lv); 
+void init_line_view(piece_table* pt, termw_info* tinfo, line_view* lv, line_handler* lh); 
+void update_view_ins_nl(piece_table* pt, line_view* lv);
+void update_view_del_nl(piece_table* pt, line_view* lv); 
 void render_screen(piece_table* pt, line_view* lv);
 
 #define CHR_IN_TRACK(track_ptr) \
