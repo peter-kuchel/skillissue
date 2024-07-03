@@ -121,6 +121,9 @@ typedef struct{
 #define CURR_LINE_SIZE(pt) \
     ( (LH_CURR_LINE(pt))->line_size )    
 
+#define ENT_AT_POS(pt, pos) \
+    ( &(pt->entries[pos]) )
+
 void log_piece_table_current(Logger* logger, piece_table* pt);
 int init_piece_table(FILE* f, char* fn, piece_table* pt);
 void empty_piece_table(piece_table* pt);
