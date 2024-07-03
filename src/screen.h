@@ -52,8 +52,14 @@ typedef struct {
 } line_view; 
 
 void init_line_view(piece_table* pt, termw_info* tinfo, line_view* lv, line_handler* lh); 
+
+void update_view_move_down(piece_table* pt, line_view* lv, cursor_pos* pos);
+void update_view_move_up(piece_table* pt, line_view* lv, cursor_pos* pos);
+
 void update_view_ins_nl(piece_table* pt, line_view* lv);
 void update_view_del_nl(piece_table* pt, line_view* lv); 
+
+
 void render_screen(piece_table* pt, line_view* lv);
 
 #define CHR_IN_TRACK(track_ptr) \

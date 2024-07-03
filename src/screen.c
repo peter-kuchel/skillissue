@@ -30,18 +30,79 @@ void init_line_view(piece_table* pt, termw_info* tinfo, line_view* lv, line_hand
 
     lv->top_view_ent = pt->ent_head; 
     lv->top_view_chr = pt->curr_chr_ptr; 
-
-    // calc total line size here
-    
      
 }
 
-void update_view_move_down(piece_table* pt, line_view* lv){
+static void update_top_ent_up(piece_table* pt, line_handler* lh, line_view* lv){
 
+    line* new_top = LINE_AT_POS(lh, lv->top_win); 
+    pt_entry* ent = ENT_AT_POS(pt, lv->top_view_ent); 
+
+    // avoid possible underflow when chr ptr is at the beginning of either text buffer 
+    ssize_t chr_ptr = (ssize_t)lv->top_view_chr; 
+    ssize_t ent_start = (ssize_t)ent->start;
+
+    for(int d = 0; d < new_top->line_size; d++){
+
+        chr_ptr--; 
+        if (chr_ptr < ent_start){
+            lv->top_view_ent = ent->left; 
+            ent = ENT_AT_POS(pt, lv->top_view_ent);
+
+            chr_ptr = (ssize_t)(ent->start + ent->len - 1);
+            ent_start = (ssize_t)ent->start; 
+        }
+    }
+
+    lv->top_view_chr = (size_t)chr_ptr;
 }
 
-void update_view_move_up(piece_table* pt, line_view* lv){
+static void update_top_ent_down(piece_table* pt, line_handler* lh, line_view* lv, int prev_top_win){
+    
+    line* prev_top = &(lh->lines[prev_top_win]);
+    pt_entry* ent = ENT_AT_POS(pt, lv->top_view_ent);
 
+    for (int d = 0; d < prev_top->line_size; d++){
+
+        lv->top_view_chr++; 
+
+        if (lv->top_view_chr == (ent->start + ent->len)){
+            lv->top_view_ent = ent->right; 
+            ent = ENT_AT_POS(pt, lv->top_view_ent);
+            lv->top_view_chr = ent->start; 
+        }
+    }
+}
+
+void update_view_move_down(piece_table* pt, line_view* lv, cursor_pos* pos){
+    
+    if (pos->y > lv->tinfo_ptr->rows){
+
+        
+        line_handler* lh = &(pt->lh);
+
+        int prev_top_win = lv->top_win;
+        lv->top_win = (lh->lines[lv->top_win]).next_line; 
+        lv->bot_win = (lh->lines[lv->bot_win]).next_line; 
+
+        // update line views top_view_ent 
+        update_top_ent_down(pt, lh, lv, prev_top_win);
+        pos->y = lv->tinfo_ptr->rows; 
+    }
+}
+
+void update_view_move_up(piece_table* pt, line_view* lv, cursor_pos* pos){
+
+    if (pos->y < 0){
+
+        line_handler* lh = &(pt->lh);
+
+        lv->top_win = (lh->lines[lv->top_win]).prev_line; 
+        lv->bot_win = (lh->lines[lv->bot_win]).prev_line; 
+
+        update_top_ent_up(pt, lh, lv);
+        pos->y = 0;
+    }
 }
 
 void update_view_ins_nl(piece_table* pt, line_view* lv){
@@ -53,25 +114,6 @@ void update_view_ins_nl(piece_table* pt, line_view* lv){
     } else {
         lv->bot_win = (lh->lines[lv->bot_win]).prev_line;
     }
-
-    // update top ent view
-    // line* curr_top = &(lh->lines[lv->top_win]);
-    
-    // pt_entry* _ent = ENT_AT_POS(pt, lv->top_view_ent);
-    // for(int d = 0; d < curr_top->line_size; d++){
-
-    //     lv->top_view_chr++; 
-    //     if (lv->top_view_chr == (_ent->len + _ent->start) ){
-            
-    //         lv->top_view_ent = _ent->right;
-    //         _ent = ENT_AT_POS(pt, lv->top_view_ent);
-
-    //         lv->top_view_chr = _ent->start; 
-            
-    //     }
-    // }
-    
-    // lv->top_win = (lh->lines[lv->top_win]).next_line; 
 
 }
 

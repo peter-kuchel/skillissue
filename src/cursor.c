@@ -1,6 +1,10 @@
 #include "cursor.h"
 
-int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
+// TODO: all this code should be refactored because its ugly af 
+
+
+// for when a or d is pressed 
+int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* lv){
     
     // reset the column memory when moving across the line
     pt->lh.col_mem = -1; 
@@ -154,7 +158,7 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
     return 0; 
 }
 
-int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int prev_ent){
+int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int prev_ent, line_view* lv){
 
     pt_src_t _prev_src = (pt->entries[prev_ent]).src;
     pt_buffer_t *src_buffer = GET_PT_BUFF(pt, _prev_src);
@@ -185,7 +189,7 @@ int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int pre
     return 0; 
 }
 
-int handle_jump_up(piece_table* pt, cursor_pos* pos){
+int handle_jump_up(piece_table* pt, cursor_pos* pos, line_view* lv){
 
     char _c = PTR_AT_CHR(pt, pt->curr_chr_ptr);
 
@@ -286,7 +290,9 @@ int move_chr_ptr(piece_table* pt, int dist, int dir){
     return 0; 
 }
 
-int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir){
+
+// for when w or s is pressed 
+int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* lv){
     line *curr, *jump_to;
     int dist, jump_size, curr_size, curr_col_mem;
 
@@ -332,6 +338,8 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir){
             log_to_file(&sk_logger, pbuf);
         #endif
 
+        update_view_move_up(pt, lv, pos);
+
     // check for going down the file
     } else {
 
@@ -365,6 +373,10 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir){
                 );
             log_to_file(&sk_logger, pbuf);
         #endif
+
+
+        // check if at the very bottom and need to trigger a re-render 
+        update_view_move_down(pt, lv, pos);
     } 
     return 0;
 }

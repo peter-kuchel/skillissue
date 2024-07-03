@@ -155,23 +155,23 @@ int edit_file(char* fn, termw_info* tinfo){
                 
                 /* move around file*/
                 case 'w':
-                    handle_line_movement(&pt, &pos, -1);
+                    handle_line_movement(&pt, &pos, -1, &lv);
                     break; 
                     
                 case 'a':
-                    handle_side_movement(&pt, &pos, -1);
-                    handle_jump_up(&pt, &pos);
+                    handle_side_movement(&pt, &pos, -1, &lv);
+                    handle_jump_up(&pt, &pos, &lv);
                     break;
                     
                 case 's':
-                    handle_line_movement(&pt, &pos, 1);
+                    handle_line_movement(&pt, &pos, 1, &lv);
                     break;
 
                 case 'd':
                     prev_chr_ptr = pt.curr_chr_ptr; 
                     prev_ent = pt.curr_ent_ptr;
-                    handle_side_movement(&pt, &pos, 1);
-                    handle_jump_down(&pt, &pos, prev_chr_ptr, prev_ent);
+                    handle_side_movement(&pt, &pos, 1, &lv);
+                    handle_jump_down(&pt, &pos, prev_chr_ptr, prev_ent, &lv);
                     break; 
                 
                 default:
