@@ -1,7 +1,10 @@
-# TODO (and possible future functionality) in not particular order: 
+# TODO (and possible future functionality) in no particular order: 
 
 * re-factor delete exhaustion so that it doesn't make a new entry until
   there is a confirmed delete
+
+* implement using the line reclaim when a line is deleted 
+    * if it has not already been implemented
 
 * get ncurses to stop printing the ascii of the key pressed 
 
