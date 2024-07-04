@@ -381,7 +381,7 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in, line_vie
     }
 
     // toggle that a render is required
-    lv->needs_render = 1; 
+    lv->needs_render++; 
     
     #ifdef DEBUG_PT
         log_piece_table_current(&sk_logger, pt);

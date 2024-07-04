@@ -102,10 +102,32 @@ int edit_file(char* fn, termw_info* tinfo){
 
         user_in = getch(); 
 
-        #ifdef DEBUG_GEN 
-            memset(pbuf, 0, PBUF_SIZE);
-            sprintf(pbuf, "[User In]: %d\n", user_in);
-            log_to_file(&sk_logger, pbuf);
+        #ifdef DEBUG_GEN
+
+            if (umode.mode == 0){
+                char* key_pressed;  
+                switch(user_in){
+                    case 'w': 
+                        key_pressed = "UP";
+                        break;
+                    case 's': 
+                        key_pressed = "DOWN";
+                        break;
+                    case 'a': 
+                        key_pressed = "LEFT";
+                        break;
+                    case 'd': 
+                        key_pressed = "RIGHT";
+                        break;
+                    case 'i': 
+                        key_pressed = "INSERTION MODE";
+                        break;
+                }
+                memset(pbuf, 0, PBUF_SIZE);
+                sprintf(pbuf, "[User In]: %s\n", key_pressed);
+                log_to_file(&sk_logger, pbuf);
+            }
+            
         #endif  
         
         int insert_res; 
@@ -180,17 +202,19 @@ int edit_file(char* fn, termw_info* tinfo){
             }
         }
 
-        /* re-render the screen */
-        // need to be in this order 
-        // update_line_view(&(pt.lh), &lv);
-
         // render only if a render is required
-        render_screen(&pt, &lv);
+        if (lv.needs_render){
+            render_screen(&pt, &lv);
+            lv.needs_render--; 
+        }
+
         move(pos.y , pos.x);
 
-        // #ifdef DEBUG_PT
-        //     log_piece_table_current(&sk_logger, &pt);
-        // #endif 
+        #ifdef DEBUG_GEN
+            memset(pbuf, 0, PBUF_SIZE);
+            sprintf(pbuf, "[CURSOR POS]: x: %d, y: %d\n", pos.x, pos.y);
+            log_to_file(&sk_logger, pbuf);
+        #endif 
        
 
         if (edit_status < 0) in_edit--;

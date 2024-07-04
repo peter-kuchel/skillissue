@@ -62,6 +62,7 @@ void update_view_del_nl(piece_table* pt, line_view* lv);
 
 void render_screen(piece_table* pt, line_view* lv);
 
+// track_ptr->ent.start is the chr_ptr being tracked currently
 #define CHR_IN_TRACK(track_ptr) \
         ( track_ptr->buff->text[track_ptr->ent.start] )
 
