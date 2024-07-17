@@ -343,7 +343,23 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
     // check for going down the file
     } else {
 
-        if (pt->lh.bottom_line == _curr_line) return 0;
+        // if (pt->lh.bottom_line == _curr_line){
+        //     // update_view_move_down(pt, lv, pos);
+            
+        //     #ifdef DEBUG_SCREEN
+        //         memset(pbuf, 0, PBUF_SIZE);
+        //         sprintf(pbuf,"at bottom line\n");
+        //         log_to_file(&sk_logger, pbuf);
+        //     #endif
+
+        //     return 0;
+        // }
+
+        // if current line is bottom line, update window if necessary 
+        if (pt->lh.bottom_line == _curr_line){
+            // update_view_move_down(pt, lv, pos);
+            return 0; 
+        }
 
         pos->y++; 
 
