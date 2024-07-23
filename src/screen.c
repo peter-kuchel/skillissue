@@ -13,7 +13,7 @@ void init_line_view(piece_table* pt, termw_info* tinfo, line_view* lv, line_hand
         line* _l; 
         int curr_l = lh->top_line;
 
-        for(int v = 0; v < tinfo->rows; v++){
+        for(int v = 0; v < tinfo->rows - 1; v++){
             _l = &(lh->lines[curr_l]);
             curr_l = _l->next_line;
         }
@@ -67,7 +67,7 @@ static void update_top_ent_up(piece_table* pt, line_handler* lh, line_view* lv){
     lv->top_view_chr = (size_t)chr_ptr;
 }
 
-static void update_top_ent_down(piece_table* pt, line_handler* lh, line_view* lv, int prev_top_win){
+void update_top_ent_down(piece_table* pt, line_handler* lh, line_view* lv, int prev_top_win){
     
     line* prev_top = &(lh->lines[prev_top_win]);
     pt_entry* ent = ENT_AT_POS(pt, lv->top_view_ent);
@@ -91,35 +91,36 @@ void update_view_move_down(piece_table* pt, line_view* lv, cursor_pos* pos){
 
     int max_row = lv->tinfo_ptr->rows;
 
-    #ifdef DEBUG_SCREEN
-        memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, "(curr) %d == %d (bot) | bot win: %d\n", lh->curr_line, lh->bottom_line, lv->bot_win);
-        log_to_file(&sk_logger, pbuf);
-    #endif 
+    // #ifdef DEBUG_SCREEN
+    //     memset(pbuf, 0, PBUF_SIZE);
+    //     sprintf(pbuf, "(curr) %d == %d (bot) | bot win: %d\n", lh->curr_line, lh->bottom_line, lv->bot_win);
+    //     log_to_file(&sk_logger, pbuf);
+    // #endif 
 
     // check if the screen lines will be shifted
     if (pos->y == max_row){
 
-        if (lv->bot_win != lh->bottom_line) 
-            lv->bot_win = (lh->lines[lv->bot_win]).next_line; 
+        if (lv->bot_win != lh->bottom_line){ 
 
-        int prev_top_win = lv->top_win;
-        lv->top_win = (lh->lines[lv->top_win]).next_line;  
+            int prev_top_win = lv->top_win;
+            lv->top_win = (lh->lines[lv->top_win]).next_line;  
+            lv->bot_win = (lh->lines[lv->bot_win]).next_line;
 
-        // update line views top_view_ent 
-        update_top_ent_down(pt, lh, lv, prev_top_win);
+            // update line views top_view_ent 
+            update_top_ent_down(pt, lh, lv, prev_top_win);
+            lv->needs_render++; 
+        }
 
         pos->y--; 
-        lv->needs_render++; 
-
+        
     }
 
 
-    #ifdef DEBUG_SCREEN
-        memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, "(curr) %d == %d (bot) | bot win: %d\n", lh->curr_line, lh->bottom_line, lv->bot_win);
-        log_to_file(&sk_logger, pbuf);
-    #endif 
+    // #ifdef DEBUG_SCREEN
+    //     memset(pbuf, 0, PBUF_SIZE);
+    //     sprintf(pbuf, "(curr) %d == %d (bot) | bot win: %d\n", lh->curr_line, lh->bottom_line, lv->bot_win);
+    //     log_to_file(&sk_logger, pbuf);
+    // #endif 
     
 }
 
@@ -136,10 +137,12 @@ void update_view_move_up(piece_table* pt, line_view* lv, cursor_pos* pos){
             lv->bot_win = (lh->lines[lv->bot_win]).prev_line; 
 
             update_top_ent_up(pt, lh, lv);    
+
+            lv->needs_render++;
         }
 
         pos->y++;
-        lv->needs_render++;
+        
     }
 }
 
@@ -148,8 +151,11 @@ void update_view_ins_nl(piece_table* pt, line_view* lv){
 
     // update bottom window depending on lines file relative to term window size
     if (lh->size < lv->tinfo_ptr->rows){
+
         lv->bot_win = lh->bottom_line;
+
     } else {
+
         lv->bot_win = (lh->lines[lv->bot_win]).prev_line;
     }
 
@@ -244,7 +250,7 @@ void render_screen(piece_table* pt, line_view* lv){
     line_print lp = { 0, 0, 0 }; 
  
     int view_curr = lv->top_win;
-    int view_end = lh->curr_line == lh->bottom_line ? NULL_LINE : lv->bot_win;
+    // int view_end = lh->curr_line == lh->bottom_line ? NULL_LINE : lv->bot_win;
     
     pt_track track;
     memset((char*)&track, 0, sizeof(pt_track)); 
@@ -256,13 +262,13 @@ void render_screen(piece_table* pt, line_view* lv){
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, 
             "\n--{Line start: %d | line end: %d | curr ent: %d}--\n\n", 
-            view_curr, view_end, track.curr_ent);
+            view_curr, lv->bot_win, track.curr_ent);
         log_to_file(&sk_logger, pbuf);
     
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, 
-            "top win: %d | bot win: %d | view_end: %d\n", 
-            lv->top_win, lv->bot_win, view_end);
+            "top win: %d | bot win: %d\n", 
+            lv->top_win, lv->bot_win);
         log_to_file(&sk_logger, pbuf);
     #endif 
 
