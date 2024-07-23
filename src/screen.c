@@ -130,9 +130,8 @@ void update_view_move_up(piece_table* pt, line_view* lv, cursor_pos* pos){
     // check if the screen lines will be shifted
     if (pos->y < 0){
 
-        if (lv->top_win == lh->top_line){
+        if (lv->top_win != lh->top_line){
 
-        } else {
             lv->top_win = (lh->lines[lv->top_win]).prev_line; 
             lv->bot_win = (lh->lines[lv->bot_win]).prev_line; 
 
