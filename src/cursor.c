@@ -158,8 +158,7 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
     return 0; 
 }
 
-int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int prev_ent, line_view* lv
-    ){
+int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int prev_ent, line_view* lv){
 
     pt_src_t _prev_src = (pt->entries[prev_ent]).src;
     pt_buffer_t *src_buffer = GET_PT_BUFF(pt, _prev_src);
@@ -173,13 +172,20 @@ int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int pre
     #endif 
 
     if ( prev_char == '\n'){
-                        
+        
+        line_handler* lh = LH_PTR(pt); 
+
+        // int prev_curr_line = lh->curr_line; 
         line *curr = LH_CURR_LINE(pt);
-        pt->lh.curr_line = curr->next_line; 
+        lh->curr_line = curr->next_line; 
+
         pos->y++;
         pos->x = 0;
+
+        // handle if jump down goes into line off of current view of the screen 
+        update_view_move_down(pt, lv, pos);
         
-        #ifdef DEBUG_MOVE
+        #ifdef DEBUG_SCREEN
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(pbuf, 
                 "[JUMP DOWN]: curr line is: %d\n", pt->lh.curr_line);
@@ -190,8 +196,7 @@ int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int pre
     return 0; 
 }
 
-int handle_jump_up(piece_table* pt, cursor_pos* pos, line_view* lv
-    ){
+int handle_jump_up(piece_table* pt, cursor_pos* pos, line_view* lv){
 
     char _c = PTR_AT_CHR(pt, pt->curr_chr_ptr);
 
@@ -208,6 +213,9 @@ int handle_jump_up(piece_table* pt, cursor_pos* pos, line_view* lv
         pt->lh.curr_line = curr->prev_line; 
         pos->y--; 
         pos->x = CURR_LINE_SIZE(pt);
+
+        // handle if jump up goes into line off of current view of the screen 
+        update_view_move_up(pt, lv, pos);
 
         #ifdef DEBUG_MOVE
             memset(pbuf, 0, PBUF_SIZE);

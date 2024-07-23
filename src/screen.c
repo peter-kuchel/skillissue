@@ -67,7 +67,7 @@ static void update_top_ent_up(piece_table* pt, line_handler* lh, line_view* lv){
     lv->top_view_chr = (size_t)chr_ptr;
 }
 
-void update_top_ent_down(piece_table* pt, line_handler* lh, line_view* lv, int prev_top_win){
+static void update_top_ent_down(piece_table* pt, line_handler* lh, line_view* lv, int prev_top_win){
     
     line* prev_top = &(lh->lines[prev_top_win]);
     pt_entry* ent = ENT_AT_POS(pt, lv->top_view_ent);
@@ -90,12 +90,6 @@ void update_view_move_down(piece_table* pt, line_view* lv, cursor_pos* pos){
     line_handler* lh = &(pt->lh);
 
     int max_row = lv->tinfo_ptr->rows;
-
-    // #ifdef DEBUG_SCREEN
-    //     memset(pbuf, 0, PBUF_SIZE);
-    //     sprintf(pbuf, "(curr) %d == %d (bot) | bot win: %d\n", lh->curr_line, lh->bottom_line, lv->bot_win);
-    //     log_to_file(&sk_logger, pbuf);
-    // #endif 
 
     // check if the screen lines will be shifted
     if (pos->y == max_row){
