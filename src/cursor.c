@@ -158,7 +158,8 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
     return 0; 
 }
 
-int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int prev_ent, line_view* lv){
+int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int prev_ent, line_view* lv
+    ){
 
     pt_src_t _prev_src = (pt->entries[prev_ent]).src;
     pt_buffer_t *src_buffer = GET_PT_BUFF(pt, _prev_src);
@@ -189,7 +190,8 @@ int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int pre
     return 0; 
 }
 
-int handle_jump_up(piece_table* pt, cursor_pos* pos, line_view* lv){
+int handle_jump_up(piece_table* pt, cursor_pos* pos, line_view* lv
+    ){
 
     char _c = PTR_AT_CHR(pt, pt->curr_chr_ptr);
 
