@@ -128,6 +128,9 @@ typedef struct{
 #define LINE_AT_POS(lh, pos) \
     ( &(lh->lines[pos]) )
 
+#define LH_PTR(pt) \
+    (&(pt->lh))
+
 void log_piece_table_current(Logger* logger, piece_table* pt);
 int init_piece_table(FILE* f, char* fn, piece_table* pt);
 void empty_piece_table(piece_table* pt);
