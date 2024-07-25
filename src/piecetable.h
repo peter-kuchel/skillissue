@@ -32,18 +32,16 @@ typedef struct {
     pt_stack_t line_reclaim; 
     line *lines;
     int cap;
-    int size; 
+    int size;                           // total number of lines in the file
 
-    int top_line; 
-    int curr_line;
-    int bottom_line; 
+    int top_line;                       // line at the top of the file
+    int curr_line;                      // line the cursor is currently on
+    int bottom_line;                    // line at the bottom of the file
 
     int line_number;                    // actual line number of the current line
     // int nl_side_hit;
 
     int col_mem;                        // remember which col the cursor is on
-    // int top_view;                       // top line in view in the editor
-    // int bot_view;                       // bottom line in view in the editor
 
 } line_handler; 
 

@@ -34,8 +34,9 @@ void init_line_view(piece_table* pt, termw_info* tinfo, line_view* lv, line_hand
     #ifdef DEBUG_SCREEN
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, 
-            "[line init]: top_win: %d, bot_win: %d, right_win: %d, left_win: %d\n", 
-            lv->top_win, lv->bot_win, lv->right_win, lv->left_win);
+            "[line init]: top_win: %d, bot_win: %d, right_win: %d, left_win: %d\n\t\t\ttop view ent: (%d), top view chr_ptr: (%ld)\n", 
+            lv->top_win, lv->bot_win, lv->right_win, lv->left_win, lv->top_view_ent, lv->top_view_chr
+            );
         log_to_file(&sk_logger, pbuf);
     #endif
      
@@ -55,6 +56,7 @@ static void update_top_ent_up(piece_table* pt, line_handler* lh, line_view* lv){
 
         chr_ptr--; 
         if (chr_ptr < ent_start){
+
             lv->top_view_ent = ent->left; 
             ent = ENT_AT_POS(pt, lv->top_view_ent);
 
@@ -78,6 +80,7 @@ static void update_top_ent_down(piece_table* pt, line_handler* lh, line_view* lv
         lv->top_view_chr++; 
 
         if (lv->top_view_chr == (ent->start + ent->len)){
+
             lv->top_view_ent = ent->right; 
             ent = ENT_AT_POS(pt, lv->top_view_ent);
             lv->top_view_chr = ent->start; 
@@ -162,45 +165,76 @@ void update_view_del_nl(piece_table* pt, line_view* lv){
 
     lv->bot_win = (pt->lh.lines[lv->bot_win]).prev_line; 
 }
-static void move_into_next_ent(piece_table* pt, pt_track* track){
 
-    pt_entry* track_ent = &(track->ent); 
-     
-    if (track_ent->start == track->ent_end){
-        int _next_ent = track->ent_end == 0 ? track->curr_ent : track_ent->right; 
 
-        pt_entry* right_ent = &(pt->entries[_next_ent]);
+static void init_track(piece_table* pt, line_view* lv, pt_track* track){
 
-        track_ent->start = track->ent_end == 0 ? track->curr_start_ptr : right_ent->start; 
-        track_ent->len = right_ent->len; 
-        track_ent->src = right_ent->src; 
-        track_ent->right = right_ent->right; 
+    track->curr_start_ptr = lv->top_view_chr; 
+    track->curr_ent = lv->top_view_ent;
+    track->ent_ptr = ENT_AT_POS(pt, track->curr_ent); 
+    track->buff = GET_PT_BUFF(pt, track->ent_ptr->src); 
 
-        track->buff = GET_PT_BUFF(pt, track_ent->src);
-        track->ent_end = track_ent->start + track_ent->len;
+    // don't need to minus 1 here because we are checking when it goes past entry window
+    track->ent_chr_end = track->ent_ptr->start + track->ent_ptr->len;
+}
 
-        // #ifdef DEBUG_SCREEN
-        //     memset(pbuf, 0, PBUF_SIZE);
-        //     sprintf(pbuf, 
-        //         "NEXT ENT: %d [start: %ld | end: %ld\n]\n", 
-        //         _next_ent, track->ent.start, track->ent_end);
-        //     log_to_file(&sk_logger, pbuf);
-        // #endif
-    }
+static int move_into_next_ent(piece_table* pt, pt_track* track){
 
     
+     
+    if (track->curr_start_ptr == track->ent_chr_end){ 
+
+        #ifdef DEBUG_SCREEN
+            char last_c = CHR_IN_TRACK( track );
+            memset(pbuf, 0, PBUF_SIZE); 
+            sprintf(pbuf, 
+                    "Last char: %x, chr_ptr: %ld\n", 
+                    last_c, track->curr_start_ptr);
+            log_to_file(&sk_logger, pbuf);
+        #endif
+
+        /*
+        only to handle the case 
+        for the very last line in the tail entry so that it doesn't enter into entry '-1'
+        and random characters are not displayed on the terminal window  
+        */
+        if (track->curr_ent == pt->ent_tail)
+            return 0; 
+        
+
+        int next_ent = track->ent_ptr->right;
+
+        track->ent_ptr = ENT_AT_POS(pt, next_ent); 
+        track->curr_ent = next_ent; 
+
+        track->buff = GET_PT_BUFF(pt, track->ent_ptr->src);
+        track->ent_chr_end = track->ent_ptr->start + track->ent_ptr->len;
+        track->curr_start_ptr = track->ent_ptr->start; 
+
+        #ifdef DEBUG_SCREEN
+            memset(pbuf, 0, PBUF_SIZE);
+            sprintf(pbuf, 
+                "NEXT ENT: %d [start: %ld | end: %ld]\n", 
+                next_ent, track->curr_start_ptr, track->ent_chr_end );
+            log_to_file(&sk_logger, pbuf);
+        #endif
+    }
+
+    return 1; 
 
 }
 
 // this can be re-written now 
 static void move_right_offset(piece_table* pt, pt_track* track, line_print* lp){
+
     if (lp->right_cutoff){
 
         char curr_chr = CHR_IN_TRACK(track);
         while (curr_chr != '\n'){
 
-            track->ent.start++; 
             move_into_next_ent(pt, track);
+
+            track->curr_start_ptr++; 
             curr_chr = CHR_IN_TRACK(track);
         }
 
@@ -221,13 +255,13 @@ static void calc_line_size(piece_table* pt, pt_track* track, line_print* lp, lin
 
     // begin left offset
     for(int left_off = 0; left_off < lv->left_win; left_off++){
-        track->ent.start++; 
+        track->curr_start_ptr++; 
         move_into_next_ent(pt, track);
     }
 
     #ifdef DEBUG_SCREEN
         memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, "[Line size: %d]\n", lp->line_size);
+        sprintf(pbuf, "[Line size: %d] -- {}\n", lp->line_size);
         log_to_file(&sk_logger, pbuf);
     #endif 
 }
@@ -246,33 +280,32 @@ void render_screen(piece_table* pt, line_view* lv){
     int view_curr = lv->top_win;
     // int view_end = lh->curr_line == lh->bottom_line ? NULL_LINE : lv->bot_win;
     
-    pt_track track;
-    memset((char*)&track, 0, sizeof(pt_track)); 
+    pt_track track; 
+    init_track(pt, lv, &track); 
 
-    track.curr_start_ptr = lv->top_view_chr; 
-    track.curr_ent = lv->top_view_ent; 
+    int term_rows = lv->tinfo_ptr->rows; 
+    int lines_to_render = lh->size < term_rows ? lh->size : term_rows; 
 
     #ifdef DEBUG_SCREEN
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, 
-            "\n--{Line start: %d | line end: %d | curr ent: %d}--\n\n", 
-            view_curr, lv->bot_win, track.curr_ent);
+            "\n--{ Line start: %d | line end: %d | start ent: %d @ (%ld, %ld) }--\nLines to render: %d\n", 
+            view_curr, lv->bot_win, track.curr_ent, track.curr_start_ptr, track.ent_chr_end, lines_to_render);
         log_to_file(&sk_logger, pbuf);
     
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, 
-            "top win: %d | bot win: %d\n", 
+            "(top win: %d | bot win: %d)\n", 
             lv->top_win, lv->bot_win);
         log_to_file(&sk_logger, pbuf);
     #endif 
 
-    for (int i = 0; i < lv->tinfo_ptr->rows; i++){
+    for (int i = 0; i < lines_to_render; i++){
         _l = &(lh->lines[view_curr]);
 
         if (lv->left_win > _l->line_size){
 
-            // print newline here since this line is out of view
-            printw("\n");
+            printw("\n");                                               // print newline here since this line is out of view
 
             #ifdef DEBUG_SCREEN
                 memset(pbuf, 0, PBUF_SIZE);
@@ -284,17 +317,22 @@ void render_screen(piece_table* pt, line_view* lv){
 
             calc_line_size(pt, &track, &lp, lv, _l);
 
-            lp.line_size++;
+            lp.line_size++;                                             // account for the '\n'
             
-            char to_print[lp.line_size + 1];
+            size_t print_size = (size_t)lp.line_size +1;
+            char to_print[print_size]; 
+            memset(to_print, 0, print_size);
+            int ent_ok; 
 
             while (lp.line_pos < lp.line_size){
 
-                // move into next ent if needed
-                move_into_next_ent(pt, &track);
+                ent_ok = move_into_next_ent(pt, &track);                         // move into next ent if needed
 
-                to_print[lp.line_pos] = CHR_IN_TRACK( (&track));
-                track.ent.start++; 
+                if (ent_ok){
+                    to_print[lp.line_pos] = CHR_IN_TRACK( (&track) ); 
+                    track.curr_start_ptr++;
+                }
+                
                 lp.line_pos++; 
             }
             to_print[lp.line_size] = '\0';

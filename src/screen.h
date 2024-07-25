@@ -26,17 +26,17 @@ typedef struct {
 } line_print;
 
 typedef struct {
-    pt_buffer_t* buff; 
-    pt_entry ent; 
+    pt_buffer_t* buff;                  // buffer for the corresponding entry 
+    pt_entry* ent_ptr;                  // ptr to entry being rendered 
 
-    size_t ent_end;
-    size_t curr_start_ptr;
-    int curr_ent;
+    size_t ent_chr_end;                 // position where the entry ends 
+    size_t curr_start_ptr;              // cht ptr to start from
+    int curr_ent;                       // int ptr to current entry 
 } pt_track;
 
 typedef struct {
     termw_info* tinfo_ptr;
-    size_t top_view_chr;
+    size_t top_view_chr;                // ptr to char in the top left position of the terminal screen 
     int top_view_ent;
     
 
@@ -46,9 +46,9 @@ typedef struct {
     int left_win; 
     int right_win;
 
-    int total_line_chars;           // implement down the line
+    int total_line_chars;               // implement down the line
 
-    int needs_render;               // determine if a screen render is necessary 
+    int needs_render;                   // determine if a screen render is necessary 
 } line_view; 
 
 void init_line_view(piece_table* pt, termw_info* tinfo, line_view* lv, line_handler* lh); 
@@ -64,6 +64,6 @@ void render_screen(piece_table* pt, line_view* lv);
 
 // track_ptr->ent.start is the chr_ptr being tracked currently
 #define CHR_IN_TRACK(track_ptr) \
-        ( track_ptr->buff->text[track_ptr->ent.start] )
+        ( track_ptr->buff->text[track_ptr->curr_start_ptr] )
 
 #endif 

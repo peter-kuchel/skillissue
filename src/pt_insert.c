@@ -181,8 +181,32 @@ static int create_middle_insert(piece_table* pt, line_view* lv){
     #endif 
 
     // update the line viewer 
-    if (old_ent_ptr == lv->top_view_ent)
-        lv->top_view_ent = new_left_ent;
+    if (old_ent_ptr == lv->top_view_ent){
+
+        size_t top_chr_ptr = lv->top_view_chr;
+
+        int new_ents[] = {new_left_ent, new_midd_ent, new_right_ent}; 
+
+        size_t ent_beg, ent_end; 
+        for(int i = 0; i < 3; i++){
+            _ent = ENT_AT_POS(pt, new_ents[i]); 
+            ent_beg = _ent->start; 
+            ent_end = (ent_beg + _ent->len) - 1; 
+
+            if (top_chr_ptr >= ent_beg &&  top_chr_ptr <= ent_end){
+                lv->top_view_ent = new_ents[i]; 
+                break; 
+            } 
+        }
+
+        #ifdef DEBUG_INSERT
+            memset(pbuf, 0, PBUF_SIZE);
+            sprintf(pbuf, "[Middle Insert - lv update] new top view entry: %d @ %ld\n", 
+                lv->top_view_ent, lv->top_view_chr);
+            log_to_file(&sk_logger, pbuf);
+        #endif 
+        // lv->top_view_ent = new_left_ent;
+    }
 
     return 0; 
 }
