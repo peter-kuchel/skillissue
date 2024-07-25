@@ -22,10 +22,11 @@ static int create_from_empty(piece_table* pt){
     return 0; 
 }
 
-static int create_end_insert(piece_table* pt, int very_end){
+static int create_end_insert(piece_table* pt, int very_end, line_view* lv){
 
     pt_entry *curr_ent, *new_ent;
     int new_ent_pos = new_pt_entry(pt);
+    int old_curr_ptr = pt->curr_ent_ptr;
 
     curr_ent = &(pt->entries[pt->curr_ent_ptr]);
     new_ent = &(pt->entries[new_ent_pos]);
@@ -46,9 +47,15 @@ static int create_end_insert(piece_table* pt, int very_end){
         new_ent->right = pt->curr_ent_ptr; 
 
         pt->ent_head = new_ent_pos;
+
+        // case where at the top of the document and inserting at the beginning 
+        if (lv->top_view_ent == old_curr_ptr)
+            lv->top_view_ent = new_ent_pos;
     }
 
     pt->curr_ins_ent = new_ent_pos; 
+
+
 
     #ifdef DEBUG_INSERT
         memset(pbuf, 0, PBUF_SIZE);
@@ -237,7 +244,6 @@ static int handle_new_line_insert(piece_table* pt, cursor_pos* curs_pos){
     }
 
     // calc new line sizes with the new addition 
-    // int move_ent = pt->curr_ins_ent;
     int move_ent = (pt->entries[pt->curr_ins_ent]).right; 
     size_t chr_ptr;
     pt_entry* _ent; 
@@ -350,7 +356,7 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in, line_vie
             create_from_empty(pt);
 
         } else if ( very_end || very_beginning ){
-            create_end_insert(pt, very_end);
+            create_end_insert(pt, very_end, lv);
         
         /* handle case where curr_chr_ptr is at the end of an existing entry */
         } else if (at_ent_start){

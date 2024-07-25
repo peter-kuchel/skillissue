@@ -201,7 +201,6 @@ static int move_into_next_ent(piece_table* pt, pt_track* track){
         if (track->curr_ent == pt->ent_tail)
             return 0; 
         
-
         int next_ent = track->ent_ptr->right;
 
         track->ent_ptr = ENT_AT_POS(pt, next_ent); 
@@ -278,7 +277,6 @@ void render_screen(piece_table* pt, line_view* lv){
     line_print lp = { 0, 0, 0 }; 
  
     int view_curr = lv->top_win;
-    // int view_end = lh->curr_line == lh->bottom_line ? NULL_LINE : lv->bot_win;
     
     pt_track track; 
     init_track(pt, lv, &track); 
@@ -305,7 +303,7 @@ void render_screen(piece_table* pt, line_view* lv){
 
         if (lv->left_win > _l->line_size){
 
-            printw("\n");                                               // print newline here since this line is out of view
+            printw("\n");                                                       // print newline here since this line is out of view
 
             #ifdef DEBUG_SCREEN
                 memset(pbuf, 0, PBUF_SIZE);
@@ -317,7 +315,7 @@ void render_screen(piece_table* pt, line_view* lv){
 
             calc_line_size(pt, &track, &lp, lv, _l);
 
-            lp.line_size++;                                             // account for the '\n'
+            lp.line_size++;                                                     // account for the '\n'
             
             size_t print_size = (size_t)lp.line_size +1;
             char to_print[print_size]; 
@@ -326,7 +324,7 @@ void render_screen(piece_table* pt, line_view* lv){
 
             while (lp.line_pos < lp.line_size){
 
-                ent_ok = move_into_next_ent(pt, &track);                         // move into next ent if needed
+                ent_ok = move_into_next_ent(pt, &track);                        // move into next ent if needed
 
                 if (ent_ok){
                     to_print[lp.line_pos] = CHR_IN_TRACK( (&track) ); 
