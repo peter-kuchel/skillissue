@@ -4,7 +4,7 @@
 
 
 // for when a or d is pressed 
-int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* lv){
+int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
     
     // reset the column memory when moving across the line
     pt->lh.col_mem = -1; 

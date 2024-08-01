@@ -32,7 +32,7 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
         if (pt->curr_ins_ent > 0) 
             pt->curr_ins_ent = NULL_ENT; 
 
-        delete_manager(pt, curs_pos, user_in);
+        delete_manager(pt, curs_pos, user_in, lv);
     
     /* insert char into additions and update the entry*/
     } else {
@@ -181,7 +181,7 @@ int edit_file(char* fn, termw_info* tinfo){
                     break; 
                     
                 case 'a':
-                    handle_side_movement(&pt, &pos, -1, &lv);
+                    handle_side_movement(&pt, &pos, -1);
                     handle_jump_up(&pt, &pos, &lv);
                     break;
                     
@@ -192,7 +192,7 @@ int edit_file(char* fn, termw_info* tinfo){
                 case 'd':
                     prev_chr_ptr = pt.curr_chr_ptr; 
                     prev_ent = pt.curr_ent_ptr;
-                    handle_side_movement(&pt, &pos, 1, &lv);
+                    handle_side_movement(&pt, &pos, 1);
                     handle_jump_down(&pt, &pos, prev_chr_ptr, prev_ent, &lv);
                     break; 
                 
