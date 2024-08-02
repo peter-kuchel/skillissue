@@ -44,7 +44,7 @@ static int delete_starting_from_end(piece_table* pt){
     return 0; 
 }
 
-static int delete_from_side(piece_table* pt){
+static int delete_from_side(piece_table* pt, line_view* lv){
 
     int new_del_ent = new_pt_entry(pt);
 
@@ -60,7 +60,7 @@ static int delete_from_side(piece_table* pt){
     del_ent->src = left_ent->src; 
     del_ent->start = left_ent->start; 
 
-    del_ent->left = left_ent->left; 
+    del_ent->left = left_left_of_curr; 
     del_ent->right = left_ent->right; 
 
     curr_ent->left = new_del_ent; 
@@ -76,6 +76,10 @@ static int delete_from_side(piece_table* pt){
 
     pt->curr_del_ent = new_del_ent; 
 
+    if (left_of_curr == lv->top_view_ent){
+        lv->top_view_ent = new_del_ent; 
+    }
+
     #ifdef DEBUG_DELETE 
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, "[Delete - Side]: del_ent: %d, chr_ptr: %ld\n", 
@@ -86,11 +90,13 @@ static int delete_from_side(piece_table* pt){
     return 0; 
 }
 
-static int delete_in_middle(piece_table* pt){
+static int delete_in_middle(piece_table* pt, line_view* lv){
     
     pt_entry* _side_ent; 
     int new_del_ent = new_pt_entry(pt);
     int new_split_ent = new_pt_entry(pt);
+
+    int old_ent = pt->curr_ent_ptr; 
 
     pt_entry* old_curr_ent = &(pt->entries[pt->curr_ent_ptr]);
 
@@ -100,7 +106,6 @@ static int delete_in_middle(piece_table* pt){
     pt_entry* del_ent = &(pt->entries[new_del_ent]);
     pt_entry* split_ent = &(pt->entries[new_split_ent]);
     
-
     push_pt_stack(&(pt->undo), pt->curr_ent_ptr);
 
     del_ent->start = old_curr_ent->start; 
@@ -136,6 +141,27 @@ static int delete_in_middle(piece_table* pt){
     pt->curr_del_ent = new_del_ent; 
     pt->curr_ent_ptr = new_split_ent; 
 
+    // if old ent was top view for rendering, find which of the new ents is the new top view 
+    if (old_ent == lv->top_view_ent){
+        size_t top_chr_ptr = lv->top_view_chr; 
+
+        int new_ents[] = {new_del_ent, new_split_ent}; 
+
+        size_t ent_beg, ent_end; 
+        pt_entry* _ent; 
+        for (int i = 0; i < 2; i++){
+
+            _ent = ENT_AT_POS(pt, new_ents[i]); 
+            ent_beg = _ent->start; 
+            ent_end = (ent_beg + _ent->len) - 1; 
+
+            if (top_chr_ptr >= ent_beg &&  top_chr_ptr <= ent_end){
+                lv->top_view_ent = new_ents[i]; 
+                break; 
+            } 
+        }
+    }
+
     #ifdef DEBUG_DELETE 
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, "[Delete - Middle]: del_ent: %d, chr_ptr: %ld\n", 
@@ -146,7 +172,8 @@ static int delete_in_middle(piece_table* pt){
     return 0; 
 }
 
-static int delete_curr_exhuasted(piece_table* pt){
+static int delete_curr_exhuasted(piece_table* pt, line_view* lv){
+
     #ifdef DEBUG_DELETE
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, "[Delete]: Exhuasted current delete ent\n");
@@ -191,7 +218,7 @@ static int delete_curr_exhuasted(piece_table* pt){
     new_del_ent->src = del_left_ent->src; 
     new_del_ent->len = del_left_ent->len; 
 
-    new_del_ent->left = del_left_ent->left; 
+    new_del_ent->left = del_left_left; 
     new_del_ent->right = curr_del_ent->right;
 
     curr_ent->left = new_del;
@@ -212,6 +239,12 @@ static int delete_curr_exhuasted(piece_table* pt){
     }
 
     pt->curr_del_ent = new_del;
+
+    if (curr_del == lv->top_view_ent ){
+
+    } else if (del_left == lv->top_view_ent){
+        lv->top_view_ent = new_del; 
+    }
 
     #ifdef DEBUG_DELETE 
         memset(pbuf, 0, PBUF_SIZE);
@@ -258,9 +291,9 @@ static int handle_new_line_delete(piece_table* pt, cursor_pos* curs_pos){
     return 0; 
 }
 
-int delete_manager(piece_table* pt, cursor_pos* curs_pos, int key_pressed){
+int delete_manager(piece_table* pt, cursor_pos* curs_pos, int key_pressed, line_view* lv){
 
-    // handle delete key presses 
+    // handle delete key presses --TODO 
     if (key_pressed == KEY_DC){
 
         return 0; 
@@ -304,11 +337,11 @@ int delete_manager(piece_table* pt, cursor_pos* curs_pos, int key_pressed){
         
         // start deleting at the ent left of the current ent
         } else if (pt->curr_chr_ptr == curr_ent->start){
-            delete_from_side(pt);
+            delete_from_side(pt, lv);
 
         // somewhere in the middle of the current ent 
         } else {
-            delete_in_middle(pt);
+            delete_in_middle(pt, lv);
         }
     } 
     
@@ -352,13 +385,15 @@ int delete_manager(piece_table* pt, cursor_pos* curs_pos, int key_pressed){
     // else check current if delete ent has been exhuasted 
     if (del_ent->len == 0){
 
-        delete_curr_exhuasted(pt);
+        delete_curr_exhuasted(pt, lv);
 
         // if (at_end) return 0; 
 
         // del_ent = &(pt->entries[pt->curr_del_ent]);
         // del_ent = ENT_AT_POS_ENTRIES(pt, pt->curr_del_ent);
     }
+
+    lv->needs_render++; 
 
     #ifdef DEBUG_PT 
         log_piece_table_current(&sk_logger, pt);
