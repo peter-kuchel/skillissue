@@ -26,13 +26,15 @@ typedef struct {
 } usermode; 
 
 
-#define USR_MODE_ESC  27
-#define USR_BACKSPACE 127
-// #define USER_DEL      
+#define USR_ESC  27
+#define USR_BACKSPACE 127    
 
-#define USR_MODE_INS  0x1
-#define USR_MODE_SLT  0x2 
-#define USR_MODE_CMD  0x4
+typedef enum {
+
+    MODE_INSERT = 0x1,
+    MODE_SAVE   = 0x2,
+
+} usr_mode;
 
 #define TMP_ADD_BUF_SIZE 256
 

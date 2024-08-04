@@ -1,10 +1,13 @@
 #include "skillissue.h" 
 
 
-void save_file_writes(FILE* f, piece_table* pt){
+int save_file_writes(FILE* f, piece_table* pt){
     // put together the piece table 
 
     printf("%p %p", (void*)f, (void*)pt);
+
+
+    return 0; 
 
     // use freopen to clear the contents 
 
@@ -13,7 +16,7 @@ void save_file_writes(FILE* f, piece_table* pt){
 int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos, int user_in, line_view* lv){
 
     /* handle user finishing up insertion mode*/
-    if (user_in == USR_MODE_ESC){
+    if (user_in == USR_ESC){
         pt->curr_ins_ent = NULL_ENT;
         pt->curr_del_ent = NULL_ENT; 
         umode->mode &= 0;
@@ -137,10 +140,15 @@ int edit_file(char* fn, termw_info* tinfo){
             
             switch(umode.mode){
 
-                case USR_MODE_INS:
+                case MODE_INSERT:
                     insert_res = handle_insertion_mode(&pt, &umode, &pos, user_in, &lv);
                     if (insert_res < 0){}
                     break;
+
+                case MODE_SAVE:
+                    save_file_writes(f, &pt); 
+                    umode.mode = 0; 
+                    break; 
 
                 default:
                     break; 
@@ -154,7 +162,7 @@ int edit_file(char* fn, termw_info* tinfo){
                 /* save progress and write to file */
                 case 'z':
                     save_file_writes(f, &pt);
-                    umode.made_save = 1;
+                    umode.mode = MODE_SAVE;
                     break; 
 
                 /* quit the editor (if not saved then all progress is lost) */
@@ -164,7 +172,7 @@ int edit_file(char* fn, termw_info* tinfo){
 
                 /* insert */
                 case 'i':
-                    umode.mode |= USR_MODE_INS;
+                    umode.mode = MODE_INSERT;
                     break;  
                 
                 /* redo */
