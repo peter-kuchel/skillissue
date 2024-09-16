@@ -110,6 +110,12 @@ int edit_file(char* fn, termw_info* tinfo){
             if (umode.mode == 0){
                 char* key_pressed;  
                 switch(user_in){
+                    case 'q':
+                        key_pressed = "QUIT";
+                        break;
+                    case 'z':
+                        key_pressed = "QUIT";
+                        break;   
                     case 'w': 
                         key_pressed = "UP";
                         break;
@@ -257,11 +263,19 @@ void run_sk(int argc, char** argv){
         // enable getting int from getch 
         keypad(stdscr, TRUE);   
 
-        memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, "[Screen Size] rows: %d, cols: %d\n", tinfo.rows, tinfo.cols);
-        log_to_file(&sk_logger, pbuf);
+        #ifdef DEBUG_GEN
+            memset(pbuf, 0, PBUF_SIZE);
+            sprintf(pbuf, "[Screen Size] rows: %d, cols: %d\n", tinfo.rows, tinfo.cols);
+            log_to_file(&sk_logger, pbuf);
+        #endif 
 
         int res = edit_file(argv[1], &tinfo);
+
+        #ifdef DEBUG_GEN
+            memset(pbuf, 0, PBUF_SIZE);
+            sprintf(pbuf, "[Logger exiting]\n");
+            log_to_file(&sk_logger, pbuf);
+        #endif 
 
         teardown_logger(&sk_logger);
         endwin();
