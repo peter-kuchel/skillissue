@@ -109,6 +109,7 @@ int edit_file(char* fn, termw_info* tinfo){
 
             if (umode.mode == 0){
                 char* key_pressed;  
+                char _key_pressed[10];
                 switch(user_in){
                     case 'q':
                         key_pressed = "QUIT";
@@ -132,7 +133,9 @@ int edit_file(char* fn, termw_info* tinfo){
                         key_pressed = "INSERTION MODE";
                         break;
                     default:
-                        key_pressed = "N/A";
+                        // key_pressed = "N/A";
+                        sprintf(_key_pressed, "%c", user_in);
+                        key_pressed = _key_pressed; 
                         break;
                 }
                 memset(pbuf, 0, PBUF_SIZE);

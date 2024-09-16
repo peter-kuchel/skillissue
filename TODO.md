@@ -2,7 +2,6 @@
 
 * high priority 
     * fix deleting first line from top of document
-    * have the screen render down when inserting newlines 
     * fix small bugs still present when adding new lines
 
 * medium priority 
