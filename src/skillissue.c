@@ -131,6 +131,9 @@ int edit_file(char* fn, termw_info* tinfo){
                     case 'i': 
                         key_pressed = "INSERTION MODE";
                         break;
+                    default:
+                        key_pressed = "N/A";
+                        break;
                 }
                 memset(pbuf, 0, PBUF_SIZE);
                 sprintf(pbuf, "[User In]: %s\n", key_pressed);

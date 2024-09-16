@@ -225,6 +225,7 @@ static int handle_new_line_insert(piece_table* pt, cursor_pos* curs_pos){
 
     line *_new_line, *curr_line;  
 
+    // if we are in the last entry, then just append the new line to the end
     if (pt->curr_ins_ent == pt->ent_tail){
         _new_line = &(pt->lh.lines[new_line]);
         _new_line->line_size = 0; 
@@ -403,6 +404,9 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in, line_vie
     if (user_in == '\n'){
         handle_new_line_insert(pt, curs_pos);
         update_view_ins_nl(pt, lv);
+
+        // for when the nl insertion goes beyond the screen
+        update_view_move_down(pt, lv, curs_pos);
     } else {
         
         line* curr_line = LH_CURR_LINE(pt);
