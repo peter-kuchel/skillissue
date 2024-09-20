@@ -1,7 +1,7 @@
 #include "pt_delete.h"
 
 
-static int delete_starting_from_end(piece_table* pt){
+static int delete_starting_from_end(piece_table* pt, line_view* lv){
 
     int new_del_ent = new_pt_entry(pt);
 
@@ -31,6 +31,11 @@ static int delete_starting_from_end(piece_table* pt){
     pt->curr_ent_ptr = new_del_ent;
 
     pt->curr_del_ent = new_del_ent;
+
+    // replace line view with newly made entry
+    if (old_ent == lv->top_view_ent){
+        lv->top_view_ent = new_del_ent;
+    }
 
 
     #ifdef DEBUG_DELETE 
@@ -345,7 +350,7 @@ int delete_manager(piece_table* pt, cursor_pos* curs_pos, int key_pressed, line_
             pt->ent_tail == pt->curr_ent_ptr && 
             pt->curr_chr_ptr == (curr_ent->start + curr_ent->len)
         ){
-            delete_starting_from_end(pt);
+            delete_starting_from_end(pt, lv);
         
         // start deleting at the ent left of the current ent
         } else if (pt->curr_chr_ptr == curr_ent->start){
