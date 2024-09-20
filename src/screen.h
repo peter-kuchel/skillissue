@@ -37,12 +37,12 @@ typedef struct {
 typedef struct {
     termw_info* tinfo_ptr;
     size_t top_view_chr;                // ptr to char in the top left position of the terminal screen 
-    int top_view_ent;
+    int top_view_ent;                   // which entry do the characters at the very top left of the screen belong to 
     
 
     // sliding view window 
-    int top_win;
-    int bot_win; 
+    int top_win;                        //
+    int bot_win;                        //
     int left_win; 
     int right_win;
 

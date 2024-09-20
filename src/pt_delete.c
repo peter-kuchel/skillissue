@@ -180,29 +180,38 @@ static int delete_curr_exhuasted(piece_table* pt, line_view* lv){
         log_to_file(&sk_logger, pbuf); 
     #endif 
 
-    // if we are at the very end with current del ent, then return and set necessary variables 
-    if (pt->ent_head == pt->curr_del_ent){
+    pt_stack_t* _undo = &(pt->undo);
+    int curr_del = pt->curr_del_ent;
+
+    // if we are at the very beginning of the document with current del ent, then set necessary variables 
+    if (pt->ent_head == curr_del){
+
+        push_pt_stack(_undo, curr_del);
+        pt->ent_head = pt->curr_ent_ptr; 
+
+        // new head has to become top_view_ent 
+        // lv->top_view_ent = pt->ent_head;
+
+        // pt_entry* head = ENT_AT_POS(pt, pt->ent_head); 
+        // lv->top_view_chr = head->start; 
+        
+
+        pt_entry* head_ent = &(pt->entries[pt->ent_head]);
+        head_ent->left = NULL_ENT;
+
+        pt->curr_del_ent = NULL_ENT; 
 
         #ifdef DEBUG_DELETE
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(pbuf, "[Delete]: Exhausted at very beginning\n");
             log_to_file(&sk_logger, pbuf);
         #endif 
-
-        pt->ent_head = pt->curr_ent_ptr; 
-
-        pt_entry* head_ent = &(pt->entries[pt->ent_head]);
-        head_ent->left = NULL_ENT;
-
-        pt->curr_del_ent = NULL_ENT; 
          
         return 1;
     }
 
-    int curr_del = pt->curr_del_ent;
+    
     int new_del = new_pt_entry(pt);
-
-    pt_stack_t* _undo = &(pt->undo);
 
     
     pt_entry* curr_del_ent = &(pt->entries[curr_del]);
@@ -240,6 +249,7 @@ static int delete_curr_exhuasted(piece_table* pt, line_view* lv){
 
     pt->curr_del_ent = new_del;
 
+    // whats the point of this ? 
     if (curr_del == lv->top_view_ent ){
 
     } else if (del_left == lv->top_view_ent){
@@ -276,6 +286,8 @@ static int handle_new_line_delete(piece_table* pt, cursor_pos* curs_pos){
 
     if (rm_pos == pt->lh.bottom_line){
         pt->lh.bottom_line = merge_pos; 
+    } else if (rm_pos == pt->lh.top_line){
+        pt->lh.top_line = merge_pos; 
     } else {
         neighbour = &(pt->lh.lines[to_remove->next_line]);
         neighbour->prev_line = merge_pos;
