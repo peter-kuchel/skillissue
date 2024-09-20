@@ -195,10 +195,10 @@ static int delete_curr_exhuasted(piece_table* pt, line_view* lv){
         pt->ent_head = pt->curr_ent_ptr; 
 
         // new head has to become top_view_ent 
-        // lv->top_view_ent = pt->ent_head;
+        lv->top_view_ent = pt->ent_head;
 
-        // pt_entry* head = ENT_AT_POS(pt, pt->ent_head); 
-        // lv->top_view_chr = head->start; 
+        pt_entry* head = ENT_AT_POS(pt, pt->ent_head); 
+        lv->top_view_chr = head->start; 
         
 
         pt_entry* head_ent = &(pt->entries[pt->ent_head]);
