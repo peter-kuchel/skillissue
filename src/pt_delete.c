@@ -196,7 +196,6 @@ static int delete_curr_exhuasted(piece_table* pt, line_view* lv){
 
         // new head has to become top_view_ent 
         lv->top_view_ent = pt->ent_head;
-
         pt_entry* head = ENT_AT_POS(pt, pt->ent_head); 
         lv->top_view_chr = head->start; 
         
@@ -403,11 +402,6 @@ int delete_manager(piece_table* pt, cursor_pos* curs_pos, int key_pressed, line_
     if (del_ent->len == 0){
 
         delete_curr_exhuasted(pt, lv);
-
-        // if (at_end) return 0; 
-
-        // del_ent = &(pt->entries[pt->curr_del_ent]);
-        // del_ent = ENT_AT_POS_ENTRIES(pt, pt->curr_del_ent);
     }
 
     lv->needs_render++; 

@@ -1,8 +1,10 @@
 # TODO (and possible future functionality) in no particular order: 
 
 * high priority 
-    * fix deleting first line from top of document
-    * fix small bugs still present when adding new lines
+    * fix small bug when deleting from the end of the document and moving down after
+        * ( segmentation fault because x and y go negative )
+
+    * fix small bugs still present when adding new lines (?)
 
 * medium priority 
     * implement using the line reclaim when a line is deleted 
@@ -11,7 +13,7 @@
 * low priority 
 
     * re-factor delete exhaustion so that it doesn't make a new entry until
-      there is a confirmed delete
+      there is a confirmed delete (?)
 
     * fixed size buffer for printing to the screen(?)
         * calculate the buffer size using the max screen size 

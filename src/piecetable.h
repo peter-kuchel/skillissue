@@ -123,6 +123,9 @@ typedef struct{
 #define ENT_AT_POS(pt, pos) \
     ( &(pt->entries[pos]) )
 
+#define CURR_ENT_PTR(pt) \
+    ( ENT_AT_POS(pt, pt->curr_ent_ptr) )
+
 #define LINE_AT_POS(lh, pos) \
     ( &(lh->lines[pos]) )
 
