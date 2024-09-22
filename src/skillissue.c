@@ -133,7 +133,7 @@ int edit_file(char* fn, termw_info* tinfo){
                         key_pressed = "INSERTION MODE";
                         break;
                     default:
-                        // key_pressed = "N/A";
+                        // key_pressed = "N/A"; 
                         sprintf(_key_pressed, "%c", user_in);
                         key_pressed = _key_pressed; 
                         break;

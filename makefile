@@ -5,12 +5,14 @@ CFLAGS = -Wall -Wextra -Wpedantic \
 		 -g \
 		 -O2
 
+# for debugging 
 DEBUG_INSERT_TOGGLE = 1
 DEBUG_DELETE_TOGGLE = 1
-DEBUG_MOVEMENT_TOGGLE = 0
+DEBUG_MOVEMENT_TOGGLE =
 DEBUG_PT_TOGGLE = 1
 DEBUG_GENERAL_TOGGLE = 1
 DEBUG_SCREEN_TOGGLE = 1
+
 
 ifeq ($(DEBUG_INSERT_TOGGLE), 1)
 CFLAGS+= -D DEBUG_INSERT
@@ -40,24 +42,27 @@ NCURSES = -lncurses
 
 SRC = src
 BIN = bin
-TARGET = skillissue
 
-all: mk-bin sk 
+TARGET = skillissue
+SRC_FILES = $(wildcard $(SRC)/*.c)
+# SRC_FILES := $(shell find $(SRC) -name '*.c')
+
+OBJ_FILES = $(SRC_FILES:$(SRC)/%.c=$(BIN)/%.o)
+
+all: mk-bin $(TARGET) 
 
 mk-bin:
 	mkdir -p bin
+# 	@echo $(OBJ_FILES)
 
-sk: 
-	$(CC) $(CFLAGS) \
-	$(SRC)/cursor.c \
-	$(SRC)/logging.c \
-	$(SRC)/piecetable.c \
-	$(SRC)/pt_delete.c \
-	$(SRC)/pt_insert.c \
-	$(SRC)/pt_realloc.c \
-	$(SRC)/pt_stacks.c \
-	$(SRC)/screen.c \
-	$(SRC)/skillissue.c \
-	$(SRC)/utils.c \
-	$(NCURSES) \
-	-o $(BIN)/$(TARGET)
+$(TARGET): $(OBJ_FILES)
+	$(CC) -o $(BIN)/$@ $(OBJ_FILES) $(NCURSES)
+
+
+$(BIN)/%.o: $(SRC)/%.c
+	$(CC) -c $(CFLAGS) -I $(SRC)/ $< -o $@  
+
+
+clean:
+	-rm -f $(BIN)/*.o $(BIN)/skillissue
+	

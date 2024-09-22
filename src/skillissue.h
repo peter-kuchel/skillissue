@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <curses.h>
+// #include <curses.h>
 
 #include "cursor.h"
 #include "piecetable.h"
