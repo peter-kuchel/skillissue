@@ -43,7 +43,7 @@ NCURSES = -lncurses
 SRC = src
 BIN = bin
 
-TARGET = skillissue
+TARGET = $(BIN)/skillissue
 SRC_FILES = $(wildcard $(SRC)/*.c)
 # SRC_FILES := $(shell find $(SRC) -name '*.c')
 
@@ -53,14 +53,13 @@ all: mk-bin $(TARGET)
 
 mk-bin:
 	mkdir -p bin
-# 	@echo $(OBJ_FILES)
 
 $(TARGET): $(OBJ_FILES)
-	$(CC) -o $(BIN)/$@ $(OBJ_FILES) $(NCURSES)
+	$(CC) -o $@ $^ $(NCURSES)
 
 
 $(BIN)/%.o: $(SRC)/%.c
-	$(CC) -c $(CFLAGS) -I $(SRC)/ $< -o $@  
+	$(CC) -c $(CFLAGS) $< -o $@  
 
 
 clean:
