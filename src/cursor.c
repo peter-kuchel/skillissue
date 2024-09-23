@@ -171,7 +171,10 @@ int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int pre
         log_to_file(&sk_logger, pbuf);
     #endif 
 
-    if ( prev_char == '\n'){
+        line_handler* lh = LH_PTR(pt);
+
+    // jump down only if we are not already at the bottom line
+    if ( prev_char == '\n' && lh->curr_line != lh->bottom_line){
         
         line_handler* lh = LH_PTR(pt); 
 

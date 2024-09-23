@@ -185,7 +185,7 @@ void log_piece_table_current(Logger* logger, piece_table* pt){
 
    memset(pbuf, 0, PBUF_SIZE);
    char _c = PTR_AT_CHR(pt, pt->curr_chr_ptr);
-   sprintf(pbuf, "top: %d\ncurr: %d | chr_ptr: %c\nbottom: %d\n\n", _lh->top_line, _lh->curr_line, _c, _lh->bottom_line);
+   sprintf(pbuf, "top: %d\nbottom: %d\ncurr: %d | chr_ptr: %c\n\n", _lh->top_line, _lh->bottom_line, _lh->curr_line, _c);
    log_to_file(logger, pbuf);
 
    int _l = _lh->top_line; 
