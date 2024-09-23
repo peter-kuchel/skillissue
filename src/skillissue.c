@@ -237,7 +237,7 @@ int edit_file(char* fn, termw_info* tinfo){
         #endif 
        
 
-        if (edit_status < 0) in_edit--;
+        // if (edit_status < 0) in_edit--;
         
     } while (in_edit);
 

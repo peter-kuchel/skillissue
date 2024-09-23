@@ -22,15 +22,15 @@ typedef struct{
 } pt_stack_t;
 
 typedef struct {
-    int next_line; 
-    int prev_line; 
-    int line_size; 
+    int next_line;                      // index which points to next line in the file
+    int prev_line;                      // index which points to previous line in the file
+    int line_size;                      // size of the line not including '\n' character at the end
 } line; 
 
 typedef struct {
 
-    pt_stack_t line_reclaim; 
-    line *lines;
+    pt_stack_t line_reclaim;            // spots in *lines which can be reused when we need to add a new line
+    line *lines;                        // dynamic array of line structs 
     int cap;
     int size;                           // total number of lines in the file
 

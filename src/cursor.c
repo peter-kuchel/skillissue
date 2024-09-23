@@ -16,7 +16,7 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
     if (dir > 0){
         size_t upper_bound = ent->start + ent->len;
 
-        // go forward to next entry 
+        // go forward to next entry, 
         if (chr_ptr == upper_bound || chr_ptr + 1 == upper_bound){
             
             #ifdef DEBUG_MOVE
@@ -25,6 +25,7 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
                 log_to_file(&sk_logger, pbuf);
             #endif 
 
+            // currently in the last entry 
             if (pt->ent_tail == pt->curr_ent_ptr){
                 
                 #ifdef DEBUG_MOVE
@@ -49,6 +50,7 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
                 return 0;
             }
 
+            // if we are at the every end of the current entry -- move into the right entry
             if (chr_ptr + 1 == upper_bound){
                 
                 int right = (&(pt->entries[pt->curr_ent_ptr]))->right;
@@ -160,23 +162,21 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
 
 int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int prev_ent, line_view* lv){
 
-    pt_src_t _prev_src = (pt->entries[prev_ent]).src;
-    pt_buffer_t *src_buffer = GET_PT_BUFF(pt, _prev_src);
+    // get the character last seen when attempting to jump down
+    pt_buffer_t *src_buffer = GET_PT_BUFF( pt, (pt->entries[prev_ent]).src );
     char prev_char = src_buffer->text[prev_chr_ptr]; 
 
-    #ifdef DEBUG_MOVE
-        memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, 
-            "[JUMP TEST DOWN]: %x\n", prev_char);
-        log_to_file(&sk_logger, pbuf);
-    #endif 
+    // #ifdef DEBUG_MOVE
+    //     memset(pbuf, 0, PBUF_SIZE);
+    //     sprintf(pbuf, 
+    //         "[JUMP TEST DOWN]: %x\n", prev_char);
+    //     log_to_file(&sk_logger, pbuf);
+    // #endif 
 
-        line_handler* lh = LH_PTR(pt);
+    line_handler* lh = LH_PTR(pt);
 
-    // jump down only if we are not already at the bottom line
+    // jump down only if we are not already at the bottom else don't 
     if ( prev_char == '\n' && lh->curr_line != lh->bottom_line){
-        
-        line_handler* lh = LH_PTR(pt); 
 
         // int prev_curr_line = lh->curr_line; 
         line *curr = LH_CURR_LINE(pt);
@@ -210,6 +210,7 @@ int handle_jump_up(piece_table* pt, cursor_pos* pos, line_view* lv){
         log_to_file(&sk_logger, pbuf);
     #endif 
 
+    // jump up if we hit a new line character 
     if ( _c == '\n'){
         
         line *curr = LH_CURR_LINE(pt);
@@ -231,19 +232,23 @@ int handle_jump_up(piece_table* pt, cursor_pos* pos, line_view* lv){
     return 0; 
 }
 
+// move the chr_ptr to the correct place when going up and down the file
 int move_chr_ptr(piece_table* pt, int dist, int dir){
 
-    int d = 0; 
     int curr_ent = pt->curr_ent_ptr; 
-    
     pt_entry *curr = &(pt->entries[curr_ent]);
-    size_t end = dir > 0 ? curr->start + (curr->len - 1) : curr->start; 
 
+    // depending on the direction (up or down), the entry end we want to look for will be different
+    size_t ent_end = dir > 0 ? curr->start + (curr->len - 1) : curr->start; 
+
+    // at last entry and at the every end of it
     if ( curr_ent == pt->ent_tail && 
-         pt->curr_chr_ptr == curr->start + (curr->len - 1) ){
+         pt->curr_chr_ptr == curr->start + (curr->len - 1) 
+    ){
         pt->curr_chr_ptr--;
     }
 
+    int d = 0; 
     while (d <= dist){
 
         #ifdef DEBUG_MOVE
@@ -251,12 +256,12 @@ int move_chr_ptr(piece_table* pt, int dist, int dir){
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(pbuf, 
                 "[dir: %d] %d <= %d (dist) | at: {%ld} -> end {%ld}| curr_ent: %d [%c]\n",
-                dir, d, dist, pt->curr_chr_ptr, end, curr_ent, _c  
+                dir, d, dist, pt->curr_chr_ptr, ent_end, curr_ent, _c  
             );
             log_to_file(&sk_logger, pbuf);
         #endif 
 
-        if (pt->curr_chr_ptr == end){
+        if (pt->curr_chr_ptr == ent_end){
 
             #ifdef DEBUG_MOVE
                     memset(pbuf, 0, PBUF_SIZE);
@@ -276,13 +281,13 @@ int move_chr_ptr(piece_table* pt, int dist, int dir){
                 
                 pt->curr_chr_ptr = dir > 0 ? curr->start : curr->start + (curr->len - 1); 
                 pt->curr_ent_ptr = curr_ent;
-                end = dir > 0 ? curr->start + (curr->len - 1) : curr->start;
+                ent_end = dir > 0 ? curr->start + (curr->len - 1) : curr->start;
 
                 #ifdef DEBUG_MOVE
                     memset(pbuf, 0, PBUF_SIZE);
                     sprintf(pbuf, 
                         "[REACH END]: new-- end: %ld, curr_ent: %d, curr_chr_ptr: %ld\n",
-                            end, curr_ent, pt->curr_chr_ptr
+                            ent_end, curr_ent, pt->curr_chr_ptr
                     );
                     log_to_file(&sk_logger, pbuf);
                 #endif 
@@ -297,7 +302,6 @@ int move_chr_ptr(piece_table* pt, int dist, int dir){
         }
 
         d++; 
-
     }
 
     return 0; 
@@ -315,25 +319,30 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
     
     curr_col_mem = pt->lh.col_mem;
   
+    // get current line and it's size 
     int _curr_line = pt->lh.curr_line; 
     curr = &(pt->lh.lines[_curr_line]);
     curr_size = curr->line_size;
 
-    // going up the file
+    // if going up the file by pressing 'w'
     if (dir < 0){
 
         if (pt->lh.top_line == _curr_line) return 0; 
 
         pos->y--; 
 
-        jump_to = &(pt->lh.lines[curr->prev_line]); 
+        // the line that is going to be jumped to  & size of the above line to calcuate where the char ptr will end up 
+        jump_to = &(pt->lh.lines[curr->prev_line]);
         jump_size = jump_to->line_size;
 
-        //  
+        // check if the size of the line is greater than the column memery that the cursor should jump to
         if (jump_size >= curr_col_mem){
-            dist = pos->x + (jump_size - curr_col_mem); 
+
+            dist = pos->x + (jump_size - curr_col_mem);             // distance to move chr_ptr
             pos->x = curr_col_mem;
-        } else{
+        
+        } else {
+
             dist = pos->x;
             pos->x = jump_size;
         } 
@@ -353,20 +362,8 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
 
         update_view_move_up(pt, lv, pos);
 
-    // check for going down the file
+    // else going down the file pressing 's' 
     } else {
-
-        // if (pt->lh.bottom_line == _curr_line){
-        //     // update_view_move_down(pt, lv, pos);
-            
-        //     #ifdef DEBUG_SCREEN
-        //         memset(pbuf, 0, PBUF_SIZE);
-        //         sprintf(pbuf,"at bottom line\n");
-        //         log_to_file(&sk_logger, pbuf);
-        //     #endif
-
-        //     return 0;
-        // }
 
         // if current line is bottom line, update window if necessary 
         if (pt->lh.bottom_line == _curr_line){
@@ -380,7 +377,7 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
         jump_size = jump_to->line_size;
 
         if (jump_size >= curr_col_mem){
-            dist = curr_col_mem + (curr_size - pos->x);
+            dist = curr_col_mem + (curr_size - pos->x);         // distance to move chr_ptr
             pos->x = curr_col_mem;
         } 
         

@@ -41,8 +41,8 @@ typedef struct {
     
 
     // sliding view window 
-    int top_win;                        //
-    int bot_win;                        //
+    int top_win;                        // line at the top of the screen being displyed
+    int bot_win;                        // line at the bottom of the screen being displayed 
     int left_win; 
     int right_win;
 
