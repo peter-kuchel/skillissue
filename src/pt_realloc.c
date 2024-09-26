@@ -136,7 +136,7 @@ int add_new_line(line_handler* lh){
 
 int init_line_handler(line_handler* lh, pt_buffer_t* original_buffer){ //, int term_rows
 
-    int s = 0, prev_line = NULL_LINE, new_line; 
+    int prev_line_i = NULL_LINE, curr_line_i; 
     size_t i = 0; 
 
     if (original_buffer->size == 0){
@@ -151,55 +151,56 @@ int init_line_handler(line_handler* lh, pt_buffer_t* original_buffer){ //, int t
     #endif 
 
     char c; 
-    line *_prev_line = NULL, *_curr_line = NULL;
+    line *prev_line = NULL, *curr_line = NULL;
+
+    // for the very first line
+    curr_line_i = get_new_line(lh);
+    curr_line = &(lh->lines[ curr_line_i ]);
+
     while (i < original_buffer->size){
 
         c = original_buffer->text[i];
 
-        int at_last = (i + 1 == original_buffer->size);
-
-        if (c == '\n' || at_last){
-
-            if (at_last) s++;
-            // s++; 
-
-            new_line = get_new_line(lh);
-            _curr_line = &(lh->lines[new_line]);
-
-            _curr_line->line_size = s; 
-
+        if (c == '\n'){
             #ifdef DEBUG_PT
                 memset(pbuf, 0, PBUF_SIZE);
                 sprintf(pbuf, 
-                    "[New line found in original at position]: %ld, new line is: %d, size: %d\n", i, new_line, s);
+                    "[Line found in original at position]: %ld, new line is: %d, size: %d\n[New line of size 0 made]\n", 
+                        i, curr_line_i, curr_line->line_size);
                 log_to_file(&sk_logger, pbuf);
             #endif 
 
-            if (lh->size == 1){
-               lh->top_line = new_line;
-                
-            } else {
-                _prev_line->next_line = new_line;
-                _curr_line->prev_line = prev_line;
+            prev_line = curr_line; 
+            prev_line_i = curr_line_i;
+
+            curr_line_i = get_new_line(lh);
+            curr_line = &(lh->lines[  curr_line_i ]);
+
+            if (lh->size == 1)
+                lh->top_line = curr_line_i; 
+            else {
+                prev_line->next_line = curr_line_i; 
+                curr_line->prev_line = prev_line_i; 
             }
 
-            _prev_line = _curr_line;
-            prev_line = new_line;
-
-            s = 0; 
         } else {
-            s++; 
+            curr_line->line_size++;
         }
-
         i++;
     }
 
-    // add last line
-    lh->bottom_line = prev_line;
+    // for the last line - it needs to be made the bottom 
+    lh->bottom_line = curr_line_i;
     lh->curr_line = lh->top_line;
 
-    // lh->top_view = lh->top_line; 
-    // lh->bot_view = lh->bottom_line; 
+    #ifdef DEBUG_PT
+    memset(pbuf, 0, PBUF_SIZE);
+    sprintf(pbuf, "[All lines added]: total lines: %d\n", lh->size);
+    log_to_file(&sk_logger, pbuf);
+    #endif 
+
+    // add last line
+    
 
 
     return 0; 

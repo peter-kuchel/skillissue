@@ -1,7 +1,8 @@
 # TODO (and possible future functionality) in no particular order: 
 
 * high priority 
-
+    
+    * fix small bug with inserts not displaying
 
 * medium priority 
     

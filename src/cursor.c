@@ -12,7 +12,7 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
     pt_entry* ent = &(pt->entries[pt->curr_ent_ptr]);
     size_t chr_ptr = pt->curr_chr_ptr; 
 
-    /* move to the right */  
+    /* move to the right -- when d is pressed*/  
     if (dir > 0){
         size_t upper_bound = ent->start + ent->len;
 
@@ -87,7 +87,7 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
         pos->x++;
         
 
-    /* move to the left */ 
+    /* move to the left -- when a is pressed*/ 
     } else {
         size_t lower_bound = ent->start; 
 
@@ -169,7 +169,7 @@ int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int pre
     // #ifdef DEBUG_MOVE
     //     memset(pbuf, 0, PBUF_SIZE);
     //     sprintf(pbuf, 
-    //         "[JUMP TEST DOWN]: %x\n", prev_char);
+    //         "[JUMP TEST DOWN]: %x\n", prev_char); 
     //     log_to_file(&sk_logger, pbuf);
     // #endif 
 
