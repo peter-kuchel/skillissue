@@ -6,6 +6,12 @@ int init_piece_table(FILE* f, char* fn, piece_table* pt){
    
    size_t f_size = file_size(fn);
 
+   #ifdef DEBUG_PT
+      memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "[Size of %s]: %ld\n", fn, f_size);
+        log_to_file(&sk_logger, pbuf);
+   #endif 
+
    char* org_buf = (char*)malloc( (f_size + 1) * sizeof(char) );
    char* add_buf = (char*)malloc(STARTING_ADD_BUF_SIZE * sizeof(char));
 

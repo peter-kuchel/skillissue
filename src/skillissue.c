@@ -115,7 +115,7 @@ int edit_file(char* fn, termw_info* tinfo){
                         key_pressed = "QUIT";
                         break;
                     case 'z':
-                        key_pressed = "QUIT";
+                        key_pressed = "SAVE";
                         break;   
                     case 'w': 
                         key_pressed = "UP";
@@ -130,7 +130,7 @@ int edit_file(char* fn, termw_info* tinfo){
                         key_pressed = "RIGHT";
                         break;
                     case 'i': 
-                        key_pressed = "INSERTION MODE";
+                        key_pressed = "INSERTION";
                         break;
                     default:
                         // key_pressed = "N/A"; 
@@ -222,13 +222,20 @@ int edit_file(char* fn, termw_info* tinfo){
             }
         }
 
+        
+
         // render only if a render is required
         if (lv.needs_render){
             render_screen(&pt, &lv);
             lv.needs_render--; 
         }
 
+        // display info about current state
+        display_screen_info(&pt, &lv, &pos); 
+
         move(pos.y , pos.x);
+
+
 
         #ifdef DEBUG_GEN
             memset(pbuf, 0, PBUF_SIZE);
@@ -256,7 +263,7 @@ int edit_file(char* fn, termw_info* tinfo){
     return 0; 
 }
 
-void run_sk(int argc, char** argv){
+void run_skillissue(int argc, char** argv){
 
     /* started with a file so load this file right away */
     if (argc > 1){
@@ -265,6 +272,9 @@ void run_sk(int argc, char** argv){
 
         // get size of the terminal 
         getmaxyx(stdscr, tinfo.rows, tinfo.cols);
+
+        // keep one row for displaying info
+        tinfo.rows--;
 
         // enable getting int from getch 
         keypad(stdscr, TRUE);   
@@ -301,7 +311,7 @@ int main(int argc, char** argv){
     log_to_file(&sk_logger, "logger has been successfully set up!\n===================================\n\n");
 
     /* run */
-    run_sk(argc, argv);
+    run_skillissue(argc, argv);
 
  
     return 0; 

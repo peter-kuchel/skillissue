@@ -35,7 +35,7 @@ typedef struct {
 } pt_track;
 
 typedef struct {
-    termw_info* tinfo_ptr;
+    termw_info* tinfo_ptr;              // terminal dimensions 
     size_t top_view_chr;                // ptr to char in the top left position of the terminal screen 
     int top_view_ent;                   // which entry do the characters at the very top left of the screen belong to 
     
@@ -60,6 +60,7 @@ void update_view_ins_nl(piece_table* pt, line_view* lv);
 void update_view_del_nl(piece_table* pt, line_view* lv); 
 
 
+void display_screen_info(piece_table* pt, line_view* lv, cursor_pos* pos);
 void render_screen(piece_table* pt, line_view* lv);
 
 // track_ptr->ent.start is the chr_ptr being tracked currently
