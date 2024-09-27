@@ -111,13 +111,6 @@ void update_view_move_down(piece_table* pt, line_view* lv, cursor_pos* pos){
         pos->y--; 
         
     }
-
-
-    // #ifdef DEBUG_SCREEN
-    //     memset(pbuf, 0, PBUF_SIZE);
-    //     sprintf(pbuf, "(curr) %d == %d (bot) | bot win: %d\n", lh->curr_line, lh->bottom_line, lv->bot_win);
-    //     log_to_file(&sk_logger, pbuf);
-    // #endif 
     
 }
 

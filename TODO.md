@@ -2,7 +2,9 @@
 
 * high priority 
     
-    * fix small bug with inserts not displaying
+    * fix small bug with inserts not displaying (? maybe not an issue anymore?) 
+    * fix small bug where the cursor position sometimes ends up in the wrong spot (non consistent bug)
+    * displaying position in the document
 
 * medium priority 
     

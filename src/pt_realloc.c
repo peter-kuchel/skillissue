@@ -96,41 +96,6 @@ int add_new_line(line_handler* lh){
 
     _curr_line->next_line = new_line_num;
 
-
-
-    // if (dir > 0){
-    //     new_line->next_line = _curr_line->next_line;
-    //     new_line->prev_line = lh->curr_line;
-
-    //     _curr_line->next_line = new_line_num;
-        
-    //     // check if the new line needs to be come the bottom line
-    //     if (lh->curr_line == lh->bottom_line){
-    //         lh->bottom_line = new_line_num;
-    //     } else {
-    //         neighbour = &(lh->lines[_curr_line->next_line]);
-    //         neighbour->prev_line = new_line_num;
-    //     }
-          
-    // } else {
-    //     new_line->prev_line = _curr_line->prev_line;
-    //     new_line->next_line = lh->curr_line;
-
-    //     _curr_line->prev_line = new_line_num;
-        
-    //     // check if the new line needs to be come the top line
-    //     if (lh->curr_line == lh->top_line){
-    //         lh->top_line = new_line_num;
-    //     } else {
-    //         neighbour = &(lh->lines[_curr_line->prev_line]);
-    //         neighbour->next_line = new_line_num;
-    //     }
-        
-    // }
-
-    // handle update after if needed 
-    // lh->curr_line = new_line_num;
-
     return new_line_num;
 }
 
@@ -192,6 +157,9 @@ int init_line_handler(line_handler* lh, pt_buffer_t* original_buffer){ //, int t
     // for the last line - it needs to be made the bottom 
     lh->bottom_line = curr_line_i;
     lh->curr_line = lh->top_line;
+
+    // starting at the very top line
+    lh->line_number = 1;
 
     #ifdef DEBUG_PT
     memset(pbuf, 0, PBUF_SIZE);
