@@ -222,8 +222,6 @@ int edit_file(char* fn, termw_info* tinfo){
             }
         }
 
-        
-
         // render only if a render is required
         if (lv.needs_render){
             render_screen(&pt, &lv);
@@ -243,8 +241,6 @@ int edit_file(char* fn, termw_info* tinfo){
             log_to_file(&sk_logger, pbuf);
         #endif 
        
-
-        // if (edit_status < 0) in_edit--;
         
     } while (in_edit);
 
@@ -276,7 +272,7 @@ void run_skillissue(int argc, char** argv){
         // keep one row for displaying info
         tinfo.rows--;
 
-        // enable getting int from getch 
+        // enable getting int from getch
         keypad(stdscr, TRUE);   
 
         #ifdef DEBUG_GEN
@@ -293,7 +289,10 @@ void run_skillissue(int argc, char** argv){
             log_to_file(&sk_logger, pbuf);
         #endif 
 
-        teardown_logger(&sk_logger);
+        #ifdef DEBUG_GEN
+            teardown_logger(&sk_logger);
+        #endif 
+
         endwin();
 
         if (res < 0) exit(1);
@@ -306,9 +305,10 @@ void run_skillissue(int argc, char** argv){
 
 int main(int argc, char** argv){
 
-    
-    setup_logger(&sk_logger, LOG_FILE);
-    log_to_file(&sk_logger, "logger has been successfully set up!\n===================================\n\n");
+    #ifdef DEBUG_GEN
+        setup_logger(&sk_logger, LOG_FILE);
+        log_to_file(&sk_logger, "logger has been successfully set up!\n===================================\n\n");
+    #endif 
 
     /* run */
     run_skillissue(argc, argv);
