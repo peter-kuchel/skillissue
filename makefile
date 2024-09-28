@@ -10,13 +10,13 @@ CFLAGS = -Wall -Wextra -Wpedantic \
 # this one has to always be enabled if debugging 
 # if debugging is turned off then clean needs to be ran
 
-DEBUG_GENERAL_TOGGLE = 
+DEBUG_GENERAL_TOGGLE = 1
 
-DEBUG_INSERT_TOGGLE = 
-DEBUG_DELETE_TOGGLE = 
+DEBUG_INSERT_TOGGLE = 1
+DEBUG_DELETE_TOGGLE = 1
 DEBUG_MOVEMENT_TOGGLE = 
-DEBUG_PT_TOGGLE = 
-DEBUG_SCREEN_TOGGLE = 
+DEBUG_PT_TOGGLE = 1
+DEBUG_SCREEN_TOGGLE = 1
 
 
 ifeq ($(DEBUG_INSERT_TOGGLE), 1)

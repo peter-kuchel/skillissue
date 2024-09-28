@@ -4,7 +4,12 @@
     
     * fix small bug with inserts not displaying (? maybe not an issue anymore?) 
     * fix small bug where the cursor position sometimes ends up in the wrong spot (non consistent bug)
+        * bug seems to happen when scrolling down to the very bottom of the document
+    * fix small bug with writing info at the bottom
     * displaying position in the document
+
+    * implement a system to stop flickering when moving up and down the screen for long periods of time
+        * single call to printw
 
 * medium priority 
     
