@@ -64,6 +64,7 @@ void display_screen_info(piece_table* pt, line_view* lv, cursor_pos* pos);
 void render_screen(piece_table* pt, line_view* lv);
 
 // track_ptr->ent.start is the chr_ptr being tracked currently
+// macro gets the char in the text buffer for the track
 #define CHR_IN_TRACK(track_ptr) \
         ( track_ptr->buff->text[track_ptr->curr_start_ptr] )
 

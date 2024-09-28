@@ -285,10 +285,10 @@ void display_screen_info(piece_table* pt, line_view* lv, cursor_pos* pos){
 
 void render_screen(piece_table* pt, line_view* lv){
 
-    clear();
+    erase();
 
     line_handler* lh = &(pt->lh);
-    line* _l; 
+    line *_l; 
     line_print lp = { 0, 0, 0 }; 
  
     int view_curr = lv->top_win;
@@ -299,10 +299,30 @@ void render_screen(piece_table* pt, line_view* lv){
     int term_rows = lv->tinfo_ptr->rows; 
     int lines_to_render = lh->size < term_rows ? lh->size : term_rows; 
 
-    // print information about the position
+    // get size of buffer to print
+    int i, l_size, c = view_curr;
+    int buf_size = 1;               // 1 to account for null terminator
+
+    for (i = 0; i < lines_to_render; i++){
+        _l = &(lh->lines[c]);
+
+        // lines with just \n have a size of 0, so we need to make space to print \n to the screen
+        calc_line_size(pt, &track, &lp, lv, _l);
+        l_size = lp.line_size + 1; 
+       
+        buf_size += l_size;
+
+        c = _l->next_line; 
+        
+    }
+
+    char print_buf[buf_size]; 
+    memset(print_buf, 0, buf_size);
     
-
-
+    lp.line_size = 0; 
+    lp.right_cutoff = 0; 
+    lp.line_pos = 0; 
+    
     #ifdef DEBUG_SCREEN
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, 
@@ -315,14 +335,19 @@ void render_screen(piece_table* pt, line_view* lv){
             "(top win: %d | bot win: %d)\n", 
             lv->top_win, lv->bot_win);
         log_to_file(&sk_logger, pbuf);
+
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "print_buf size: %d\n", buf_size);
+        log_to_file(&sk_logger, pbuf);
     #endif 
 
-    for (int i = 0; i < lines_to_render; i++){
+    int pb_i = 0;                                   // index for print buffer
+    for (i = 0; i < lines_to_render; i++){
         _l = &(lh->lines[view_curr]);
 
         if (lv->left_win > _l->line_size){
-
-            printw("\n");                                                       // print newline here since this line is out of view
+                                                    
+            print_buf[pb_i++] = '\n';                               // print newline here since this line is out of view
 
             #ifdef DEBUG_SCREEN
                 memset(pbuf, 0, PBUF_SIZE);
@@ -336,24 +361,19 @@ void render_screen(piece_table* pt, line_view* lv){
 
             lp.line_size++;                                                     // account for the '\n'
             
-            size_t print_size = (size_t)lp.line_size +1;
-            char to_print[print_size]; 
-            memset(to_print, 0, print_size);
             int ent_ok; 
-
             while (lp.line_pos < lp.line_size){
 
                 ent_ok = move_into_next_ent(pt, &track);                        // move into next ent if needed
 
                 if (ent_ok){
-                    to_print[lp.line_pos] = CHR_IN_TRACK( (&track) ); 
+                    // to_print[lp.line_pos] = CHR_IN_TRACK( (&track) ); 
+                    print_buf[pb_i++] = CHR_IN_TRACK( (&track) );
                     track.curr_start_ptr++;
                 }
                 
                 lp.line_pos++; 
             }
-            to_print[lp.line_size] = '\0';
-            printw("%s", to_print);
         }
 
         // moving the chr ptr to the next top line
@@ -361,5 +381,7 @@ void render_screen(piece_table* pt, line_view* lv){
 
         view_curr = _l->next_line; 
     }
+
+    printw("%s", print_buf);
     
 }
