@@ -2,46 +2,48 @@ CC = gcc
 
 CFLAGS = -Wall -Wextra -Wpedantic \
 		 -std=c99 \
-		 -g \
-		 -O2
+		 -O2 \
 
+
+###############################################################
 ### debugging flags ###
+###############################################################
 
-# this one has to always be enabled if debugging 
-# if debugging is turned off then clean needs to be ran
+# DEBUG_GENERAL_TOGGLE has to always be set as '1' for debugging 
 
 DEBUG_GENERAL_TOGGLE = 1
 
 DEBUG_INSERT_TOGGLE = 1
-DEBUG_DELETE_TOGGLE = 
+DEBUG_DELETE_TOGGLE = 1
 DEBUG_MOVEMENT_TOGGLE = 1
 DEBUG_PT_TOGGLE = 1
-DEBUG_SCREEN_TOGGLE = 
+DEBUG_SCREEN_TOGGLE = 1
 
+ifeq ($(DEBUG_GENERAL_TOGGLE), 1)
+CFLAGS+=-g -D DEBUG_GEN
+endif 
 
-ifeq ($(DEBUG_INSERT_TOGGLE), 1)
+ifeq ($(DEBUG_GENERAL_TOGGLE)$(DEBUG_INSERT_TOGGLE), 11)
 CFLAGS+= -D DEBUG_INSERT
 endif
 
-ifeq ($(DEBUG_DELETE_TOGGLE), 1)
+ifeq ($(DEBUG_GENERAL_TOGGLE)$(DEBUG_DELETE_TOGGLE), 11)
 CFLAGS+= -D DEBUG_DELETE
 endif
 
-ifeq ($(DEBUG_MOVEMENT_TOGGLE), 1)
+ifeq ($(DEBUG_GENERAL_TOGGLE)$(DEBUG_MOVEMENT_TOGGLE), 11)
 CFLAGS+= -D DEBUG_MOVE
 endif
 
-ifeq ($(DEBUG_PT_TOGGLE), 1)
+ifeq ($(DEBUG_GENERAL_TOGGLE)$(DEBUG_PT_TOGGLE), 11)
 CFLAGS+= -D DEBUG_PT
 endif 
 
-ifeq ($(DEBUG_GENERAL_TOGGLE), 1)
-CFLAGS+= -D DEBUG_GEN
-endif 
-
-ifeq ($(DEBUG_SCREEN_TOGGLE), 1)
+ifeq ($(DEBUG_GENERAL_TOGGLE)$(DEBUG_SCREEN_TOGGLE), 11)
 CFLAGS += -D DEBUG_SCREEN
 endif
+
+###############################################################
 
 NCURSES = -lncurses
 
