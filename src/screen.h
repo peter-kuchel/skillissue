@@ -11,6 +11,20 @@ typedef struct {
 } termw_info;
 
 typedef struct {
+    int made_save;
+    unsigned short mode;                    // mode(s) that the user is in       
+    char cmd[10];                           // buffer to save the chars entered previously 
+} usermode; 
+
+typedef enum {
+
+    MODE_NONE = 0x0,
+    MODE_INSERT = 0x1,
+    MODE_SAVE   = 0x2,
+
+} usr_mode;
+
+typedef struct {
     int x; 
     int y; 
 } cursor_pos;
@@ -60,7 +74,7 @@ void update_view_ins_nl(piece_table* pt, line_view* lv);
 void update_view_del_nl(piece_table* pt, line_view* lv); 
 
 
-void display_screen_info(piece_table* pt, line_view* lv, cursor_pos* pos);
+void display_screen_info(piece_table* pt, line_view* lv, cursor_pos* pos, usermode* umode, char user_in);
 void render_screen(piece_table* pt, line_view* lv);
 
 // track_ptr->ent.start is the chr_ptr being tracked currently

@@ -251,19 +251,47 @@ static void calc_line_size(piece_table* pt, pt_track* track, line_print* lp, lin
         move_into_next_ent(pt, track);
     }
 
-    #ifdef DEBUG_SCREEN
-        memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, "[Line size: %d] -- {}\n", lp->line_size);
-        log_to_file(&sk_logger, pbuf);
-    #endif 
+    // uncomment to see line sizes found
+    // #ifdef DEBUG_SCREEN
+    //     memset(pbuf, 0, PBUF_SIZE);
+    //     sprintf(pbuf, "[Line size: %d] -- {}\n", lp->line_size);
+    //     log_to_file(&sk_logger, pbuf);
+    // #endif 
 }
 
 
 
-void display_screen_info(piece_table* pt, line_view* lv, cursor_pos* pos){
+void display_screen_info(piece_table* pt, line_view* lv, cursor_pos* pos, usermode* umode, char user_in){
 
     int max_info_size = lv->tinfo_ptr->cols;
     char info_str[ max_info_size ];
+
+    char* mode_str; 
+    switch (umode->mode){
+        case MODE_INSERT:
+            mode_str = "INSERT";
+            break;
+        case MODE_SAVE:
+            mode_str = "SAVE";
+            break;
+        default:
+            break;
+
+    }
+
+    if (umode->mode == MODE_NONE){
+        switch (user_in){
+            case 'w':
+            case 'a':
+            case 's':
+            case 'd':
+                mode_str = "MOVE";
+                break; 
+            default:
+                mode_str = "";
+                break;
+        }
+    }
 
     #ifdef DEBUG_SCREEN
         // memset(pbuf, 0, PBUF_SIZE);
@@ -273,7 +301,7 @@ void display_screen_info(piece_table* pt, line_view* lv, cursor_pos* pos){
 
     int line_num = pt->lh.line_number + 1;
 
-    int size = sprintf(info_str, "[ %d ] [ %d ]", line_num, pos->x);
+    int size = sprintf(info_str, "[ %d ] [ %d ]\t-{ %s }-", line_num, pos->x, mode_str);
     memset(info_str + size, ' ', max_info_size - size -1 );
     info_str[ max_info_size ] = '\0';
 
@@ -367,7 +395,6 @@ void render_screen(piece_table* pt, line_view* lv){
                 ent_ok = move_into_next_ent(pt, &track);                        // move into next ent if needed
 
                 if (ent_ok){
-                    // to_print[lp.line_pos] = CHR_IN_TRACK( (&track) ); 
                     print_buf[pb_i++] = CHR_IN_TRACK( (&track) );
                     track.curr_start_ptr++;
                 }

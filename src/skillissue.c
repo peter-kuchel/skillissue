@@ -229,7 +229,7 @@ int edit_file(char* fn, termw_info* tinfo){
         }
 
         // display info about current state
-        display_screen_info(&pt, &lv, &pos); 
+        display_screen_info(&pt, &lv, &pos, &umode, user_in); 
 
         move(pos.y , pos.x);
 

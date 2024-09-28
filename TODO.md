@@ -1,14 +1,16 @@
-# TODO (and possible future functionality) in no particular order: 
+# TODO (and possible future functionality): 
+-- anything with (?) means might not be an issue if is a bug or not necessary if refactoring / feature
 
-* high priority 
+* __high priority__ 
     
     * fix small bug with inserts not displaying (? maybe not an issue anymore?) 
-    * fix small bug where the cursor position sometimes ends up in the wrong spot (non consistent bug)
-        * bug seems to happen when scrolling down to the very bottom of the document
-
+    
     * fix small bug with writing info at the bottom (?)
+    * fix bug with cursor position and lines when line size is greater than terminal window
 
-* medium priority 
+    * something that displays the command that has been toggled (similar to vim?)
+
+* __medium priority__ 
     
     * moving left and right on a line when the line size is greater than the window length 
     
@@ -21,9 +23,15 @@
 
     * add being able delete using the 'del' key
 
-    * something that displays the command that has been toggled (similar to vim?)
+    * fix small bug where the cursor position sometimes ends up in the wrong spot (non consistent bug) (?)
+        * bug seems to happen when scrolling down to the very bottom of the document
+
+    * handling tabs in general
+        * moving over tabs to make the cursor jump (?)
+            * maybe just have the tab create 4 spaces (will be an easier solution for the time being)
+        * moving the cursor appropriately when inserting and deleting
         
-* low priority 
+* __low priority__ 
     
     * add being able to use the arrow keys to move when in insertion mode 
 

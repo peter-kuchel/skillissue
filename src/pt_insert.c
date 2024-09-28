@@ -394,7 +394,7 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in, line_vie
         log_to_file(&sk_logger, pbuf);
     #endif 
 
-    
+
     adds->curr_pos++; 
 
     if (pt->ent_tail == pt->curr_ins_ent)
@@ -408,9 +408,14 @@ int insert_manager(piece_table* pt, cursor_pos* curs_pos, char user_in, line_vie
         // for when the nl insertion goes beyond the screen
         update_view_move_down(pt, lv, curs_pos);
     } else {
-        
+
         line* curr_line = LH_CURR_LINE(pt);
         curr_line->line_size++;
+
+        // implement later
+        // if (user_in == '\t')
+        //     curs_pos->x += 3;
+
         curs_pos->x++;
     }
 

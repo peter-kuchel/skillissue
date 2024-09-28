@@ -12,29 +12,15 @@
 #include "pt_delete.h"
 #include "pt_insert.h"
 #include "screen.h"
-#include "utils.h"
 
 typedef struct {
     FILE* f; 
 } window_info;
 
 
-typedef struct {
-    int made_save;
-    unsigned short mode;                    // mode(s) that the user is in       
-    char cmd[10];                           // buffer to save the chars entered previously 
-} usermode; 
-
 
 #define USR_ESC  27
 #define USR_BACKSPACE 127    
-
-typedef enum {
-
-    MODE_INSERT = 0x1,
-    MODE_SAVE   = 0x2,
-
-} usr_mode;
 
 #define TMP_ADD_BUF_SIZE 256
 

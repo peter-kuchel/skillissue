@@ -262,6 +262,12 @@ int move_chr_ptr(piece_table* pt, int dist, int dir){
                 dir, d, dist, pt->curr_chr_ptr, ent_end, curr_ent, _c  
             );
             log_to_file(&sk_logger, pbuf);
+
+            // if(_c == '\t'){
+            //     memset(pbuf, 0, PBUF_SIZE);
+            //     sprintf(pbuf,"[c is a tab: \\t]\n");
+            //     log_to_file(&sk_logger, pbuf);
+            // }
         #endif 
 
         if (pt->curr_chr_ptr == ent_end){
