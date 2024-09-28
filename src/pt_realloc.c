@@ -159,7 +159,7 @@ int init_line_handler(line_handler* lh, pt_buffer_t* original_buffer){ //, int t
     lh->curr_line = lh->top_line;
 
     // starting at the very top line
-    lh->line_number = 1;
+    lh->line_number = 0;
 
     #ifdef DEBUG_PT
     memset(pbuf, 0, PBUF_SIZE);

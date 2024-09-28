@@ -181,6 +181,7 @@ int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int pre
         // int prev_curr_line = lh->curr_line; 
         line *curr = LH_CURR_LINE(pt);
         lh->curr_line = curr->next_line; 
+        lh->line_number++; 
 
         pos->y++;
         pos->x = 0;
@@ -191,7 +192,7 @@ int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int pre
         #ifdef DEBUG_SCREEN
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(pbuf, 
-                "[JUMP DOWN]: curr line is: %d\n", pt->lh.curr_line);
+                "[JUMP DOWN]: curr line is: %d\n", lh->curr_line);
             log_to_file(&sk_logger, pbuf);
         #endif 
     }
@@ -215,6 +216,8 @@ int handle_jump_up(piece_table* pt, cursor_pos* pos, line_view* lv){
         
         line *curr = LH_CURR_LINE(pt);
         pt->lh.curr_line = curr->prev_line; 
+        pt->lh.line_number--; 
+
         pos->y--; 
         pos->x = CURR_LINE_SIZE(pt);
 
@@ -349,6 +352,7 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
         
         move_chr_ptr(pt, dist, dir);
         pt->lh.curr_line = curr->prev_line;
+        pt->lh.line_number--;
 
         #ifdef DEBUG_MOVE
             char _c = PTR_AT_CHR(pt,pt->curr_chr_ptr);
@@ -389,6 +393,7 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
 
         move_chr_ptr(pt, dist, dir);
         pt->lh.curr_line = curr->next_line;
+        pt->lh.line_number++;
 
         #ifdef DEBUG_MOVE
             char _c = PTR_AT_CHR(pt,pt->curr_chr_ptr);

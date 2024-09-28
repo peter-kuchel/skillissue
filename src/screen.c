@@ -262,11 +262,19 @@ static void calc_line_size(piece_table* pt, pt_track* track, line_print* lp, lin
 
 void display_screen_info(piece_table* pt, line_view* lv, cursor_pos* pos){
 
-    int max_info_size = lv->tinfo_ptr->cols + 1;
+    int max_info_size = lv->tinfo_ptr->cols;
     char info_str[ max_info_size ];
 
-    int size = sprintf(info_str, "[ %d ] [ %d ]", pos->y, pos->x);
-    memset(info_str + size, ' ', max_info_size -1 );
+    #ifdef DEBUG_SCREEN
+        // memset(pbuf, 0, PBUF_SIZE);
+        // sprintf(pbuf, "[Line size: %d] -- {}\n", lp->line_size);
+        // log_to_file(&sk_logger, pbuf);
+    #endif
+
+    int line_num = pt->lh.line_number + 1;
+
+    int size = sprintf(info_str, "[ %d ] [ %d ]", line_num, pos->x);
+    memset(info_str + size, ' ', max_info_size - size -1 );
     info_str[ max_info_size ] = '\0';
 
     mvprintw(lv->tinfo_ptr->rows, 0, "%s", info_str);
