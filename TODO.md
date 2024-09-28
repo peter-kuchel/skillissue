@@ -8,11 +8,14 @@
     * fix small bug with writing info at the bottom (?)
     * fix bug with cursor position and lines when line size is greater than terminal window
 
-    * something that displays the command that has been toggled (similar to vim?)
+    * moving left and right on a line when the line size is greater than the window length 
+        * needs to be debugged heavily
+            * fix issue with segmentation fault when going right
+
 
 * __medium priority__ 
-    
-    * moving left and right on a line when the line size is greater than the window length 
+
+    * re-set terminal info when the screen gets resized
     
     * implement using the line reclaim when a line is deleted 
         * if it has not already been implemented

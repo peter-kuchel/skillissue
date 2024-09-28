@@ -4,7 +4,7 @@
 
 
 // for when a or d is pressed 
-int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
+int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* lv){
     
     // reset the column memory when moving across the line
     pt->lh.col_mem = -1; 
@@ -85,6 +85,8 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
         #endif 
 
         pos->x++;
+
+        update_view_move_right(pt, lv, pos);
         
 
     /* move to the left -- when a is pressed*/ 
@@ -155,6 +157,8 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir){
             log_to_file(&sk_logger, pbuf);
         #endif 
 
+        update_view_move_left(pt, lv, pos);
+
     }
 
     return 0; 
@@ -182,6 +186,12 @@ int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int pre
         line *curr = LH_CURR_LINE(pt);
         lh->curr_line = curr->next_line; 
         lh->line_number++; 
+
+        int term_rh_end = lv->tinfo_ptr->cols; 
+        if (lv->right_win > term_rh_end){
+            lv->right_win = term_rh_end;
+            lv->left_win = 0; 
+        }
 
         pos->y++;
         pos->x = 0;
@@ -220,6 +230,13 @@ int handle_jump_up(piece_table* pt, cursor_pos* pos, line_view* lv){
 
         pos->y--; 
         pos->x = CURR_LINE_SIZE(pt);
+
+        int term_rh_end = lv->tinfo_ptr->cols;
+        if (pos->x > term_rh_end){
+
+            lv->right_win = pos->x + 1; 
+            lv->left_win = pos->x - term_rh_end; 
+        }
 
         // handle if jump up goes into line off of current view of the screen 
         update_view_move_up(pt, lv, pos);

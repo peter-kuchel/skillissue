@@ -201,7 +201,7 @@ int edit_file(char* fn, termw_info* tinfo){
                     break; 
                     
                 case 'a':
-                    handle_side_movement(&pt, &pos, -1);
+                    handle_side_movement(&pt, &pos, -1, &lv);
                     handle_jump_up(&pt, &pos, &lv);
                     break;
                     
@@ -212,7 +212,7 @@ int edit_file(char* fn, termw_info* tinfo){
                 case 'd':
                     prev_chr_ptr = pt.curr_chr_ptr; 
                     prev_ent = pt.curr_ent_ptr;
-                    handle_side_movement(&pt, &pos, 1);
+                    handle_side_movement(&pt, &pos, 1, &lv);
                     handle_jump_down(&pt, &pos, prev_chr_ptr, prev_ent, &lv);
                     break; 
                 

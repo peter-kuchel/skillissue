@@ -136,6 +136,34 @@ void update_view_move_up(piece_table* pt, line_view* lv, cursor_pos* pos){
     }
 }
 
+void update_view_move_left(piece_table* pt, line_view* lv, cursor_pos* pos){
+
+    if (pos->x < 0){
+
+        if (lv->left_win != 0){
+            lv->left_win--;
+            lv->right_win--;    
+        }
+        
+        lv->needs_render++;
+
+        pos->x++;
+    }
+}
+
+void update_view_move_right(piece_table* pt, line_view* lv, cursor_pos* pos){
+
+    if (pos->x == lv->tinfo_ptr->cols){
+
+        lv->left_win++;
+        lv->right_win++;
+
+        lv->needs_render++;
+
+        pos->x--;
+    }
+}
+
 void update_view_ins_nl(piece_table* pt, line_view* lv){
     line_handler* lh = &(pt->lh);
 
@@ -237,7 +265,9 @@ static void move_right_offset(piece_table* pt, pt_track* track, line_print* lp){
 static void calc_line_size(piece_table* pt, pt_track* track, line_print* lp, line_view* lv, line* _l){
     lp->line_pos = 0;
 
-    if (_l->line_size > lv->right_win){
+    int rhs_bound = lv->tinfo_ptr->cols; 
+
+    if (_l->line_size > rhs_bound){
         lp->right_cutoff++;
         lp->line_size = lv->right_win - lv->left_win;
 
@@ -293,12 +323,6 @@ void display_screen_info(piece_table* pt, line_view* lv, cursor_pos* pos, usermo
         }
     }
 
-    #ifdef DEBUG_SCREEN
-        // memset(pbuf, 0, PBUF_SIZE);
-        // sprintf(pbuf, "[Line size: %d] -- {}\n", lp->line_size);
-        // log_to_file(&sk_logger, pbuf);
-    #endif
-
     int line_num = pt->lh.line_number + 1;
 
     int size = sprintf(info_str, "[ %d ] [ %d ]\t-{ %s }-", line_num, pos->x, mode_str);
@@ -307,9 +331,6 @@ void display_screen_info(piece_table* pt, line_view* lv, cursor_pos* pos, usermo
 
     mvprintw(lv->tinfo_ptr->rows, 0, "%s", info_str);
 }
-
-// TODO
-// calc size of everything in advance so that only 1 sys call is made 
 
 void render_screen(piece_table* pt, line_view* lv){
 
@@ -360,8 +381,8 @@ void render_screen(piece_table* pt, line_view* lv){
     
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, 
-            "(top win: %d | bot win: %d)\n", 
-            lv->top_win, lv->bot_win);
+            "(top win: %d | bot win: %d | left: %d | right: %d)\n", 
+            lv->top_win, lv->bot_win, lv->left_win, lv->right_win);
         log_to_file(&sk_logger, pbuf);
 
         memset(pbuf, 0, PBUF_SIZE);
