@@ -6,7 +6,6 @@
     * fix small bug with inserts not displaying (? maybe not an issue anymore?) 
     
     * fix small bug with writing info at the bottom (?)
-    * fix bug with cursor position and lines when line size is greater than terminal window
 
     * moving left and right on a line when the line size is greater than the window length 
         * needs to be debugged heavily

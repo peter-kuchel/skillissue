@@ -31,7 +31,6 @@ typedef struct {
 
 typedef struct {
 
-    // size_t line_chr_ptr;
     int line_size;
     int line_pos; 
 

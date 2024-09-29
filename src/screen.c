@@ -201,8 +201,6 @@ static void init_track(piece_table* pt, line_view* lv, pt_track* track){
 
 static int move_into_next_ent(piece_table* pt, pt_track* track){
 
-    
-     
     if (track->curr_start_ptr == track->ent_chr_end){ 
 
         #ifdef DEBUG_SCREEN
@@ -244,10 +242,16 @@ static int move_into_next_ent(piece_table* pt, pt_track* track){
 
 }
 
-// this can be re-written now 
+// move the render track's char ptr for parts of the lines cutoff by the rhs
 static void move_right_offset(piece_table* pt, pt_track* track, line_print* lp){
 
     if (lp->right_cutoff){
+
+        #ifdef DEBUG_SCREEN
+            memset(pbuf, 0, PBUF_SIZE);
+            sprintf(pbuf, "[cutoff found] - moving chr ptr | before: %ld\n", track->curr_start_ptr);
+            log_to_file(&sk_logger, pbuf);
+        #endif
 
         char curr_chr = CHR_IN_TRACK(track);
         while (curr_chr != '\n'){
@@ -258,7 +262,16 @@ static void move_right_offset(piece_table* pt, pt_track* track, line_print* lp){
             curr_chr = CHR_IN_TRACK(track);
         }
 
+        #ifdef DEBUG_SCREEN
+            memset(pbuf, 0, PBUF_SIZE);
+            sprintf(pbuf, "[cutoff accounted for] chr ptr: %ld\n\n", track->curr_start_ptr);
+            log_to_file(&sk_logger, pbuf);
+        #endif
+
         lp->right_cutoff--; 
+
+        // skip over the '\n' char, since next line doesn't need to have a new line to be displayed to the next line
+        track->curr_start_ptr++;
     }
 }
 
@@ -267,12 +280,17 @@ static void calc_line_size(piece_table* pt, pt_track* track, line_print* lp, lin
 
     int rhs_bound = lv->tinfo_ptr->cols; 
 
-    if (_l->line_size > rhs_bound){
+    // needs to also take into account current right and left window views
+
+    int remaining_line = _l->line_size - lv->left_win + 1;
+
+    if (remaining_line >= rhs_bound){
         lp->right_cutoff++;
-        lp->line_size = lv->right_win - lv->left_win;
+        // lp->line_size = lv->right_win - lv->left_win;
+        lp->line_size = rhs_bound;
 
     } else {
-        lp->line_size = _l->line_size - lv->left_win;
+        lp->line_size = remaining_line;
     }
 
     // begin left offset
@@ -282,11 +300,11 @@ static void calc_line_size(piece_table* pt, pt_track* track, line_print* lp, lin
     }
 
     // uncomment to see line sizes found
-    // #ifdef DEBUG_SCREEN
-    //     memset(pbuf, 0, PBUF_SIZE);
-    //     sprintf(pbuf, "[Line size: %d] -- {}\n", lp->line_size);
-    //     log_to_file(&sk_logger, pbuf);
-    // #endif 
+    #ifdef DEBUG_SCREEN
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "[Line size: %d] -- {}\n", lp->line_size);
+        log_to_file(&sk_logger, pbuf);
+    #endif 
 }
 
 
@@ -357,7 +375,7 @@ void render_screen(piece_table* pt, line_view* lv){
 
         // lines with just \n have a size of 0, so we need to make space to print \n to the screen
         calc_line_size(pt, &track, &lp, lv, _l);
-        l_size = lp.line_size + 1; 
+        l_size = lp.line_size; 
        
         buf_size += l_size;
 
@@ -375,7 +393,7 @@ void render_screen(piece_table* pt, line_view* lv){
     #ifdef DEBUG_SCREEN
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, 
-            "\n--{ Line start: %d | line end: %d | start ent: %d @ (%ld, %ld) }--\nLines to render: %d\n", 
+            "\n----------\n{ Line start: %d | line end: %d | start ent: %d @ (%ld, %ld) }\nLines to render: %d\n", 
             view_curr, lv->bot_win, track.curr_ent, track.curr_start_ptr, track.ent_chr_end, lines_to_render);
         log_to_file(&sk_logger, pbuf);
     
@@ -386,11 +404,12 @@ void render_screen(piece_table* pt, line_view* lv){
         log_to_file(&sk_logger, pbuf);
 
         memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, "print_buf size: %d\n", buf_size);
+        sprintf(pbuf, "print_buf size: %d\n----------\n", buf_size);
         log_to_file(&sk_logger, pbuf);
     #endif 
 
     int pb_i = 0;                                   // index for print buffer
+    char chr; 
     for (i = 0; i < lines_to_render; i++){
         _l = &(lh->lines[view_curr]);
 
@@ -408,15 +427,31 @@ void render_screen(piece_table* pt, line_view* lv){
 
             calc_line_size(pt, &track, &lp, lv, _l);
 
-            lp.line_size++;                                                     // account for the '\n'
+            // if (!lp.right_cutoff)
+            //     lp.line_size++;                                                     // account for the '\n'
             
             int ent_ok; 
+
+            #ifdef DEBUG_SCREEN
+                memset(pbuf, 0, PBUF_SIZE);
+                sprintf(pbuf, "[Line Print]: ( size: %d |  pos: %d | cutoff: %d) \n", lp.line_size, lp.line_pos, lp.right_cutoff);
+                log_to_file(&sk_logger, pbuf);
+            #endif 
+
             while (lp.line_pos < lp.line_size){
 
                 ent_ok = move_into_next_ent(pt, &track);                        // move into next ent if needed
 
                 if (ent_ok){
-                    print_buf[pb_i++] = CHR_IN_TRACK( (&track) );
+                    chr = CHR_IN_TRACK( (&track) );
+                    print_buf[pb_i++] = chr; 
+
+                    // #ifdef DEBUG_SCREEN
+                    //     memset(pbuf, 0, PBUF_SIZE);
+                    //     sprintf(pbuf, "[Adding char]: %x\n", chr);
+                    //     log_to_file(&sk_logger, pbuf);
+                    // #endif 
+                    
                     track.curr_start_ptr++;
                 }
                 
@@ -424,7 +459,7 @@ void render_screen(piece_table* pt, line_view* lv){
             }
         }
 
-        // moving the chr ptr to the next top line
+        // moving the chr ptr to the next top line by skipping over everything cutoff on the right
         move_right_offset(pt, &track, &lp);
 
         view_curr = _l->next_line; 
