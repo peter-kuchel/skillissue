@@ -8,8 +8,7 @@
     * fix small bug with writing info at the bottom (?)
 
     * moving left and right on a line when the line size is greater than the window length 
-        * needs to be debugged heavily
-            * fix issue with segmentation fault when going right
+        * fix jumping up and down when at the beginning and end of lines
 
 
 * __medium priority__ 

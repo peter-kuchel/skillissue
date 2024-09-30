@@ -295,7 +295,7 @@ static void calc_line_size(line_print* lp, line_view* lv, line* _l){
 
     // remaining_line++; // +1 to account for eol insertion space and or '\n' char 
 
-    if ( (remaining_line + 1) >= rhs_bound){
+    if ( (remaining_line + 1) > rhs_bound){
         lp->right_cutoff++;
         lp->line_size = rhs_bound;
 
@@ -423,26 +423,23 @@ void render_screen(piece_table* pt, line_view* lv){
 
         calc_line_size(&lp, lv, _l);
 
-        // account for left offset by moving the char ptr
-        // int left_offset = (lp.line_size < lv->left_win) ? lp.line_size : lv->left_win;
 
-        #ifdef DEBUG_SCREEN
-            memset(pbuf, 0, PBUF_SIZE);
-            sprintf(pbuf, "[Left offset]: %d\n", lv->left_win);
-            log_to_file(&sk_logger, pbuf);
-        #endif 
-
-
+        // account for left offset by moving the char ptr if line is not originally just '\n'
         if (l_size > 0){
 
             int left_off = (l_size > lv->left_win) ? lv->left_win : l_size;
-            
+
+            #ifdef DEBUG_SCREEN
+                memset(pbuf, 0, PBUF_SIZE);
+                sprintf(pbuf, "[Left offset]: %d\n", left_off);
+                log_to_file(&sk_logger, pbuf);
+            #endif 
+
             for (int l_off = 0; l_off < left_off; l_off++){
                 track.curr_start_ptr++; 
                 move_into_next_ent(pt, &track);
             }
         }
-        
 
         int ent_ok; 
 
@@ -452,6 +449,7 @@ void render_screen(piece_table* pt, line_view* lv){
             log_to_file(&sk_logger, pbuf);
         #endif 
 
+        // account for lines which have just '\n'
         if (lp.line_size == 0)
             lp.line_size++;
 
