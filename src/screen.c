@@ -138,6 +138,12 @@ void update_view_move_up(piece_table* pt, line_view* lv, cursor_pos* pos){
 
 void update_view_move_left(line_view* lv, cursor_pos* pos){
 
+    #ifdef DEBUG_SCREEN
+        memset(pbuf, 0, PBUF_SIZE); 
+        sprintf(pbuf, "[shift window left] -- x: %d, left win: %d\n", pos->x, lv->left_win);
+        log_to_file(&sk_logger, pbuf);
+    #endif
+
     if (pos->x < 0){
 
         if (lv->left_win > 0){
@@ -147,8 +153,6 @@ void update_view_move_left(line_view* lv, cursor_pos* pos){
             lv->needs_render++;   
         }
         
-        
-
         pos->x++;
     }
 }

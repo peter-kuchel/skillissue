@@ -121,9 +121,13 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
                         log_to_file(&sk_logger, pbuf);
                     #endif 
                 }
+
+                // so it doesn't return before handling shifting window left 
+                update_view_move_left(lv, pos);
                 return 0;
             }
             
+            // if we are at the every end of the current entry -- move into the right entry
             if (chr_ptr == lower_bound){
 
                 int left = (&(pt->entries[pt->curr_ent_ptr]))->left;
