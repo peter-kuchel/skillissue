@@ -68,8 +68,8 @@ void init_line_view(piece_table* pt, termw_info* tinfo, line_view* lv, line_hand
 
 void update_view_move_down(piece_table* pt, line_view* lv, cursor_pos* pos);
 void update_view_move_up(piece_table* pt, line_view* lv, cursor_pos* pos);
-void update_view_move_left(piece_table* pt, line_view* lv, cursor_pos* pos);
-void update_view_move_right(piece_table* pt, line_view* lv, cursor_pos* pos);
+void update_view_move_left(line_view* lv, cursor_pos* pos);
+void update_view_move_right(line_view* lv, cursor_pos* pos);
 
 void update_view_ins_nl(piece_table* pt, line_view* lv);
 void update_view_del_nl(piece_table* pt, line_view* lv); 

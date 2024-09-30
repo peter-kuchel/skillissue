@@ -5,8 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// #include <curses.h>
-
 #include "cursor.h"
 #include "piecetable.h"
 #include "pt_delete.h"
@@ -16,7 +14,6 @@
 typedef struct {
     FILE* f; 
 } window_info;
-
 
 
 #define USR_ESC  27

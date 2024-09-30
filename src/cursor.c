@@ -86,7 +86,7 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
 
         pos->x++;
 
-        update_view_move_right(pt, lv, pos);
+        update_view_move_right(lv, pos);
         
 
     /* move to the left -- when a is pressed*/ 
@@ -157,7 +157,7 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
             log_to_file(&sk_logger, pbuf);
         #endif 
 
-        update_view_move_left(pt, lv, pos);
+        update_view_move_left(lv, pos);
 
     }
 
@@ -197,7 +197,7 @@ int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int pre
         pos->x = 0;
 
         // handle if jump down goes into line off of current view of the screen 
-        update_view_move_down(pt, lv, pos);
+        // update_view_move_down(pt, lv, pos);
         
         #ifdef DEBUG_SCREEN
             memset(pbuf, 0, PBUF_SIZE);
@@ -228,8 +228,10 @@ int handle_jump_up(piece_table* pt, cursor_pos* pos, line_view* lv){
         pt->lh.curr_line = curr->prev_line; 
         pt->lh.line_number--; 
 
+        int curr_l_size = CURR_LINE_SIZE(pt);
+
         pos->y--; 
-        pos->x = CURR_LINE_SIZE(pt);
+        pos->x = curr_l_size;
 
         int term_rh_end = lv->tinfo_ptr->cols;
         if (pos->x > term_rh_end){
@@ -238,8 +240,9 @@ int handle_jump_up(piece_table* pt, cursor_pos* pos, line_view* lv){
             lv->left_win = pos->x - term_rh_end; 
         }
 
-        // handle if jump up goes into line off of current view of the screen 
-        update_view_move_up(pt, lv, pos);
+        // handle if jump up goes into line off of current view of the screen
+        // if (curr_l_size > lv) 
+        // update_view_move_up(pt, lv, pos);
 
         #ifdef DEBUG_MOVE
             memset(pbuf, 0, PBUF_SIZE);
@@ -253,7 +256,7 @@ int handle_jump_up(piece_table* pt, cursor_pos* pos, line_view* lv){
 }
 
 // move the chr_ptr to the correct place when going up and down the file
-int move_chr_ptr(piece_table* pt, int dist, int dir){
+static int move_chr_ptr(piece_table* pt, int dist, int dir){
 
     int curr_ent = pt->curr_ent_ptr; 
     pt_entry *curr = &(pt->entries[curr_ent]);
