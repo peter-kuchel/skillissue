@@ -3,12 +3,13 @@
 
 * __high priority__ 
     
-    * fix small bug with inserts not displaying (? maybe not an issue anymore?) 
+    * fix small bug with inserts not displaying (? maybe not an issue anymore ?) 
     
     * fix small bug with writing info at the bottom (?)
 
     * moving left and right on a line when the line size is greater than the window length 
-        * fix jumping up and down when at the beginning and end of lines
+        * fix moving down lines and keeping cursor position in the correct place
+        * test to make sure addition entries work with scrolling to the sides
 
 
 * __medium priority__ 

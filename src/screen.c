@@ -1,6 +1,5 @@
 #include "screen.h"
 
-
 void init_line_view(piece_table* pt, termw_info* tinfo, line_view* lv, line_handler* lh){
 
     memset((char*)lv, 0, sizeof(line_view)); 
@@ -185,7 +184,6 @@ void update_view_ins_nl(piece_table* pt, line_view* lv){
 
 }
 
-
 void update_view_del_nl(piece_table* pt, line_view* lv){
 
     // only the lv->bot_win gets changed?
@@ -317,8 +315,6 @@ static void calc_line_size(line_print* lp, line_view* lv, line* _l){
         log_to_file(&sk_logger, pbuf);
     #endif 
 }
-
-
 
 void display_screen_info(piece_table* pt, line_view* lv, cursor_pos* pos, usermode* umode, char user_in){
 

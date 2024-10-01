@@ -238,15 +238,20 @@ int handle_jump_up(piece_table* pt, cursor_pos* pos, line_view* lv){
         pos->x = curr_l_size;
 
         int term_rh_end = lv->tinfo_ptr->cols;
-        if (pos->x > term_rh_end){
+        if (pos->x >= term_rh_end){
 
-            lv->right_win = pos->x + 1; 
-            lv->left_win = pos->x - term_rh_end; 
+            pos->x = term_rh_end - 1;
+            lv->right_win = curr_l_size + 1; 
+            lv->left_win = curr_l_size - term_rh_end + 1; 
+
+            lv->needs_render++;
+
+            #ifdef DEBUG_MOVE
+                memset(pbuf, 0, PBUF_SIZE);
+                sprintf(pbuf, "[JUMP UP] ++ left win: %d | right win: %d\n", lv->left_win, lv->right_win);
+                log_to_file(&sk_logger, pbuf);
+            #endif
         }
-
-        // handle if jump up goes into line off of current view of the screen
-        // if (curr_l_size > lv) 
-        // update_view_move_up(pt, lv, pos);
 
         #ifdef DEBUG_MOVE
             memset(pbuf, 0, PBUF_SIZE);
