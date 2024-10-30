@@ -201,7 +201,7 @@ int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int pre
         pos->x = 0;
 
         // handle if jump down goes into line off of current view of the screen 
-        // update_view_move_down(pt, lv, pos);
+        update_view_move_down(pt, lv, pos);
         
         #ifdef DEBUG_SCREEN
             memset(pbuf, 0, PBUF_SIZE);
@@ -252,6 +252,8 @@ int handle_jump_up(piece_table* pt, cursor_pos* pos, line_view* lv){
                 log_to_file(&sk_logger, pbuf);
             #endif
         }
+
+        update_view_move_up(pt, lv, pos);
 
         #ifdef DEBUG_MOVE
             memset(pbuf, 0, PBUF_SIZE);

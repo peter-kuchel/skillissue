@@ -3,13 +3,15 @@
 
 * __high priority__ 
     
-    * fix small bug with inserts not displaying (? maybe not an issue anymore ?) 
-    
-    * fix small bug with writing info at the bottom (?)
 
     * moving left and right on a line when the line size is greater than the window length 
         * fix moving down lines and keeping cursor position in the correct place
         * test to make sure addition entries work with scrolling to the sides
+        * make sure inserting & deleting works when document is offset to the right
+
+    * small bug where the cursor goes over one space extra when scrolling down and the last line is \n
+    * fix bug when scrolling down and the window is minimized and it interfers with the mode section
+        * when moving cursor from left to right and it has to jump down
 
 
 * __medium priority__ 
@@ -23,7 +25,7 @@
         * stack functions to handle the arrays
         * figuring out when a redo is no longer valid and removing it from the stack 
 
-    * add being able delete using the 'del' key
+    * add being able to delete using the 'del' key
 
     * fix small bug where the cursor position sometimes ends up in the wrong spot (non consistent bug) (?)
         * bug seems to happen when scrolling down to the very bottom of the document
@@ -39,6 +41,10 @@
 
     * re-factor delete exhaustion so that it doesn't make a new entry until
       there is a confirmed delete (?)
+
+    * fix small bug with inserts not displaying (? maybe not an issue anymore ?) 
+    
+    * fix small bug with writing info at the bottom (?)
 
     * fixed size buffer for printing to the screen(?)
         * calculate the buffer size using the max screen size 

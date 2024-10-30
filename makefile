@@ -9,7 +9,7 @@ CFLAGS = -Wall -Wextra -Wpedantic \
 ### debugging flags ###
 ###############################################################
 
-# DEBUG_GENERAL_TOGGLE has to always be set as '1' for debugging 
+# DEBUG_GENERAL_TOGGLE has to always be set as '1' for other debugging flags to toggled 
 
 DEBUG_GENERAL_TOGGLE = 1
 
