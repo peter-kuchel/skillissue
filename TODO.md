@@ -2,7 +2,6 @@
 -- anything with (?) means might not be an issue if is a bug or not necessary if refactoring / feature
 
 * __high priority__ 
-    
 
     * moving left and right on a line when the line size is greater than the window length 
         * fix moving down lines and keeping cursor position in the correct place
@@ -10,8 +9,8 @@
         * make sure inserting & deleting works when document is offset to the right
 
     * small bug where the cursor goes over one space extra when scrolling down and the last line is \n
-    * fix bug when scrolling down and the window is minimized and it interfers with the mode section
-        * when moving cursor from left to right and it has to jump down
+    * fix small bug where cursor position on display doesn't match actual when moving the window view to the right
+    * fix small bug when logger is toggled off then a segfault happens
 
 
 * __medium priority__ 
