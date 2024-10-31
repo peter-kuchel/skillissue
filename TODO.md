@@ -7,6 +7,7 @@
         * fix moving down lines and keeping cursor position in the correct place
         * test to make sure addition entries work with scrolling to the sides
         * make sure inserting & deleting works when document is offset to the right
+        
 
     * small bug where the cursor goes over one space extra when scrolling down and the last line is \n
     * fix small bug where cursor position on display doesn't match actual when moving the window view to the right

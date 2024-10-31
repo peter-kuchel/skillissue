@@ -93,19 +93,9 @@ static void update_top_ent_down(piece_table* pt, line_handler* lh, line_view* lv
     }
 }
 
-static void update_line_in_view_down(piece_table *pt, line_view *lv, cursor_pos *pos, int line_down_size){
-    #ifdef DEBUG_SCREEN
-        memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, "[top view vars]: ent = %d, chr_ptr = %ld\n",
-                lv->top_view_ent, lv->top_view_chr);
-        log_to_file(&sk_logger, pbuf);
-    #endif 
-
-
-    // left win should be moved to the very end of the line so that it is just in view 
-    int pos_diff = (lv->left_win - line_down_size);
-    lv->right_win -= pos_diff;
-    lv->left_win = line_down_size;
+// adjust the top view ent for the line that needs to come into view ( liv - line in view ) 
+// when scrolling up or down while shifted to the right
+static void adjust_liv_top_view(piece_table *pt, line_view *lv, int pos_diff){
 
     // update line views top_view ent -- need to move top_view_char backwards so that it lines up with the left window
     pt_entry* ent = ENT_AT_POS(pt, lv->top_view_ent);
@@ -130,6 +120,23 @@ static void update_line_in_view_down(piece_table *pt, line_view *lv, cursor_pos 
      }
 
      lv->top_view_chr = (size_t)chr_ptr; 
+}
+
+static void update_line_in_view_down(piece_table *pt, line_view *lv, cursor_pos *pos, int line_down_size){
+    #ifdef DEBUG_SCREEN
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "[top view vars]: ent = %d, chr_ptr = %ld\n",
+                lv->top_view_ent, lv->top_view_chr);
+        log_to_file(&sk_logger, pbuf);
+    #endif 
+
+
+    // left win should be moved to the very end of the line so that it is just in view 
+    int pos_diff = (lv->left_win - line_down_size);
+    lv->right_win -= pos_diff;
+    lv->left_win = line_down_size;
+
+    adjust_liv_top_view(pt, lv, pos_diff); 
 
     // x should be what is in view
     pos->x = 0; 
@@ -151,13 +158,14 @@ void update_view_move_down(piece_table* pt, line_view* lv, cursor_pos* pos){
                 lv->left_win, lv->right_win, lv->top_win, lv->bot_win);
         log_to_file(&sk_logger, pbuf);
     #endif 
-//
+
     line_handler* lh = &(pt->lh);
 
     int max_row = lv->tinfo_ptr->rows;
 
-    int line_down_size = (lh->lines[lh->curr_line]).line_size;
-    int line_in_view = line_down_size - lv->left_win > 0; 
+    // int line_down_size = (lh->lines[lh->curr_line]).line_size;
+    int line_down_size = CURR_LINE_SIZE(pt);
+    int line_in_view = line_down_size - lv->left_win >= 0; 
 
     // for when the line to move down to is not in the window view on the left
     if (!line_in_view)
@@ -190,11 +198,43 @@ void update_view_move_down(piece_table* pt, line_view* lv, cursor_pos* pos){
     
 }
 
+static void update_line_in_view_up(piece_table *pt, line_view *lv, cursor_pos *pos){
+
+    line_handler *lh = LH_PTR(pt); 
+    int prev_line_size = lh->lines[ (lh->lines[lh->curr_line]).prev_line  ].line_size;
+    int line_up_size = CURR_LINE_SIZE(pt);
+
+    // need to move top_view_chr down the remainder of the current line, plus ( prev_line size - left_win)
+    int pos_diff = (  prev_line_size - lh->col_mem ) + ( line_up_size - lv->left_win );
+    lv->right_win = lv->left_win - line_up_size;
+    lv->left_win = line_up_size;
+
+    adjust_liv_top_view(pt, lv, pos_diff);
+
+    pos->x = 0; 
+    lv->needs_render++; 
+
+}
+
 void update_view_move_up(piece_table* pt, line_view* lv, cursor_pos* pos){
 
     line_handler* lh = &(pt->lh);
 
-    // check if the screen lines will be shifted
+    int line_up_size = CURR_LINE_SIZE(pt); 
+    int line_in_view = line_up_size - lv->left_win >= 0;
+
+    #ifdef DEBUG_SCREEN
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "---\n[LINE IN VIEW]: %d\n---\n", line_in_view);
+        log_to_file(&sk_logger, pbuf);
+    #endif
+    
+
+    // check if the screen lines will be need to be shifted from a right offset 
+    if (!line_in_view)
+        update_line_in_view_up(pt, lv, pos);
+
+    // check if the screen lines will be shifted up
     if (pos->y < 0){
 
         if (lv->top_win != lh->top_line){
@@ -429,17 +469,19 @@ void display_screen_info(piece_table* pt, line_view* lv, cursor_pos* pos, usermo
 
     int size = sprintf(info_str, "[ %d ] [ %d ]\t-{ %s }-", line_num, pos->x, mode_str);
 
-    // when in debug got to make sure the screen is large enough
+    // when in debug got to make sure the screen is large enough -- else there will be a BOF then segfault
     #ifdef DEBUG_GEN
 
         size += sprintf(
 
                 info_str + size - 1, 
-                " |%ld @ %d| t: %d b: %d l: %d r: %d |", 
-                pt->curr_chr_ptr, pt->curr_ent_ptr, lv->top_win, lv->bot_win, lv->left_win, lv->right_win
+                " |%ld @ %d| t: %d b: %d l: %d r: %d | v: %ld @ %d |", 
+                pt->curr_chr_ptr, pt->curr_ent_ptr, lv->top_win, lv->bot_win, lv->left_win, lv->right_win,
+                lv->top_view_chr, lv->top_view_ent
             );
 
     #endif
+
     memset(info_str + size, ' ', max_info_size - size -1 );
     info_str[ max_info_size ] = '\0';
 

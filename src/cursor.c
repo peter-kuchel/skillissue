@@ -383,7 +383,7 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
         
         } else {
 
-            dist = pos->x;
+            dist = pos->x ;//+ lv->left_win;
             pos->x = jump_size;
         } 
         
