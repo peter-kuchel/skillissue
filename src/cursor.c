@@ -417,16 +417,22 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
         jump_to = &(pt->lh.lines[curr->next_line]);
         jump_size = jump_to->line_size;
 
+        #ifdef DEBUG_MOVE
+            memset(pbuf, 0, PBUF_SIZE);
+            sprintf(pbuf, "======\njump_size= %d | cm: %d | cur_size: %d | x: %d\n======\n",
+                jump_size, curr_col_mem, curr_size, pos->x);
+            log_to_file(&sk_logger, pbuf);
+        #endif 
+
         if (jump_size >= curr_col_mem){
             dist = curr_col_mem + (curr_size - pos->x);         // distance to move chr_ptr
             pos->x = curr_col_mem;
         } 
         
         else{
-            dist = jump_size + (curr_size - pos->x); 
+            dist = jump_size + (curr_size - pos->x) - lv->left_win; 
             pos->x = jump_size;
         }
-        
 
         move_chr_ptr(pt, dist, dir);
         pt->lh.curr_line = curr->next_line;

@@ -432,7 +432,12 @@ void display_screen_info(piece_table* pt, line_view* lv, cursor_pos* pos, usermo
     // when in debug got to make sure the screen is large enough
     #ifdef DEBUG_GEN
 
-        size += sprintf(info_str + size - 1, " |%ld @ %d |", pt->curr_chr_ptr, pt->curr_ent_ptr);
+        size += sprintf(
+
+                info_str + size - 1, 
+                " |%ld @ %d| t: %d b: %d l: %d r: %d |", 
+                pt->curr_chr_ptr, pt->curr_ent_ptr, lv->top_win, lv->bot_win, lv->left_win, lv->right_win
+            );
 
     #endif
     memset(info_str + size, ' ', max_info_size - size -1 );
