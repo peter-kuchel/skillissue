@@ -232,7 +232,7 @@ void update_view_move_up(piece_table* pt, line_view* lv, cursor_pos* pos){
 
     // check if the screen lines will be need to be shifted from a right offset 
     if (!line_in_view)
-        update_line_in_view_up(pt, lv, pos);
+        // update_line_in_view_up(pt, lv, pos);
 
     // check if the screen lines will be shifted up
     if (pos->y < 0){
