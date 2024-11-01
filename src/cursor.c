@@ -43,12 +43,14 @@ int handle_side_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
                 // if at the very end of the file 
                 if (chr_ptr + 1 == upper_bound){
 
+                    pt->curr_chr_ptr++; 
+
                     // if at the very end of the file and the last char is '\n' -- then don't increment further
-                    // if ( PTR_AT_CHR(pt, pt->curr_chr_ptr) == '\n')
-                    //     return 0; 
+                    if ( PTR_AT_CHR(pt, pt->curr_chr_ptr) == '\n')
+                        return 0; 
 
                     pos->x++;
-                    pt->curr_chr_ptr++; 
+                    
 
                     #ifdef DEBUG_MOVE
                         memset(pbuf, 0, PBUF_SIZE);
@@ -398,16 +400,24 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
                 "curr_line_size : %d\n"
                 "pos->x : %d\n"
                 "left win : %d\n"
-                "---\n",
+                "\n",
                 jump_size >= curr_col_mem, jump_size, curr_col_mem, curr_line_size, pos->x, lv->left_win);
             log_to_file(&sk_logger, pbuf);
 
             memset(pbuf, 0, PBUF_SIZE);
 
-            // if (jump_size >= curr_col_mem)
-            //     sprintf();
-            // else 
-            //     sprintf();
+            int bw;
+            if (jump_size >= curr_col_mem)
+                bw = sprintf(pbuf, 
+                    "dist = pos->x + (jump_size - curr_col_mem)\n"
+                    "     = %d\n"
+                    ,(pos->x + (jump_size - curr_col_mem))
+                    );
+            else 
+                bw = sprintf(pbuf, 
+                    "dist = pos->x = %d\n",pos->x);
+
+            sprintf(pbuf + bw, "----------\n");
 
             log_to_file(&sk_logger, pbuf);
         #endif 
@@ -420,7 +430,7 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
         
         } else {
 
-            dist = pos->x ;//+ lv->left_win;
+            dist = pos->x + lv->left_win;
             pos->x = jump_size;
         } 
         

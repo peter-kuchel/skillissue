@@ -210,6 +210,25 @@ static void update_line_in_view_up(piece_table *pt, line_view *lv, cursor_pos *p
 
     // need to move top_view_chr down the remainder of the current line, plus ( prev_line size - left_win)
     int pos_diff = (  prev_line_size - lh->col_mem ) + ( line_up_size - lv->left_win );
+
+    #ifdef DEBUG_SCREEN
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, 
+            "----------\n"
+            "[move up calc]\n"
+            "prev_line_size : %d\n"
+            "col mem : %d\n"
+            "line_up_size : %d\n"
+            "left win : %d\n"
+            "pos_diff = (  prev_line_size - lh->col_mem ) + ( line_up_size - lv->left_win )\n"
+            "         = %d\n"
+
+            "----------\n"
+            , prev_line_size, lh->col_mem, line_up_size, lv->left_win, pos_diff
+        );
+        log_to_file(&sk_logger, pbuf);
+    #endif
+
     lv->right_win = lv->left_win - line_up_size;
     lv->left_win = line_up_size;
 

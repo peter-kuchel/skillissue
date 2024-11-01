@@ -4,8 +4,8 @@
 * __high priority__ 
 
     * moving left and right on a line when the line size is greater than the window length 
-        * fix moving down lines and keeping cursor position in the correct place
-        * test to make sure addition entries work with scrolling to the sides
+        * make sure cursor ends up in the correct position on the RHS when scrolling 
+            * (such as when the line is cutoff on the right --> going to the correct col memory position)
         * make sure inserting & deleting works when document is offset to the right
         
     * fix small bug where cursor position on display doesn't match actual when moving the window view to the right
@@ -17,16 +17,13 @@
     * re-set terminal info when the screen gets resized
     
     * implement using the line reclaim when a line is deleted 
-        * if it has not already been implemented
+        * if it has not already been implemented -- it has not been
 
     * handling redo and undo 
         * stack functions to handle the arrays
         * figuring out when a redo is no longer valid and removing it from the stack 
 
     * add being able to delete using the 'del' key
-
-    * fix small bug where the cursor position sometimes ends up in the wrong spot (non consistent bug) (?)
-        * bug seems to happen when scrolling down to the very bottom of the document
 
     * handling tabs in general
         * moving over tabs to make the cursor jump (?)
@@ -41,8 +38,6 @@
       there is a confirmed delete (?)
 
     * fix small bug with inserts not displaying (? maybe not an issue anymore ?) 
-    
-    * fix small bug with writing info at the bottom (?)
 
     * fixed size buffer for printing to the screen(?)
         * calculate the buffer size using the max screen size 
@@ -55,5 +50,3 @@
     * jumping to a certain line number in the document
 
     * searching the file for certain words
-
-    * grammar correction 
