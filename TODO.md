@@ -13,6 +13,8 @@
 
 
 * __medium priority__ 
+    
+    * sucessfully save the file with the [z] key
 
     * re-set terminal info when the screen gets resized
     
@@ -47,6 +49,8 @@
 
     * line numbering and formating 
     * text colouring - for stuff such as 'int', {}, [], etc.
+        * own custom rules depending on the file extension being opened
+        
     * jumping to a certain line number in the document
 
     * searching the file for certain words
