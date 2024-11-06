@@ -87,6 +87,7 @@ int edit_file(char* fn, termw_info* tinfo){
     line_view lv;
 
     init_line_handler(&(pt.lh), &(pt.original));
+    
     init_line_view(pt_ptr, tinfo, &lv, &(pt.lh));
     
     render_screen(&pt, &lv);

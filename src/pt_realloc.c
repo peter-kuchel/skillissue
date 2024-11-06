@@ -130,8 +130,8 @@ int init_line_handler(line_handler* lh, pt_buffer_t* original_buffer){ //, int t
             #ifdef DEBUG_PT
                 memset(pbuf, 0, PBUF_SIZE);
                 sprintf(pbuf, 
-                    "[Line found in original at position]: %ld, new line is: %d, size: %d\n[New line of size 0 made]\n", 
-                        i, curr_line_i, curr_line->line_size);
+                    "[Line found in original at position]: %ld, new line is: %d, size: %d\n[New line of size %d made]\n", 
+                        i, curr_line_i, curr_line->line_size, curr_line->line_size);
                 log_to_file(&sk_logger, pbuf);
             #endif 
 
@@ -169,8 +169,6 @@ int init_line_handler(line_handler* lh, pt_buffer_t* original_buffer){ //, int t
 
     // add last line
     
-
-
     return 0; 
 }
 
