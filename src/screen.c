@@ -93,6 +93,12 @@ static void update_top_ent_down(piece_table* pt, line_handler* lh, line_view* lv
     }
 }
 
+// adjust where x position on the screen should be when adjusting views on the left and right
+//static void adjust_x_pos(piece_table *pt, line_view *lv, cursor_pos *pos, int line_size){
+//  int s = line_size % lv->tinfo_ptr->cols;
+//  pos->x ; 
+//}
+
 // adjust the top view ent for the line that needs to come into view on the left ( livl - line in view left) 
 // when scrolling up or down while shifted to the right
 static void adjust_livl(piece_table *pt, line_view *lv, int pos_diff){
@@ -152,27 +158,39 @@ static void adjust_livr(piece_table *pt, line_view *lv, int pos_diff){
 static void update_line_in_view_down(piece_table *pt, line_view *lv, cursor_pos *pos, int line_down_size){
     #ifdef DEBUG_SCREEN
         memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, "[top view vars]: ent = %d, chr_ptr = %ld\n",
-                lv->top_view_ent, lv->top_view_chr);
+        sprintf(pbuf, "[top view vars]: ent = %d, chr_ptr = %ld, left_win = %d, line_down_size: %d\n",
+                lv->top_view_ent, lv->top_view_chr, lv->left_win, line_down_size);
         log_to_file(&sk_logger, pbuf);
     #endif 
+    int cols = lv->tinfo_ptr->cols;
+    int pos_diff = (lv->left_win - line_down_size);
 
+    // for when the line is less than the term window length
+    if (line_down_size < cols){
+        lv->left_win = 0;
+	lv->right_win = cols;
+	pos->x = line_down_size;
+    // for when the line size is greater than the win length (or the col mem is to the right somewhere)
+    } else {
+	lv->right_win = pt->lh.col_mem + (cols / 2); 
+	lv->left_win = lv->right_win - cols;
+	pos->x = pt->lh.col_mem % cols; 
+    }
 
     // left win should be moved to the very end of the line so that it is just in view 
-    int pos_diff = (lv->left_win - line_down_size);
-    lv->right_win -= pos_diff;
-    lv->left_win = line_down_size;
+    //lv->right_win -= pos_diff - 1;
+    //lv->left_win = line_down_size - 1;
 
     adjust_livl(pt, lv, pos_diff); 
 
     // x should be what is in view
-    pos->x = 0; 
+    //adjust_x_pos(pt, lv, pos, line_down_size); 
     lv->needs_render++; 
 
     #ifdef DEBUG_SCREEN
         memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, "[top view vars]: ent = %d, chr_ptr = %ld\n",
-                lv->top_view_ent, lv->top_view_chr);
+        sprintf(pbuf, "[top view vars]: ent = %d, chr_ptr = %ld, left_win = %d, line_down_size: %d, pos_diff = %d\n",
+                lv->top_view_ent, lv->top_view_chr, lv->left_win, line_down_size, pos_diff);
         log_to_file(&sk_logger, pbuf);
     #endif 
 }
@@ -256,7 +274,6 @@ static void update_left_line_view_up(piece_table *pt, line_view *lv, cursor_pos 
     lv->left_win = line_up_size;
 
     adjust_livl(pt, lv, pos_diff);
-
     pos->x = 0; 
     lv->needs_render++; 
 
@@ -267,14 +284,15 @@ static void update_right_line_view_up(piece_table *pt, line_view *lv, cursor_pos
     int prev_line_size = lh->lines[ (lh->lines[lh->curr_line]).prev_line  ].line_size;
     int line_up_size = CURR_LINE_SIZE(pt);
 
-    int pos_diff = 0;
-
-    lv->left_win; 
-    lv->right_win; 
-
+    int pos_diff = prev_line_size;
+	
+    // left window could have a buffer so that it isn't placing the cursor at the very edge of the left when adjusting
+     
+    lv->right_win = line_up_size + 1; // +1 to account for cursor space at the ed of the line 
+    lv->left_win = lv->right_win - lv->tinfo_ptr->cols;
     adjust_livr(pt, lv, pos_diff);
 
-    pos->x = 0; 
+    pos->x = lv->tinfo_ptr->cols - 1; 
     lv->needs_render++; 
 }
 
@@ -516,7 +534,8 @@ void display_screen_info(piece_table* pt, line_view* lv, cursor_pos* pos, usermo
             mode_str = "SAVE";
             break;
         default:
-            break;
+            mode_str = "";
+	    break;
 
     }
 
