@@ -368,9 +368,9 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
     line *curr, *jump_to;
     int dist, jump_size, curr_line_size, curr_col_mem;
 
-    // save the current column for the movement 
+    // save the current column for the movement (if there wasn't already a col mem) 
     if (pt->lh.col_mem < 0)
-        pt->lh.col_mem = pos->x; 
+        pt->lh.col_mem = pos->x + lv->left_win; 
     
     curr_col_mem = pt->lh.col_mem;
   
