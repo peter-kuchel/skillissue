@@ -150,6 +150,12 @@ static void adjust_livr(piece_table *pt, line_view *lv, int pos_diff){
 }
 
 static void update_liv_down_right(piece_table *pt, line_view *lv, cursor_pos *pos, int line_down_size){
+    #ifdef DEBUG_SCREEN
+	memset(pbuf, 0, PBUF_SIZE);
+	sprintf(pbuf, "[top view vars]: ent = %d, chr_ptr = %ld, right_win = %d, line_down_size = %d\n",
+		       lv->top_view_ent, lv->top_view_chr, lv->right_win, line_down_size);	
+	log_to_file(&sk_logger, pbuf);
+    #endif
     int cols = lv->tinfo_ptr->cols;
     int col_mem = pt->lh.col_mem;
     
@@ -215,7 +221,7 @@ void update_view_move_down(piece_table* pt, line_view* lv, cursor_pos* pos){
     // int line_down_size = (lh->lines[lh->curr_line]).line_size;
     int line_down_size = CURR_LINE_SIZE(pt);
     int line_in_view = line_down_size - lv->left_win >= 0; 
-    int liv_right = lh->col_mem > lv->right_win;
+    int liv_right = lh->col_mem < lv->right_win;
 
     // for when the line to move down to is not in the window view on the left
     if (!line_in_view)
