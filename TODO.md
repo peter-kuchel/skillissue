@@ -2,7 +2,6 @@
 -- anything with (?) means might not be an issue if is a bug or not necessary if refactoring / feature
 
 * __high priority__ 
-
     * moving left and right on a line when the line size is greater than the window length 
         * make sure cursor ends up in the correct position on the RHS when scrolling 
             * (such as when the line is cutoff on the right --> going to the correct col memory position)
@@ -10,7 +9,6 @@
         
     * fix small bug where cursor position on display doesn't match actual when moving the window view to the right
     * fix small bug when logger is toggled off then a segfault happens
-
 
 * __medium priority__ 
     
