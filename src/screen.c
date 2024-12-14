@@ -218,16 +218,27 @@ void update_view_move_down(piece_table* pt, line_view* lv, cursor_pos* pos){
 
     int max_row = lv->tinfo_ptr->rows;
 
-    // int line_down_size = (lh->lines[lh->curr_line]).line_size;
+    //int line_down_size = (lh->lines[lh->curr_line]).line_size;
     int line_down_size = CURR_LINE_SIZE(pt);
-    int line_in_view = line_down_size - lv->left_win >= 0; 
-    int liv_right = lh->col_mem < lv->right_win;
+    int liv_left = line_down_size - lv->left_win >= 0; 
 
+    //int liv_right = lh->col_mem <= lv->right_win && line_down_size <= lv->right_win &&;
+    int liv_right = line_down_size <= lv->right_win;
+
+    // this condition needs to change
+    //int liv_right = lv->right_win - lh->col_mem >= 0;
+    
+    #ifdef DEBUG_SCREEN
+        memset(pbuf, 0, PBUF_SIZE);
+	sprintf(pbuf, "liv left: %d, liv right: %d\n", liv_left, liv_right);
+        log_to_file(&sk_logger, pbuf);
+    #endif
     // for when the line to move down to is not in the window view on the left
-    if (!line_in_view)
+    if (!liv_left)
         update_liv_down_left(pt, lv, pos, line_down_size);
    
     // for when the line to move down is somewhere past the right window
+    // this would only happen when the col mem NEEDS to be snapped back
     else if (!liv_right)
 	update_liv_down_right(pt, lv, pos, line_down_size);
 
@@ -252,7 +263,7 @@ void update_view_move_down(piece_table* pt, line_view* lv, cursor_pos* pos){
     #ifdef DEBUG_SCREEN
         memset(pbuf, 0, PBUF_SIZE);
         sprintf(pbuf, "[updates to window views]: left = %d right = %d top = %d bot = %d\n[line in view]: %d, line size: %d\n",
-                lv->left_win, lv->right_win, lv->top_win, lv->bot_win, line_in_view, line_down_size);
+                lv->left_win, lv->right_win, lv->top_win, lv->bot_win, liv_left, line_down_size);
         log_to_file(&sk_logger, pbuf);
     #endif 
     
@@ -311,6 +322,7 @@ static void update_liv_up_right(piece_table *pt, line_view *lv, cursor_pos *pos)
 
     pos->x = lv->tinfo_ptr->cols - 1; 
     lv->needs_render++; 
+    // TODO ADD A CASE FOR WHEN THE col mem < the line up size
 }
 
 // for when w is pressed
@@ -320,14 +332,20 @@ void update_view_move_up(piece_table* pt, line_view* lv, cursor_pos* pos){
 
     int line_up_size = CURR_LINE_SIZE(pt); 
     int line_in_view_left = line_up_size - lv->left_win >= 0;
-    int line_in_view_right = lh->col_mem - lv->right_win < 0;
+    int line_in_view_right = lh->col_mem - lv->right_win < 0 || line_up_size < lv->right_win;
 
     #ifdef DEBUG_SCREEN
         memset(pbuf, 0, PBUF_SIZE);
-        sprintf(pbuf, "---\n[LINE IN VIEW]: %d\n---\n", line_in_view_left);
+        sprintf(pbuf, "---\n[LINE IN VIEW left]: %d\n[LINE IN VIEW right]: %d\n---\n", 
+			line_in_view_left, line_in_view_right );
         log_to_file(&sk_logger, pbuf);
     #endif
-    
+    #ifdef DEBUG_SCREEN
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, "[updates to window views]: left = %d right = %d top = %d bot = %d\n",
+                lv->left_win, lv->right_win, lv->top_win, lv->bot_win);
+        log_to_file(&sk_logger, pbuf);
+    #endif  
 
     // check if the screen view will be need to be shifted back to the left
     if (!line_in_view_left)
@@ -350,8 +368,7 @@ void update_view_move_up(piece_table* pt, line_view* lv, cursor_pos* pos){
             lv->needs_render++;
         }
 
-        pos->y++;
-        
+        pos->y++; 
     }
 }
 

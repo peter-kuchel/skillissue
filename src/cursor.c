@@ -386,7 +386,7 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
 
         pos->y--; 
 
-        // the line that is going to be jumped to  & size of the above line to calcuate where the char ptr will end up 
+        // the line that is going to be jumped to & size of the above line to calcuate where the char ptr will end up 
         jump_to = &(pt->lh.lines[curr->prev_line]);
         jump_size = jump_to->line_size;
 
@@ -442,7 +442,7 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
             char _c = PTR_AT_CHR(pt,pt->curr_chr_ptr);
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(pbuf, 
-                "[moving up 1 with col mem: (%d)]: xpos: %d, curr: %d, chr_ptr: %ld, dist: %d, line size: %d | [%c],\n",
+                "[moving up 1 with col mem: (%d)]: xpos: %d, curr_line: %d, chr_ptr: %ld, dist: %d, line size: %d | [%c],\n",
                 curr_col_mem, pos->x, pt->lh.curr_line, pt->curr_chr_ptr, dist, jump_to->line_size, _c
                 );
             log_to_file(&sk_logger, pbuf);
@@ -495,11 +495,13 @@ int handle_line_movement(piece_table* pt, cursor_pos* pos, int dir, line_view* l
         // for when the line down is too short for the col mem
         else{
             dist = jump_size + (curr_line_size - pos->x) - lv->left_win; 
-            pos->x = jump_size;
+
+	    // this in theory shouldn't be less than 0
+            pos->x = jump_size - lv->left_win;
         }
 
         
-
+        // move the chr ptr
         move_chr_ptr(pt, dist, dir);
         pt->lh.curr_line = curr->next_line;
         pt->lh.line_number++;
