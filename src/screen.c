@@ -311,18 +311,28 @@ static void update_liv_up_right(piece_table *pt, line_view *lv, cursor_pos *pos)
     line_handler *lh = LH_PTR(pt); 
     int prev_line_size = lh->lines[ (lh->lines[lh->curr_line]).prev_line  ].line_size;
     int line_up_size = CURR_LINE_SIZE(pt);
-
-    int pos_diff = prev_line_size;
+    int col_mem = pt->lh.col_mem;
+    int pos_diff;
 	
     // left window could have a buffer so that it isn't placing the cursor at the very edge of the left when adjusting
-     
-    lv->right_win = line_up_size + 1; // +1 to account for cursor space at the ed of the line 
+
+    // TODO ADD A CASE FOR WHEN THE col mem < the line up size
+    if (line_up_size >= col_mem){
+        pos_diff = prev_line_size - col_mem; 
+	lv->right_win = col_mem + (lv->tinfo_ptr->cols / 2);
+	pos->x = col_mem % lv->tinfo_ptr->cols;
+
+    } else {
+	pos_diff = prev_line_size;
+        lv->right_win = line_up_size + 1; // +1 to account for cursor space at the ed of the line 
+        pos->x = lv->tinfo_ptr->cols - 1;  
+    }
+
     lv->left_win = lv->right_win - lv->tinfo_ptr->cols;
     adjust_livr(pt, lv, pos_diff);
 
-    pos->x = lv->tinfo_ptr->cols - 1; 
     lv->needs_render++; 
-    // TODO ADD A CASE FOR WHEN THE col mem < the line up size
+
 }
 
 // for when w is pressed
