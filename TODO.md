@@ -33,6 +33,7 @@
 * __low priority__ 
     
     * add being able to use the arrow keys to move when in insertion mode 
+    * fix minor bug where after saving the mode isn't set after the next key pressed
 
     * re-factor delete exhaustion so that it doesn't make a new entry until
       there is a confirmed delete (?)

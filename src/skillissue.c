@@ -1,9 +1,19 @@
 #include "skillissue.h" 
 
-int save_file_writes(FILE* f, piece_table* pt){
+int save_file_writes(FILE** f, piece_table* pt){
     // put together the piece table 
 
-    printf("%p %p", (void*)f, (void*)pt);
+    *f = freopen(NULL, "w+", *f);
+    int curr_ent_pos = pt->ent_head;  
+
+    while (curr_ent_pos != NULL_ENT){
+       pt_entry *ent = ENT_AT_POS(pt, curr_ent_pos);
+
+       pt_buffer_t *buf = GET_PT_BUFF(pt, ent->src);
+       fwrite(buf->text + ent->start, sizeof(char), ent->len, *f);
+       
+       curr_ent_pos = ent->right;
+    }
 
 
     return 0; 
@@ -158,7 +168,7 @@ int edit_file(char* fn, termw_info* tinfo){
                     break;
 
                 case MODE_SAVE:
-                    save_file_writes(f, &pt); 
+                    save_file_writes(&f, &pt); 
                     umode.mode = 0; 
                     break; 
 
@@ -173,7 +183,7 @@ int edit_file(char* fn, termw_info* tinfo){
 
                 /* save progress and write to file */
                 case 'z':
-                    save_file_writes(f, &pt);
+                    //save_file_writes(f, &pt);
                     umode.mode = MODE_SAVE;
                     break; 
 
