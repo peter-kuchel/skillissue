@@ -1,7 +1,6 @@
 #include "skillissue.h" 
 
 int save_file_writes(FILE** f, piece_table* pt){
-    // put together the piece table 
 
     *f = freopen(NULL, "w+", *f);
     int curr_ent_pos = pt->ent_head;  
@@ -15,10 +14,7 @@ int save_file_writes(FILE** f, piece_table* pt){
        curr_ent_pos = ent->right;
     }
 
-
     return 0; 
-
-    // use freopen to clear the contents 
 
 }
 
@@ -40,7 +36,6 @@ int handle_insertion_mode(piece_table* pt, usermode* umode, cursor_pos* curs_pos
             log_to_file(&sk_logger, pbuf);
         #endif  
 
-        // swap_ins_with_del(pt);
         if (pt->curr_ins_ent > 0) 
             pt->curr_ins_ent = NULL_ENT; 
 
@@ -87,7 +82,6 @@ int edit_file(char* fn, termw_info* tinfo){
     /* open the file and init the piece table */
     if ((edit_status = init_piece_table(f, fn, &pt)) < 0 ){
         printf("Something went wrong trying to create piecetable for the file content\n");
-        // goto handle_error; 
         exit(1);
     }
 
@@ -143,7 +137,6 @@ int edit_file(char* fn, termw_info* tinfo){
                         key_pressed = "INSERTION";
                         break;
                     default:
-                        // key_pressed = "N/A"; 
                         sprintf(_key_pressed, "%c", user_in);
                         key_pressed = _key_pressed; 
                         break;
@@ -183,7 +176,6 @@ int edit_file(char* fn, termw_info* tinfo){
 
                 /* save progress and write to file */
                 case 'z':
-                    //save_file_writes(f, &pt);
                     umode.mode = MODE_SAVE;
                     break; 
 

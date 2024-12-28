@@ -7,3 +7,4 @@ valgrind_out.log
 _test_2.log
 piecetable_example.h
 test_log.log
+test_save.log
