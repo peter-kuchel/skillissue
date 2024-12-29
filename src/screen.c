@@ -220,8 +220,9 @@ void update_view_move_down(piece_table* pt, line_view* lv, cursor_pos* pos){
 
     //int line_down_size = (lh->lines[lh->curr_line]).line_size;
     int line_down_size = CURR_LINE_SIZE(pt);
-    int liv_left = line_down_size - lv->left_win >= 0; 
-
+    //int liv_left = line_down_size - lv->left_win >= 0; 
+    int liv_left_diff = line_down_size - lv->left_win;
+    int liv_left = liv_left_diff >= 0;
     //int liv_right = lh->col_mem <= lv->right_win && line_down_size <= lv->right_win &&;
     int liv_right = line_down_size <= lv->right_win;
 
@@ -234,14 +235,22 @@ void update_view_move_down(piece_table* pt, line_view* lv, cursor_pos* pos){
         log_to_file(&sk_logger, pbuf);
     #endif
     // for when the line to move down to is not in the window view on the left
-    if (!liv_left)
+    if (!liv_left){
         update_liv_down_left(pt, lv, pos, line_down_size);
-   
+    }
+    
+    // for when the line is technically in view but is cutoff by 1
+    else if (liv_left_diff == 0){
+        lv->right_win--;
+	lv->left_win--;
+	pos->x++;
+	lv->needs_render++; 
+    } 
     // for when the line to move down is somewhere past the right window
     // this would only happen when the col mem NEEDS to be snapped back
-    else if (!liv_right)
+    else if (!liv_right){
 	update_liv_down_right(pt, lv, pos, line_down_size);
-
+    }
     // check if the screen lines will be shifted
     if (pos->y == max_row){
           
