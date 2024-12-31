@@ -2,7 +2,9 @@
 -- anything with (?) means might not be an issue if is a bug or not necessary if refactoring / feature
 
 * __high priority__ 
-        * fix bug when scrolling up on column memory
+        * fix bugs when moving around the screen
+            * fix segfault that occurs when scrolling up  
+            * fix bug(s) when scrolling up and down on column memory
         * make sure inserting & deleting works when document is offset to the right
         
     * fix small bug where cursor position on display doesn't match actual when moving the window view to the right

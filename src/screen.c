@@ -164,6 +164,8 @@ static void update_liv_down_right(piece_table *pt, line_view *lv, cursor_pos *po
     lv->left_win = lv->right_win - cols;
     pos->x = col_mem % cols; 
     adjust_livr(pt, lv, pos_diff);
+
+    lv->needs_render++; 
     	
 }
 
@@ -224,13 +226,21 @@ void update_view_move_down(piece_table* pt, line_view* lv, cursor_pos* pos){
     int liv_left_diff = line_down_size - lv->left_win;
     int liv_left = liv_left_diff >= 0;
 
-    //int liv_right = lh->col_mem <= lv->right_win && line_down_size <= lv->right_win &&;
-    int liv_right = line_down_size <= lv->right_win;
+    int liv_right = lh->col_mem < lv->right_win || line_down_size <= lv->right_win;
+   // int liv_right = line_down_size <= lv->right_win;
 
     // this condition needs to change
     //int liv_right = lv->right_win - lh->col_mem >= 0;
-    
     #ifdef DEBUG_SCREEN
+        memset(pbuf, 0, PBUF_SIZE);
+	sprintf(pbuf,
+		"col_mem : %d\n"
+		"right_win : %d\n"
+		"line_down_size : %d\n"
+		""
+		, lh->col_mem, lv->right_win, line_down_size);
+	log_to_file(&sk_logger, pbuf);
+
         memset(pbuf, 0, PBUF_SIZE);
 	sprintf(pbuf, "liv left: %d, liv right: %d\n", liv_left, liv_right);
         log_to_file(&sk_logger, pbuf);
