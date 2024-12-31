@@ -220,9 +220,10 @@ void update_view_move_down(piece_table* pt, line_view* lv, cursor_pos* pos){
 
     //int line_down_size = (lh->lines[lh->curr_line]).line_size;
     int line_down_size = CURR_LINE_SIZE(pt);
-    //int liv_left = line_down_size - lv->left_win >= 0; 
+
     int liv_left_diff = line_down_size - lv->left_win;
     int liv_left = liv_left_diff >= 0;
+
     //int liv_right = lh->col_mem <= lv->right_win && line_down_size <= lv->right_win &&;
     int liv_right = line_down_size <= lv->right_win;
 
@@ -318,24 +319,48 @@ static void update_liv_up_left(piece_table *pt, line_view *lv, cursor_pos *pos){
 
 static void update_liv_up_right(piece_table *pt, line_view *lv, cursor_pos *pos){
     line_handler *lh = LH_PTR(pt); 
-    int prev_line_size = lh->lines[ (lh->lines[lh->curr_line]).prev_line  ].line_size;
+    int prev_line_size = lh->lines[ (lh->lines[lh->curr_line]).next_line  ].line_size;
     int line_up_size = CURR_LINE_SIZE(pt);
     int col_mem = pt->lh.col_mem;
+    int screen_length = lv->tinfo_ptr->cols;
     int pos_diff;
 	
-    // left window could have a buffer so that it isn't placing the cursor at the very edge of the left when adjusting
+    // left window could have a buffer so that it isn't placing the cursor at the very edge of the left when adjusting (?)
 
-    // TODO ADD A CASE FOR WHEN THE col mem < the line up size
     if (line_up_size >= col_mem){
-        pos_diff = prev_line_size - col_mem; 
-	lv->right_win = col_mem + (lv->tinfo_ptr->cols / 2);
-	pos->x = col_mem % lv->tinfo_ptr->cols;
+	int view_factor = screen_length / 2; 
+        pos_diff = col_mem - prev_line_size; 
+	lv->right_win = col_mem + view_factor;
 
+	pos->x = col_mem <= lv->tinfo_ptr->cols 
+	       	  ? col_mem - view_factor
+	          : ( col_mem % screen_length) - view_factor;
+
+    // this case is to handle when line_size_up < col_mem (?)
     } else {
 	pos_diff = prev_line_size;
         lv->right_win = line_up_size + 1; // +1 to account for cursor space at the ed of the line 
         pos->x = lv->tinfo_ptr->cols - 1;  
     }
+    #ifdef DEBUG_SCREEN
+        memset(pbuf, 0, PBUF_SIZE);
+        sprintf(pbuf, 
+            "----------\n"
+            "[move up calc]\n"
+	    "line_up_size >= col_mem ? : %d\n"
+            "prev_line_size : %d\n"
+            "col mem : %d\n"
+            "line_up_size : %d\n"
+            "right win : %d\n"
+            "pos_diff = %d\n"
+	    "line_up_size = %d\n"  
+
+            "----------\n"
+            , line_up_size >= col_mem, prev_line_size, lh->col_mem, line_up_size, lv->right_win, pos_diff,
+	      line_up_size
+        );
+        log_to_file(&sk_logger, pbuf);
+    #endif
 
     lv->left_win = lv->right_win - lv->tinfo_ptr->cols;
     adjust_livr(pt, lv, pos_diff);
