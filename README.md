@@ -3,7 +3,7 @@
 An easy to use cli text-editor for the vscode soy-devs like myself who don't know how to type properly on a keyboard, and can't exit from Vim.
 
 _**`NOTE: This software is unfinished, please don't have any high expectations.`**_ 
-See TODO.md for upcoming changes.
+See TODO.md for upcoming changes and bug fixes.
 
 # Requirements: 
 
@@ -24,12 +24,13 @@ Exit the currently opened file (we did it!)
 Move around the currently opened document with these keys
 
 ### Insert [ i ]:
-Toggle inserting / deleting characters, exit mode with ESC 
+Toggle inserting / deleting characters. Currently only deleting with the 'backspace' key is supported at the moment. Exit insert mode with ESC. 
 
-## Coming soon: 
 
 ### Save [ z ]:
 Save the current changes made to the file
+
+## Coming soon: 
 
 ### Redo [ j ] & Undo [ k ]
 
