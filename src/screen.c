@@ -187,6 +187,7 @@ static void update_liv_down_left(piece_table *pt, line_view *lv, cursor_pos *pos
 	pos->x = line_down_size;
 
     // for when the line size is greater than the win length (or the col mem is to the right somewhere)
+    // this may have a bug that will need to be tested
     } else {
 	lv->right_win = ( line_down_size % cols ) + line_down_size;
         lv->left_win = lv->right_win - cols;	
