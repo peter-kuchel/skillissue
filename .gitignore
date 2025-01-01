@@ -8,3 +8,5 @@ _test_2.log
 piecetable_example.h
 test_log.log
 test_save.log
+tests/*.o
+tests/run_tests

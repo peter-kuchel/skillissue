@@ -4,7 +4,6 @@ CFLAGS = -Wall -Wextra -Wpedantic \
 		 -std=c99 \
 		 -O2 \
 
-
 ###############################################################
 ### debugging flags ###
 ###############################################################
@@ -54,11 +53,18 @@ NCURSES = -lncurses
 
 SRC = src
 BIN = bin
+TEST = tests
 
 TARGET = $(BIN)/skillissue
 SRC_FILES = $(wildcard $(SRC)/*.c)
 
 OBJ_FILES = $(SRC_FILES:$(SRC)/%.c=$(BIN)/%.o)
+
+TEST_TARGET = $(TEST)/run_tests
+TEST_FILES = $(wildcard $(TEST)/*.c)
+
+TEST_OBJS = $(TEST_FILES:$(TEST)/%.c=$(TEST)/%.o)
+
 
 all: mk-bin $(TARGET) 
 
@@ -68,11 +74,17 @@ mk-bin:
 $(TARGET): $(OBJ_FILES)
 	$(CC) -o $@ $^ $(NCURSES)
 
-
 $(BIN)/%.o: $(SRC)/%.c
 	$(CC) -c $(CFLAGS) $< -o $@  
 
+tests: all $(TEST_TARGET)
 
+$(TEST_TARGET): $(TEST_OBJS)
+	$(CC) -o $@ $^ 
+
+$(TEST)/%.o: $(TEST)/%.c
+	$(CC) -c $(CFLAGS) $< -o $@
 clean:
 	-rm -f $(OBJ_FILES) $(TARGET)
+	-rm -f $(TEST_OBJS) $(TEST_TARGET)
 	
