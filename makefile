@@ -62,8 +62,8 @@ OBJ_FILES = $(SRC_FILES:$(SRC)/%.c=$(BIN)/%.o)
 
 TEST_TARGET = $(TEST)/run_tests
 TEST_FILES = $(wildcard $(TEST)/*.c)
-
-TEST_OBJS = $(TEST_FILES:$(TEST)/%.c=$(TEST)/%.o)
+FILTERED_OBJS = $(subst bin/skillissue.o ,, $(OBJ_FILES))
+TEST_OBJS = $(TEST_FILES:$(TEST)/%.c=$(BIN)/%.o)
 
 
 all: mk-bin $(TARGET) 
@@ -79,11 +79,11 @@ $(BIN)/%.o: $(SRC)/%.c
 
 tests: all $(TEST_TARGET)
 
-$(TEST_TARGET): $(TEST_OBJS)
-	$(CC) -o $@ $^ 
+$(TEST_TARGET): $(TEST_OBJS) $(FILTERED_OBJS) 
+	$(CC) -o $@ $^ $(NCURSES)
 
-$(TEST)/%.o: $(TEST)/%.c
-	$(CC) -c $(CFLAGS) $< -o $@
+$(BIN)/%.o: $(TEST)/%.c
+	$(CC) -c -Wall -std=c99 -O2 $< -o $@
 clean:
 	-rm -f $(OBJ_FILES) $(TARGET)
 	-rm -f $(TEST_OBJS) $(TEST_TARGET)
