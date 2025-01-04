@@ -4,6 +4,7 @@ CFLAGS = -Wall -Wextra -Wpedantic \
 		 -std=c99 \
 		 -O2 \
 
+CFLAGS_DEBUG =
 ###############################################################
 ### debugging flags ###
 ###############################################################
@@ -20,31 +21,31 @@ DEBUG_SCREEN_TOGGLE = 1
 DEBUG_RENDER_TOGGLE = 
 
 ifeq ($(DEBUG_GENERAL_TOGGLE), 1)
-CFLAGS+=-g -D DEBUG_GEN
+CFLAGS_DEBUG+=-g -D DEBUG_GEN
 endif 
 
 ifeq ($(DEBUG_GENERAL_TOGGLE)$(DEBUG_INSERT_TOGGLE), 11)
-CFLAGS+= -D DEBUG_INSERT
+CFLAGS_DEBUG+= -D DEBUG_INSERT
 endif
 
 ifeq ($(DEBUG_GENERAL_TOGGLE)$(DEBUG_DELETE_TOGGLE), 11)
-CFLAGS+= -D DEBUG_DELETE
+CFLAGS_DEBUG+= -D DEBUG_DELETE
 endif
 
 ifeq ($(DEBUG_GENERAL_TOGGLE)$(DEBUG_MOVEMENT_TOGGLE), 11)
-CFLAGS+= -D DEBUG_MOVE
+CFLAGS_DEBUG+= -D DEBUG_MOVE
 endif
 
 ifeq ($(DEBUG_GENERAL_TOGGLE)$(DEBUG_PT_TOGGLE), 11)
-CFLAGS+= -D DEBUG_PT
+CFLAGS_DEBUG+= -D DEBUG_PT
 endif 
 
 ifeq ($(DEBUG_GENERAL_TOGGLE)$(DEBUG_SCREEN_TOGGLE), 11)
-CFLAGS += -D DEBUG_SCREEN
+CFLAGS_DEBUG += -D DEBUG_SCREEN
 endif
 
 ifeq ($(DEBUG_GENERAL_TOGGLE)$(DEBUG_RENDER_TOGGLE),11)
-CFLAGS += -D DEBUG_RENDER
+CFLAGS_DEBUG += -D DEBUG_RENDER
 endif
 
 ###############################################################
@@ -75,7 +76,7 @@ $(TARGET): $(OBJ_FILES)
 	$(CC) -o $@ $^ $(NCURSES)
 
 $(BIN)/%.o: $(SRC)/%.c
-	$(CC) -c $(CFLAGS) $< -o $@  
+	$(CC) -c $(CFLAGS) $(CFLAGS_DEBUG) $< -o $@  
 
 tests: all $(TEST_TARGET)
 
@@ -83,7 +84,7 @@ $(TEST_TARGET): $(TEST_OBJS) $(FILTERED_OBJS)
 	$(CC) -o $@ $^ $(NCURSES)
 
 $(BIN)/%.o: $(TEST)/%.c
-	$(CC) -c -Wall -std=c99 -O2 $< -o $@
+	$(CC) -c -Wall -std=c99 -O2 $(CFLAGS_DEBUG) $< -o $@
 clean:
 	-rm -f $(OBJ_FILES) $(TARGET)
 	-rm -f $(TEST_OBJS) $(TEST_TARGET)
