@@ -5,6 +5,7 @@
 #include "../src/screen.h"
 #include "../src/cursor.h"
 #include "../src/pt_realloc.h"
+#include "cursor_tests.h"
 #include "test_utils.h"
 
 #endif
