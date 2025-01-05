@@ -22,6 +22,7 @@ int screen_test_moving_across_and_down_to_first_line(piece_table *pt, line_view 
      // move up one space back to the beginning of the file
      for (i = 0; i < 1; i++) sim_pressing_W(pt, pos, lv);
 
+     // assert that chr position and x pos are both 0
      return pos->x == 0 && pt->curr_chr_ptr == 0;
 }
 
