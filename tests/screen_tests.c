@@ -42,8 +42,34 @@ int screen_test_moving_out_and_back_into_left_window(piece_table *pt, line_view 
 	  return 0;
 
      }
+     
+     // move up two rows to return to where the column memory is and assert positioning is correct
+     for (i = 0; i < 2; i++) sim_pressing_W(pt, pos, lv);
 
-     // this means that all tests passed
+     // assert that the position of everything is correct
+     if (pt->curr_chr_ptr != 77){
+          printf("\e[0;31m[ TEST FAILED ]\e[0m\n");
+	  printf("Expected results :: current_chr_ptr = %d\n", 77);
+	  printf("Actual results   :: current_chr_ptr = %ld\n", pt->curr_chr_ptr);
+
+	  return 0;
+
+     }
+
+     // bring the cursor back to the very beginning of the file
+     for(i = 0; i < 77; i++) sim_pressing_A(pt, pos, lv);
+
+     // asssert that the position of everything is correct
+     if ( lv->left_win != 0 || lv->right_win != 76 || pos->x != 0 || pt->curr_chr_ptr != 0){
+          printf("\e[0;31m[ TEST FAILED ]\e[0m\n");
+	  printf("Expected results :: curr_chr_ptr = %d, left_win = %d, right_win = %d, x = %d\n", 0, 0, 76, 0);
+	  printf("Actual results :: curr_chr_ptr = %ld,left_win = %d, right_win = %d, x = %d\n", 
+			  pt->curr_chr_ptr, lv->left_win, lv->right_win, pos->x);
+	  return 0;
+
+     }
+
+     // test passed
      return 1;
 
 }
@@ -90,7 +116,7 @@ int screen_test_scrolling_standard(piece_table *pt, line_view *lv, cursor_pos *p
      if(pos->x != 0 || pt->curr_chr_ptr != 0){
           printf("\e[0;31m[ TEST FAILED ]\e[0m\n");
 	  printf("Expected results :: curr_chr_ptr = %d, x = %d\n", 0, 0);
-	  printf("Actual results :: curr_chr_ptr = %ld, x = %d\n", pt->curr_chr_ptr, pos->x);
+	  printf("Actual results   :: curr_chr_ptr = %ld, x = %d\n", pt->curr_chr_ptr, pos->x);
 	  return 0;
      }
 
