@@ -252,7 +252,7 @@ void update_view_move_down(piece_table* pt, line_view* lv, cursor_pos* pos){
     }
     
     // for when the line is technically in view but is cutoff by 1
-    else if (liv_left_diff == 0){
+    else if (liv_left_diff == 0 && lv->left_win > 0){
         lv->right_win--;
 	lv->left_win--;
 	pos->x++;
