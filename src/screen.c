@@ -329,6 +329,7 @@ static void update_liv_up_left(piece_table *pt, line_view *lv, cursor_pos *pos){
 }
 
 static void update_liv_up_right(piece_table *pt, line_view *lv, cursor_pos *pos){
+
     line_handler *lh = LH_PTR(pt); 
     int prev_line_size = lh->lines[ (lh->lines[lh->curr_line]).next_line  ].line_size;
     int line_up_size = CURR_LINE_SIZE(pt);
@@ -336,16 +337,18 @@ static void update_liv_up_right(piece_table *pt, line_view *lv, cursor_pos *pos)
     int screen_length = lv->tinfo_ptr->cols;
     int pos_diff;
 	
-    // left window could have a buffer so that it isn't placing the cursor at the very edge of the left when adjusting (?)
+    int view_factor = screen_length / 2; 
 
+    // left window could have a buffer so that it isn't placing the cursor at the very edge of the left when adjusting (?)
     if (line_up_size >= col_mem){
-	int view_factor = screen_length / 2; 
         pos_diff = col_mem - prev_line_size; 
 	lv->right_win = col_mem + view_factor;
 
 	pos->x = col_mem <= lv->tinfo_ptr->cols 
 	       	  ? col_mem - view_factor
-	          : ( col_mem % screen_length) - view_factor;
+		  : view_factor;
+
+       //if (pos->x < 0) pos->x *= -1;
 
     // this case is to handle when line_size_up < col_mem (?)
     } else {
@@ -358,17 +361,19 @@ static void update_liv_up_right(piece_table *pt, line_view *lv, cursor_pos *pos)
         sprintf(pbuf, 
             "----------\n"
             "[move up calc]\n"
+	    "num of cols : %d\n"
 	    "line_up_size >= col_mem ? : %d\n"
             "prev_line_size : %d\n"
             "col mem : %d\n"
             "line_up_size : %d\n"
             "right win : %d\n"
-            "pos_diff = %d\n"
-	    "line_up_size = %d\n"  
+            "pos_diff : %d\n"
+	    "line_up_size : %d\n"  
+	    "view factor : %d\n"
 
             "----------\n"
-            , line_up_size >= col_mem, prev_line_size, lh->col_mem, line_up_size, lv->right_win, pos_diff,
-	      line_up_size
+            ,lv->tinfo_ptr->cols, line_up_size >= col_mem, prev_line_size, lh->col_mem, line_up_size, lv->right_win, pos_diff,
+	      line_up_size, view_factor
         );
         log_to_file(&sk_logger, pbuf);
     #endif
