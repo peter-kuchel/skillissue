@@ -312,6 +312,19 @@ static void update_liv_up_left(piece_table *pt, line_view *lv, cursor_pos *pos){
     line_handler *lh = LH_PTR(pt); 
     int prev_line_size = lh->lines[ (lh->lines[lh->curr_line]).prev_line  ].line_size;
     int line_up_size = CURR_LINE_SIZE(pt);
+    int cols = lv->tinfo_ptr->cols;
+
+    // for when the line size is smaller than the screen size
+    if (line_up_size < cols){
+        lv->left_win = 0;
+	lv->right_win = cols; 
+
+    // need to do some math here for when line no in view but not less than screen size
+    } else {
+        int view_factor = cols / 2;
+	lv->right_win = view_factor + line_up_size;
+	lv->left_win = lv->right_win - cols;
+    } 
 
     // need to move top_view_chr down the remainder of the current line, plus ( prev_line size - left_win)
     int pos_diff = (  prev_line_size - lh->col_mem ) + ( line_up_size - lv->left_win );
@@ -334,11 +347,11 @@ static void update_liv_up_left(piece_table *pt, line_view *lv, cursor_pos *pos){
         log_to_file(&sk_logger, pbuf);
     #endif
 
-    lv->right_win = lv->left_win - line_up_size;
-    lv->left_win = line_up_size;
+    //lv->right_win = lv->left_win - line_up_size;
+    //lv->left_win = line_up_size;
 
     //adjust_livl(pt, lv, pos_diff);
-    pos->x = 0; 
+    pos->x = line_up_size; 
     lv->needs_render++; 
 
 }
