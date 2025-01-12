@@ -11,7 +11,7 @@
     * fix small bug when logger is toggled off then a segfault happens
 
 * __medium priority__ 
-    
+    * have a safety step before quitting to confirm the user wants to quit 
     * re-set terminal info when the screen gets resized
     
     * implement using the line reclaim when a line is deleted 
