@@ -13,6 +13,77 @@ void setup_test_objects(piece_table *pt, FILE* f, termw_info *tinfo, line_view *
      log_piece_table_current(&sk_logger, pt); 
 }
 
+int screen_test_scrolling_with_right_offset(piece_table *pt, line_view *lv, cursor_pos *pos){
+     printf("screen_test_scrolling_with_right_offset -- ");
+     int i;
+
+     // move close to the very end of the line so that the right and left window have to be adjusted
+     for (i = 0; i < 77; i++) sim_pressing_D(pt, pos, lv);
+
+
+     // assert that window position is correct and the chr_ptr position is correct 
+     if ( lv->left_win != 2 || lv->right_win != 78 || pt->curr_chr_ptr != 77){
+	  printf("\e[0;31m[ TEST FAILED ]\n1st assertion failed\n\e[0m");
+	  printf("Expected results :: curr_chr_ptr = %d, left_win = %d, right_win = %d\n", 77, 2, 78);
+	  printf("Actual results :: curr_chr_ptr = %ld,left_win = %d, right_win = %d\n", 
+			  pt->curr_chr_ptr, lv->left_win, lv->right_win);
+	  return 0;
+     }
+
+     // move down 7 rows and see that the screen adjusted correctly and that the positions are correct
+     for ( i = 0; i < 7; i ++) sim_pressing_S(pt, pos, lv);
+
+     // assert that the position of everything is correct
+     if (pt->curr_chr_ptr != 207){
+          printf("\e[0;31m[ TEST FAILED ]\n2nd assertion failed\n\e[0m");
+	  printf("Expected results :: current_chr_ptr = %d\n", 207);
+	  printf("Actual results   :: current_chr_ptr = %ld\n", pt->curr_chr_ptr);
+
+	  return 0;
+
+     }
+
+     return 1;
+     
+     // asssert that the position of everything is correct
+     if ( lv->left_win != 8 || lv->right_win != 84 || pos->x != 13 || pt->curr_chr_ptr != 119){
+          printf("\e[0;31m[ TEST FAILED ]\n2nd assertion failed\n\e[0m");
+	  printf("Expected results :: curr_chr_ptr = %d, left_win = %d, right_win = %d, x = %d\n", 119, 8, 84, 13);
+	  printf("Actual results :: curr_chr_ptr = %ld,left_win = %d, right_win = %d, x = %d\n", 
+			  pt->curr_chr_ptr, lv->left_win, lv->right_win, pos->x);
+	  return 0;
+
+     }
+     
+     // move up two rows to return to where the column memory is and assert positioning is correct
+     for (i = 0; i < 10; i++) sim_pressing_D(pt, pos, lv);
+
+     // assert that the position of everything is correct
+     if (pt->curr_chr_ptr != 129){
+          printf("\e[0;31m[ TEST FAILED ]\n3rd assertion failed\n\e[0m");
+	  printf("Expected results :: current_chr_ptr = %d\n", 129);
+	  printf("Actual results   :: current_chr_ptr = %ld\n", pt->curr_chr_ptr);
+
+	  return 0;
+
+     }
+
+     // move up 6 rows and see that the screen adjusted correctly and that the positions are correct
+     for ( i = 0; i < 6; i ++) sim_pressing_W(pt, pos, lv);
+     
+     // asssert that the position of everything is correct
+     if ( lv->left_win != 0 || lv->right_win != 76 || pos->x != 1 || pt->curr_chr_ptr != 1){
+          printf("\e[0;31m[ TEST FAILED ]\n4th assertion failed\n\e[0m");
+	  printf("Expected results :: curr_chr_ptr = %d, left_win = %d, right_win = %d, x = %d\n", 1, 0, 76, 1);
+	  printf("Actual results :: curr_chr_ptr = %ld,left_win = %d, right_win = %d, x = %d\n", 
+			  pt->curr_chr_ptr, lv->left_win, lv->right_win, pos->x);
+	  return 0;
+
+     }
+     return 1;
+}
+
+
 int screen_test_scroll_right_offset_and_move_across_lines(piece_table *pt, line_view *lv, cursor_pos *pos){
 
      printf("screen_test_scroll_right_offset_and_move_across_lines -- ");
@@ -57,6 +128,30 @@ int screen_test_scroll_right_offset_and_move_across_lines(piece_table *pt, line_
 
      }
 
+     // move up 6 rows and see that the screen adjusted correctly and that the positions are correct
+     for ( i = 0; i < 6; i ++) sim_pressing_W(pt, pos, lv);
+     
+     // asssert that the position of everything is correct
+     if ( lv->left_win != 0 || lv->right_win != 76 || pos->x != 1 || pt->curr_chr_ptr != 1){
+          printf("\e[0;31m[ TEST FAILED ]\n4th assertion failed\n\e[0m");
+	  printf("Expected results :: curr_chr_ptr = %d, left_win = %d, right_win = %d, x = %d\n", 1, 0, 76, 1);
+	  printf("Actual results :: curr_chr_ptr = %ld,left_win = %d, right_win = %d, x = %d\n", 
+			  pt->curr_chr_ptr, lv->left_win, lv->right_win, pos->x);
+	  return 0;
+
+     }
+     // move down 1 and see that the screen adjusted correctly and that the positions are correct
+     for ( i = 0; i < 1; i ++) sim_pressing_A(pt, pos, lv);
+
+     // assert that the position of everything is correct
+     if (pt->curr_chr_ptr != 0){
+          printf("\e[0;31m[ TEST FAILED ]\n5th assertion failed\n\e[0m");
+	  printf("Expected results :: current_chr_ptr = %d\n", 0);
+	  printf("Actual results   :: current_chr_ptr = %ld\n", pt->curr_chr_ptr);
+
+	  return 0;
+
+     }
      return 1;
 }
 
@@ -203,6 +298,11 @@ int main(){
      	printf("\e[0;32m[ TEST PASSED ]\e[0m\n");
 
      res = screen_test_scroll_right_offset_and_move_across_lines(&pt, &lv, &pos);
+     if (res == 0) 
+          goto teardown;
+     else	     
+     	  printf("\e[0;32m[ TEST PASSED ]\e[0m\n");
+     res = screen_test_scrolling_with_right_offset(&pt, &lv, &pos);
      if (res == 0) 
           goto teardown;
      else	     
