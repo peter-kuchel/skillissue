@@ -214,6 +214,7 @@ int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int pre
         if (lv->right_win > term_rh_end){
             lv->right_win = term_rh_end;
             lv->left_win = 0; 
+	    lv->needs_render++;
         }
 
         pos->y++;
@@ -221,7 +222,7 @@ int handle_jump_down(piece_table* pt, cursor_pos* pos, int prev_chr_ptr, int pre
 
         // handle if jump down goes into line off of current view of the screen 
         update_view_move_down(pt, lv, pos);
-        
+	
         #ifdef DEBUG_SCREEN
             memset(pbuf, 0, PBUF_SIZE);
             sprintf(pbuf, 
