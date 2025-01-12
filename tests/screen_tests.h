@@ -8,4 +8,6 @@
 #include "cursor_tests.h"
 #include "test_utils.h"
 
+int all_screen_tests(piece_table *pt, line_view *lv, cursor_pos *pos);
+
 #endif

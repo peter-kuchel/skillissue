@@ -1,18 +1,5 @@
 #include "screen_tests.h"
 
-void setup_test_objects(piece_table *pt, FILE* f, termw_info *tinfo, line_view *lv){
-
-     if ( init_piece_table(f, TEST_FILE, pt) < 0 ){
-          printf("failed to open test file\n");
-	  exit(1); 
-     }     
-
-     init_line_handler(&(pt->lh), &(pt->original));
-     init_line_view(pt, tinfo, lv, &(pt->lh));
-     
-     log_piece_table_current(&sk_logger, pt); 
-}
-
 int screen_test_scrolling_with_right_offset(piece_table *pt, line_view *lv, cursor_pos *pos){
      printf("screen_test_scrolling_with_right_offset -- ");
      int i;
@@ -315,52 +302,43 @@ int screen_test_scrolling_standard(piece_table *pt, line_view *lv, cursor_pos *p
 
      return 1;
 }
-int main(){
 
-     piece_table pt; 
-     line_view lv;
-     cursor_pos pos = { 0, 0 };
-     termw_info tinfo = { 8, 76 };
-     
+int all_screen_tests(piece_table *pt, line_view *lv, cursor_pos *pos){
+
      printf("\e[0;32m--- [SCREEN TESTS STARTING] ---\e[0m\n");
-     FILE* f = fopen(TEST_FILE, "r+");
-
-     setup_logger(&sk_logger, LOG_FILE);
-     setup_test_objects(&pt, f, &tinfo, &lv);
-     fclose(f); 
      
      int res;
 
-     res = screen_test_moving_across_and_down_to_first_line(&pt, &lv, &pos);
+     res = screen_test_moving_across_and_down_to_first_line(pt, lv, pos);
      if (res == 0)
 	  goto teardown;
      else  
 	  printf("\e[0;32m[ TEST PASSED ]\e[0m\n"); 
 
-     res = screen_test_scrolling_standard(&pt, &lv, &pos);
+     res = screen_test_scrolling_standard(pt, lv, pos);
      if (res == 0)
 	  goto teardown;
       else 
 	  printf("\e[0;32m[ TEST PASSED ]\e[0m\n"); 
 
-     if (screen_test_moving_out_and_back_into_left_window(&pt, &lv, &pos) == 0) 
+     if (screen_test_moving_out_and_back_into_left_window(pt, lv, pos) == 0) 
 	goto teardown;
      else
      	printf("\e[0;32m[ TEST PASSED ]\e[0m\n");
 
-     res = screen_test_scroll_right_offset_and_move_across_lines(&pt, &lv, &pos);
+     res = screen_test_scroll_right_offset_and_move_across_lines(pt, lv, pos);
      if (res == 0) 
           goto teardown;
      else	     
      	  printf("\e[0;32m[ TEST PASSED ]\e[0m\n");
 
-     res = screen_test_scrolling_with_right_offset(&pt, &lv, &pos);
+     res = screen_test_scrolling_with_right_offset(pt, lv, pos);
      if (res == 0) 
           goto teardown;
      else	     
      	  printf("\e[0;32m[ TEST PASSED ]\e[0m\n");
 
-     res = screen_test_scrolling_with_right_offset_2(&pt, &lv, &pos);
+     res = screen_test_scrolling_with_right_offset_2(pt, lv, pos);
      if (res == 0) 
           goto teardown;
      else	     
@@ -370,6 +348,6 @@ int main(){
      return 0;
 
 teardown:
-     empty_piece_table(&pt);
+     empty_piece_table(pt);
      exit(1);
 }
