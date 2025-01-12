@@ -150,19 +150,34 @@ static void adjust_livr(piece_table *pt, line_view *lv, int pos_diff){
 }
 
 static void update_liv_down_right(piece_table *pt, line_view *lv, cursor_pos *pos, int line_down_size){
+
     #ifdef DEBUG_SCREEN
 	memset(pbuf, 0, PBUF_SIZE);
 	sprintf(pbuf, "[top view vars]: ent = %d, chr_ptr = %ld, right_win = %d, line_down_size = %d\n",
 		       lv->top_view_ent, lv->top_view_chr, lv->right_win, line_down_size);	
 	log_to_file(&sk_logger, pbuf);
     #endif
+
     int cols = lv->tinfo_ptr->cols;
     int col_mem = pt->lh.col_mem;
     
     int pos_diff = line_down_size - col_mem; 
-    lv->right_win = col_mem + (cols / 2); 
+    int view_factor = cols / 2;
+
+    if (col_mem > line_down_size)
+         lv->right_win = view_factor + line_down_size; 
+     else
+         lv->right_win = col_mem + view_factor; 
+    
     lv->left_win = lv->right_win - cols;
-    pos->x = col_mem % cols; 
+    int curr_portion_line_down = line_down_size - lv->left_win - 1;  // -1 to account for cursor space at eol
+    
+    if (curr_portion_line_down < view_factor){
+         pos->x = view_factor; 
+    } else {
+	 pos->x = curr_portion_line_down;
+    }
+
     adjust_livr(pt, lv, pos_diff);
 
     lv->needs_render++; 
